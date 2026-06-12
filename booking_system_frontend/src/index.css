@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+:root {
+    --bg: #0a0a0c;
+    --surface: #151518;
+    --surface-2: #1c1c21;
+    --surface-3: #242429;
+    --border: rgba(255, 255, 255, 0.07);
+    --border-2: rgba(255, 255, 255, 0.12);
+
+    --gold: #c9a96e;
+    --gold-light: #e8c98a;
+    --gold-dim: rgba(201, 169, 110, 0.12);
+    --violet: #9b8cdb;
+    --violet-dim: rgba(155, 140, 219, 0.12);
+    --teal: #5ec4b0;
+    --teal-dim: rgba(94, 196, 176, 0.12);
+
+    --text-1: #f0ede8;
+    --text-2: #9b9898;
+    --text-3: #5c5b60;
+
+    --radius-sm: 8px;
+    --radius: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 9999px;
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center gap-1.75 text-[0.875rem] font-semibold rounded-md px-5 py-2.5 transition-all whitespace-nowrap;
+    }
+    .btn-secondary {
+        @apply bg-(--surface-2) text-(--text-1) border border-(--border-2);
+    }
+    .btn-secondary:hover {
+        @apply bg-(--surface-3) border-[rgba(255,255,255,0.18)];
+    }
+    .btn-lg {
+        @apply text-[1rem] py-3.5 px-7 rounded-(--radius);
+    }
+    .btn-sm {
+        @apply text-[0.8125rem] py-1.75 px-3.5;
+    }
+    .input-placeholder {
+        @apply  placeholder-(--text-3)
+    }
+    .toprated-card {
+        @apply 
+        bg-(--surface)
+        border 
+        border-(--border)
+        rounded-lg
+        p-5
+        cursor-pointer
+        transition-all 
+        duration-200
+        flex
+        flex-col
+        gap-3
+    } 
+    .toprated-card:hover {
+        @apply 
+        border-(--border-2)
+        -translate-y-0.5
+        shadow-(--shadow);
+    }
+    .toprated-avatar {
+        @apply w-11 h-11 rounded-xl flex items-center justify-center text-[1.25rem];
+    }
+    .toprated-name {
+        @apply 
+        text-[0.9375rem]
+        font-semibold
+    }
+    .toprated-cat {
+        font-size: 0.75rem;
+        color: var(--text-3);
+        margin-top: 2px;
+    }
+    .toprated-footer {
+        @apply 
+        flex
+        items-center
+        justify-between
+        mt-auto
+    }
+    .rating-row {
+        @apply 
+        flex
+        items-center
+        gap-1.25
+    }
+    .rating-score {
+        @apply 
+        text-[0.8125rem]
+        font-semibold
+    }
+    .rating-count {
+        @apply 
+        text-[0.75rem]
+        text-(--text-3);
+    }
+    .hero-eyebrow {
+        @apply 
+        inline-flex
+        items-center
+        gap-2
+        bg-(--surface)
+        border  
+        border-(--border-2)
+        rounded-[100px]
+        pt-1.25  pr-3.5 pb-1.25 pl-2.5
+        text-[0.8125rem]
+        font-medium
+        text-(--text-2)
+        mb-8
+    }
+}
+
+@layer utilities {
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
