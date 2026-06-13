@@ -21,6 +21,25 @@ export async function post(url: string, body: any) {
     }
 }
 
+export async function login(url: string, token: string) {
+    try {
+        const result = await fetch(url, {
+            method: "POST",
+            body: null,
+            credentials: 'include',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const response = await result.json();
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 function getCookie(name: string) {
     return document.cookie
         .split("; ")

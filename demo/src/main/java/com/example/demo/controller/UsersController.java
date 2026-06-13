@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,11 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.UserCredentialsDto;
+import com.example.demo.dto.UserCredentialsSignUp;
+import com.example.demo.entity.Roles;
+import com.example.demo.entity.Users;
+import com.example.demo.helper.UserHelper;
 import com.example.demo.service.JwtService;
 import com.example.demo.service.UserService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 
@@ -29,25 +36,22 @@ public class UsersController {
     @Autowired
     UserService userService;
 
+    @Autowired 
+    UserHelper userHelper;
+
     @PostMapping("/api/auth/signup")
-    public ResponseEntity<AuthResponse> signup(@RequestBody UserCredentialsDto body) {
+    public ResponseEntity<AuthResponse> signup(@RequestBody UserCredentialsSignUp body) {
 
         String token = body.getId_token();
 
         try {
             FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdToken(token);
     
-            String jwtToken = jwtService.generateToken(decoded.getUid(), decoded.getEmail(), "CUSTOMER");
+            String jwtToken = jwtService.generateToken(decoded.getUid(), decoded.getEmail(), List.of("CUSTUMER"));
 
             userService.createUser(body);
            
-            ResponseCookie cookie = ResponseCookie.from("jwt-token", jwtToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(Duration.ofDays(7))
-                .sameSite("Strict")
-                .build();
+            ResponseCookie cookie = userHelper.createJwtCookie(jwtToken);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -62,5 +66,40 @@ public class UsersController {
 
     }
     
+    @PostMapping("/api/auth/login")
+    public ResponseEntity<AuthResponse> login (HttpServletRequest request) {
+        
+        try {
+            String bearerToken = request.getHeader("Authorization");
+
+            if (bearerToken == null) {
+                return ResponseEntity
+                        .status(401)
+                        .body(new AuthResponse(401, "unauthorized super request"));
+            }
+
+            String token = bearerToken.substring("Bearer".length()).trim();
+
+            FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdToken(token);
+
+            Users user = userService.getUser(decoded.getUid());
+
+            List<String> roles = userHelper.extractUserRole(user);
+
+            String jwtToken = jwtService.generateToken(decoded.getUid(), decoded.getEmail(), roles);
+
+            ResponseCookie cookie = userHelper.createJwtCookie(jwtToken);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(new AuthResponse(200, "login super success"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new AuthResponse(500, "error happens for a reason"));
+        }
+    }
 
 }

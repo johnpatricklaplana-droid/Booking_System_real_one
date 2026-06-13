@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +22,7 @@ public class Users {
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private String id;
+    private UUID id;
 
     @Column(name="first_name")
     private String firstName;

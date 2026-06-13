@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
@@ -24,7 +25,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
-    public String generateToken(String uid, String email, String role) {
+    public String generateToken(String uid, String email, List<String> role) {
         return Jwts.builder()
             .subject(uid)
             .claim("email", email)

@@ -3,12 +3,13 @@ package com.example.demo.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.UserCredentialsDto;
+import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
 import com.example.demo.repositories.UserRepository;
@@ -22,7 +23,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    public void createUser (UserCredentialsDto body) {
+    public void createUser (UserCredentialsSignUp body) {   
 
         String hashedPassword = passwordEncoder.encode(body.getPassword());
 
@@ -43,6 +44,18 @@ public class UserService {
         user.setRoles(roles);
 
         userRepo.save(user);
+
+    }
+
+    public void login () {
+        
+    }
+
+    public Users getUser (String uid) {
+
+        Users user = userRepo.findByFirebaseUid(uid);
+        
+        return user;
 
     }
 

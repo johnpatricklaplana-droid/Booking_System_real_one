@@ -25,7 +25,6 @@ interface AuthData {
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
-// Animated gold ring checkmark — draws itself on mount
 function SuccessRing() {
     return (
         <div className="relative w-24 h-24 mx-auto mb-8">
@@ -46,7 +45,6 @@ function SuccessRing() {
                         transform: 'rotate(-90deg)',
                     }}
                 />
-                {/* Check */}
                 <polyline
                     points="30,49 42,61 66,36"
                     stroke="url(#goldGrad)"
