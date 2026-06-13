@@ -1,23 +1,6 @@
 package com.example.demo.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.ErrorResponse;
-import com.example.demo.dto.UserCredentialsDto;
-import com.example.demo.service.JwtService;
-import com.example.demo.service.UserService;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +9,14 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.UserCredentialsDto;
+import com.example.demo.service.JwtService;
+import com.example.demo.service.UserService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 
 
 
