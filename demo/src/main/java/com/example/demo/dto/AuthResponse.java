@@ -8,9 +8,9 @@ import lombok.Setter;
 public class AuthResponse {
     
     private int status;
-    private String message;
+    private Object message;
 
-    public AuthResponse(int status, String message) {
+    public AuthResponse(int status, Object message) {
         this.status = status;
         this.message = message;
     }

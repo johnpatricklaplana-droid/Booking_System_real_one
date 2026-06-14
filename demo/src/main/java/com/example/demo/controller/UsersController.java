@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.UserCredentialsSignUp;
+import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
 import com.example.demo.helper.UserHelper;
@@ -90,10 +91,12 @@ public class UsersController {
 
             ResponseCookie cookie = userHelper.createJwtCookie(jwtToken);
 
+            UserDto response = userHelper.toUserDto(user);
+
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .body(new AuthResponse(200, "login super success"));
+                    .body(new AuthResponse(200, response));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity

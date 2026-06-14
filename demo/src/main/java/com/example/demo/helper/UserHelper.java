@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Users;
 import com.example.demo.service.UserService;
 
@@ -31,6 +32,18 @@ public class UserHelper {
         return user.getRoles().stream()
             .map(u -> u.getRole())
             .toList();
+    }
+
+    public UserDto toUserDto (Users user) {
+
+        UserDto dto = new UserDto();
+        dto.setFirstName(user.getFirstName());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setLastName(user.getLastName());
+        dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
+
+        return dto;
+
     }
 
 }

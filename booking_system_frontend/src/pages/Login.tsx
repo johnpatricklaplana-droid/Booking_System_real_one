@@ -129,10 +129,10 @@ export function Login() {
                             </div>
                         )}
 
-                        <form className="space-y-5">
+                        <form>
 
                             {/* Email */}
-                            <div>
+                            <div className='mb-6'>
                                 <label className="block text-[13px] font-medium text-[#e8e8ea] mb-2">Email address</label>
                                 <div className="relative">
                                     <Mail
@@ -163,7 +163,7 @@ export function Login() {
                             </div>
 
                             {/* Password */}
-                            <div>
+                            <div className='mb-6'>
                                 <div className="flex items-center justify-between mb-2">
                                     <label className="text-[13px] font-medium text-[#e8e8ea]">Password</label>
                                     <a href="#" className="text-[13px] text-[#c9a87c] hover:text-[#b89c7e] transition-colors">
@@ -199,7 +199,7 @@ export function Login() {
                             </div>
 
                             {/* Remember me */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 mb-5">
                                 <input
                                     type="checkbox" id="remember"
                                     className="w-4 h-4 bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded accent-[#c9a87c]"
@@ -214,7 +214,7 @@ export function Login() {
                             <button
                                 onClick={signIn}
                                 disabled={isLoading}
-                                className="relative w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-[14px] font-medium text-[#0a0a0c] overflow-hidden transition-all disabled:cursor-not-allowed"
+                                className="relative w-full flex items-center mb-4 justify-center gap-2 px-4 py-3 rounded-lg text-[14px] font-medium text-[#0a0a0c] overflow-hidden transition-all disabled:cursor-not-allowed"
                                 style={{
                                     background: isLoading
                                         ? 'linear-gradient(90deg,#c9a87c 0%,#e8c98a 40%,#c9a87c 60%,#b89c7e 100%)'
@@ -240,6 +240,8 @@ export function Login() {
                                     </>
                                 )}
                             </button>
+                            <p className='text-(--error) text-center text-sm'>too many request!!!!!</p>
+                            <p className='text-(--text-2) text-center text-sm'>try again in 100 seconds</p>
 
                             {/* Divider */}
                             <div className="relative my-8">
