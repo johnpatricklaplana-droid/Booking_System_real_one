@@ -12,8 +12,13 @@ import { Appointments } from "../pages/business/Appointments";
 import { CalendarPage } from "../pages/business/CalendarPage";
 import { Landing } from "../pages/business/Landing";
 import { Reports } from "../pages/business/Reports";
+import { BusinessSetup } from "../pages/BusinessRegistrationPage";
 
 export const router = createBrowserRouter([
+    {
+        path: 'landing',
+        Component: Landing
+    },
     {
         path: '/login',
         Component: Login
@@ -29,6 +34,10 @@ export const router = createBrowserRouter([
     {
         path: '/profile',
         Component: ProfilePage
+    },
+    {
+        path: '/create-business',
+        Component: BusinessSetup
     }
 ]);
 
