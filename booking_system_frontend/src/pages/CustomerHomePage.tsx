@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { CustomerNavBar } from "../components/custumerNavBar";
-
-// ── Types ─────────────────────────────────────────────────────
-type Page = "home" | "explore" | "detail" | "booking" | "profile";
-type ProfileTab = "upcoming" | "past" | "settings";
-type BookingStep = 1 | 2 | 3 | "success";
-
-// ── Tailwind token helpers (maps CSS vars to Tailwind arbitrary) ──
-// bg: #0a0a0c  surface: #151518  surface2: #1c1c21  surface3: #242429
-// gold: #c9a96e  goldLight: #e8c98a  violet: #9b8cdb  teal: #5ec4b0
-// text1: #f0ede8  text2: #9b9898  text3: #5c5b60
-// border: rgba(255,255,255,0.07)  border2: rgba(255,255,255,0.12)
+import { useUser } from "../provider/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export function HomePage() {
+
+    const user = useUser()?.user;
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    });
 
     return (
         <div className="bg-(--bg)">

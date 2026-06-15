@@ -108,6 +108,8 @@ function SuccessRing() {
 
 export function BusinessSetup() {
 
+    const navigate = useNavigate();
+
     const [logo, setLogo] = useState(null);
 
     const handleLogoChange = (e: any) => {
@@ -195,7 +197,7 @@ export function BusinessSetup() {
                         </div>
                     </div>
                     <div className='flex justify-between mt-8 w-full'>
-                        <button className='flex gap-1 items-center bg-(--surface) cursor-pointer px-4 py-2 rounded-2xl border border-(--border) text-(--text-1)'><ArrowLeftIcon></ArrowLeftIcon>super cancel</button>
+                        <button onClick={() => navigate('/profile')} className='flex gap-1 items-center bg-(--surface) cursor-pointer px-4 py-2 rounded-2xl border border-(--border) text-(--text-1)'><ArrowLeftIcon></ArrowLeftIcon>super cancel</button>
                         <button className='flex gap-1 items-center bg-(--gold) cursor-pointer px-4 py-2 rounded-2xl border border-(--border) text-(--text-1)'>create one<ArrowRightIcon></ArrowRightIcon></button>
                     </div>
                 </div>

@@ -3,11 +3,10 @@ package com.example.demo.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.entity.Roles;
@@ -21,17 +20,14 @@ public class UserService {
     UserRepository userRepo;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private SupabaseStorageService supabaseStorageService;
     
     public void createUser (UserCredentialsSignUp body) {   
-
-        String hashedPassword = passwordEncoder.encode(body.getPassword());
 
         Users user = new Users();
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         user.setEmail(body.getEmail());
-        user.setPassword(hashedPassword);
         user.setFirebaseUid(body.getFirebase_uid());
         user.setFirstName(body.getFirst_name());
         user.setLastName(body.getLast_name());
@@ -47,15 +43,19 @@ public class UserService {
 
     }
 
-    public void login () {
-        
-    }
-
     public Users getUser (String uid) {
 
         Users user = userRepo.findByFirebaseUid(uid);
         
         return user;
+
+    }
+
+    public void uploadUserProfile(MultipartFile file) {
+        
+        String url = supabaseStorageService.uploadProfilePic(file);
+
+        System.out.println(url);
 
     }
 

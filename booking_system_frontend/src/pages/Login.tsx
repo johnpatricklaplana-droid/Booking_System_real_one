@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebase_config';
 import { login } from '../api/api';
+import { useUser } from '../provider/UserContext';
 
 interface AuthData {
     email: string;
@@ -25,6 +26,8 @@ export function Login() {
     const [status, setStatus] = useState<Status>('idle');
 
     const navigate = useNavigate();
+
+    const user = useUser();
 
     const validate = (): boolean => {
         const errors: FieldErrors = {};
@@ -55,7 +58,9 @@ export function Login() {
             console.log(result);
             setStatus("idle");
 
-            login("http://localhost:8080/api/auth/login", await result.user.getIdToken());
+            const userinfo = await login("http://localhost:8080/api/auth/login", await result.user.getIdToken());
+
+            user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null});
 
             navigate("/home");
         } catch (error) {

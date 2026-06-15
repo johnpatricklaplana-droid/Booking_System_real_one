@@ -41,6 +41,7 @@ public class UserHelper {
         dto.setAvatarUrl(user.getAvatarUrl());
         dto.setLastName(user.getLastName());
         dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
+        dto.setEmail(user.getEmail());
 
         return dto;
 

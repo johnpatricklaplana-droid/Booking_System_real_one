@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { CustomerNavBar } from "../components/custumerNavBar";
 import { useNavigate } from "react-router-dom";
+import { CheckIcon, CircleUser, User } from "lucide-react";
+import { useUser } from "../provider/UserContext";
 
 type BookingTab = "upcoming" | "past";
 
@@ -71,14 +73,9 @@ function RowItem({
     icon, label, desc, badge, arrow = true,
 }: { icon: string; label: string; desc?: string; badge?: string; arrow?: boolean }) {
     return (
-        <div className="row-item" style={{
-            display: "flex", alignItems: "center", gap: "1rem",
-            padding: ".875rem 1.375rem",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-            cursor: "pointer",
-        }}>
+        <div className="row-item flex items-center gap-4 py-3.5 px-5.5 cursor-pointer border-b border-b-[rgba(225,225,225,0.05)]">
             <div style={rowIconStyle}>{icon}</div>
-            <div style={{ flex: 1 }}>
+            <div className="flex-1">
                 <div style={{ fontSize: ".9rem", color: "#e8e4de", fontWeight: 500, marginBottom: ".15rem" }}>{label}</div>
                 {desc && <div style={{ fontSize: ".78rem", color: "#5c5b60" }}>{desc}</div>}
             </div>
@@ -134,15 +131,18 @@ const rowIconStyle: React.CSSProperties = {
 
 /* ─── Personal Information Section (Customer Focused) ───── */
 function PersonalInfoSection() {
+
+    const user = useUser()?.user;
+
     return (
         <div style={sectionCard}>
             <SectionHeader title="Personal information" action="Edit" />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: "rgba(255,255,255,0.05)" }}>
                 {[
-                    { label: "Full name", value: mockUser.name },
+                    { label: "Full name", value: user?.firstName + " " + user?.lastName },
                     { label: "Phone", value: mockUser.phone },
-                    { label: "Email", value: mockUser.email },
-                    { label: "Location", value: mockUser.location },
+                    { label: "Email", value: user?.email },
+                    { label: "Location", value: user?.addres },
                 ].map(f => (
                     <div key={f.label} style={{ background: "#111115", padding: "1rem 1.375rem" }}>
                         <div style={{ fontSize: ".72rem", color: "#5c5b60", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".35rem" }}>{f.label}</div>
@@ -323,43 +323,112 @@ function BookingsSection() {
 
 /* ─── Profile Header (Customer Only) ────────────────────── */
 function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => void }) {
-    const badgeBase: React.CSSProperties = {
-        display: "inline-flex", alignItems: "center", gap: 5,
-        fontSize: ".72rem", fontWeight: 600, padding: "4px 10px",
-        borderRadius: 20, letterSpacing: ".02em",
-    };
+
+    const user = useUser()?.user;
+
     const dot = (color: string) => (
         <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, opacity: .7, display: "inline-block" }} />
     );
 
+    interface UpdateProfileSuccess {
+        open: boolean;
+        closeIn: number
+    };
+
+    const [closeOpen, setCloseOpen] = useState(false);
+    const [profilePic, setProfilePic] = useState(null);
+    const [showPreview, setShowPreview] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [updateProfileSuccess, setUpdateProfileSuccess] = useState<UpdateProfileSuccess>({open: false, closeIn: 3});
+
+    const handleCloseOpen = () => {
+        setCloseOpen(cp => cp ? false : true);
+    };
+
+    const handleProfilePicChange = (e: any) => {
+        const file = e.target.files[0];
+        setProfilePic(file);
+        setShowPreview(true);
+    };
+
+    const saveProfilePicChange = (e: any) => {
+        e.stopPropagation();
+
+        setSaving(true);
+
+        setTimeout(() => {
+            setSaving(false);
+            setShowPreview(false);
+            showUpdateProfileSuccess();
+        }, 3000);
+
+    };
+
+    const showUpdateProfileSuccess = () => {
+        setUpdateProfileSuccess(prev => ({...prev, open: true}));
+
+        const interval = setInterval(() => {
+            setUpdateProfileSuccess(prev => ({ ...prev, closeIn: prev.closeIn - 1 }));
+        }, 1000);
+
+        setTimeout(() => {
+            setUpdateProfileSuccess({ open: false, closeIn: 3});
+            clearInterval(interval);
+        }, 3000);
+    };
+
     return (
-        <div style={{ paddingTop: "3rem", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: "2.5rem" }}>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: "2rem", paddingBottom: "2rem" }}>
-                {/* Avatar */}
+        <div className="pt-12 border-b border-b-[rgba(225,225,225,0.06)] mb-10">
+            <div className="flex items-end gap-8 pb-8">
                 <div style={{ position: "relative", flexShrink: 0 }}>
-                    <img src={mockUser.avatar} alt={mockUser.name} style={{ width: 96, height: 96, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(201,169,110,0.3)", display: "block" }} />
-                    <button style={{ position: "absolute", bottom: 2, right: 2, width: 28, height: 28, borderRadius: "50%", background: "#1a1a20", border: "2px solid #0a0a0d", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#9b9898", fontSize: 13 }}
-                        aria-label="Change photo">
+                    {user?.profilePic === null ? <CircleUser className="w-24 h-24 rounded-[50%] object-contain border-2 border-[rgba(201,169,110,0.3)] block" /> : <img src={mockUser.avatar} alt={mockUser.name} style={{ width: 96, height: 96, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(201,169,110,0.3)", display: "block" }} />}
+                    <button 
+                        className="absolute items-center justify-center cursor-pointer text-[#9b9898] text-[13px] bottom-0.5 right-0.5 w-7 h-7 rounded-[50%] bg-[#1a1a20] border-2 border-[#0a0a0d] flex"
+                        aria-label="Change photo"
+                        onClick={handleCloseOpen}
+                    >
                         ✎
                     </button>
+                    {closeOpen && <div className="absolute top-[105%] left-[60%] z-50 bg-[#18181f] border border-white/10 rounded-xl p-1.5 w-48">
+                        <div className="absolute -top-1.5 left-4 w-3 h-3 bg-[#18181f] border-l border-t border-white/10 rotate-45" />
+
+                        <label htmlFor="profile_file_input" className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-[#e8e4de] text-sm hover:bg-white/5">
+                            <i className="ti ti-upload text-[#c9a96e] text-base" />
+                            Upload photo
+                        </label>
+                        
+                        <input onChange={handleProfilePicChange} type="file" hidden id="profile_file_input" />
+
+                        <button className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-[#e8e4de] text-sm hover:bg-white/5">
+                            <i className="ti ti-camera text-[#9b9898] text-base" />
+                            Take photo
+                        </button>
+
+                        <div className="h-px bg-white/[0.07] my-1 mx-1" />
+
+                        <button className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-[#ff6b6b] text-sm hover:bg-red-500/5">
+                            <i className="ti ti-trash text-base" />
+                            Remove photo
+                        </button>
+                    </div>}
                 </div>
 
                 {/* Identity */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "1.625rem", fontWeight: 600, letterSpacing: "-.03em", color: "#f0ede8", marginBottom: ".375rem" }}>
-                        {mockUser.name}
+                        {user?.firstName + " " + user?.lastName}
                     </div>
                     <div style={{ color: "#9b9898", fontSize: ".9rem", marginBottom: ".75rem" }}>
-                        {mockUser.email} · {mockUser.phone}
+                        {user?.email} · {user?.phone}
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", alignItems: "center" }}>
-                        <span style={{ ...badgeBase, background: "rgba(94,196,176,0.12)", color: "#5ec4b0", border: "1px solid rgba(94,196,176,0.2)" }}>
+                        <span className="inline-flex items-center gap-1.25 text-[0.72rem] font-semibold py-1 px-2.5 rounded-[20px] tracking-[0.02rem] bg-[rgba(94,196,176,0.12)] text-[#5ec4b0] border border-[rgba(94,196,176,0.2)]">
                             {dot("#5ec4b0")} Verified
                         </span>
-                        <span style={{ ...badgeBase, background: "rgba(255,255,255,0.05)", color: "#9b9898", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        <span className="inline-flex items-center gap-1.25 text-[0.72rem] font-semibold py-1 px-2.5 rounded-[20px] tracking-[0.02rem] bg-[rgba(255,255,255,0.05)] text-[#9b9898] border border-[rgba(255,255,255,0.08)]">
                             Member since {mockUser.joinedDate}
                         </span>
-                        <span style={{ ...badgeBase, background: "rgba(255,255,255,0.05)", color: "#9b9898", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        <span className="inline-flex items-center gap-1.25 text-[0.72rem] font-semibold py-1 px-2.5 rounded-[20px] tracking-[0.02rem] bg-[rgba(255,255,255,0.05)] text-[#9b9898] border border-[rgba(255,255,255,0.08)]">
                             {mockUser.location}
                         </span>
                     </div>
@@ -373,6 +442,97 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
                     <button style={primaryBtn}>Edit profile</button>
                 </div>
             </div>
+
+            {/* new profile picture priview */}
+            {showPreview && <div
+                className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
+                onClick={() => setShowPreview(false)} 
+            >
+                <div className="bg-[#111115] border border-white/[0.08] rounded-2xl p-7 w-80 flex flex-col items-center gap-4">
+
+                    <div className="relative">
+                        <img
+                            src={profilePic === null ? undefined : URL.createObjectURL(profilePic)}
+                            className="w-24 h-24 rounded-full object-cover border-[2.5px] border-[#c9a96e]"
+                        />
+                        <div className="absolute inset-[-4px] rounded-full border border-dashed border-[#c9a96e]/40" />
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-[#e8e4de] font-semibold text-base mb-1">Preview new photo</p>
+                        <p className="text-[#5c5b60] text-sm">Looks good? Go ahead and save it.</p>
+                    </div>
+
+                    <div className="flex gap-3 w-full">
+                        <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-[#5c5b60] bg-transparent border border-white/10">
+                            Cancel
+                        </button>
+                        <button 
+                            className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#0a0a0d] bg-linear-to-br from-[#e8c98a] to-[#c9a96e] border-none"
+                            onClick={saveProfilePicChange}
+                        >
+                            Save photo
+                        </button>
+                    </div>
+                </div>
+            </div>}
+            
+            {/* saving state */}
+            {saving && <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+                <div className="bg-[#111115] border border-white/[0.08] rounded-2xl p-7 w-80 flex flex-col items-center gap-4">
+
+                    <div className="relative w-24 h-24">
+                        <img
+                            src={profilePic === null ? undefined : URL.createObjectURL(profilePic)}
+                            className="w-24 h-24 rounded-full object-cover opacity-30"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full border-[2.5px] border-[#c9a96e]/20 border-t-[#c9a96e] animate-spin" />
+                        </div>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-[#e8e4de] font-semibold text-base mb-1">Uploading…</p>
+                        <p className="text-[#5c5b60] text-sm">Just a moment</p>
+                    </div>
+
+                    <div className="w-full h-[3px] bg-white/[0.06] rounded-full overflow-hidden">
+                        <div className="h-full w-2/3 bg-gradient-to-r from-[#e8c98a] to-[#c9a96e] rounded-full" />
+                    </div>
+                </div>
+            </div>}
+
+            {/* successful profile update state */}
+            {updateProfileSuccess.open && <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+                <div className="bg-[#111115] border border-white/8 rounded-2xl p-7 w-80 flex flex-col items-center gap-4">
+
+                    <div className="relative">
+                        <img
+                            src="https://i.pravatar.cc/150?img=32"
+                            className="w-24 h-24 rounded-full object-cover border-[2.5px] border-[#5ec4b0]/50"
+                        />
+                        <div className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-[#5ec4b0] border-2 border-[#0a0a0d] flex items-center justify-center">
+                            <i className="ti ti-check text-[#0a0a0d] text-xs" />
+                        </div>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-[#e8e4de] font-semibold text-base mb-1">Photo saved!</p>
+                        <p className="text-[#5c5b60] text-sm">Your profile photo has been updated.</p>
+                    </div>
+
+                    <div className="w-full flex justify-center gap-2 bg-[#5ec4b0]/10 border border-[#5ec4b0]/20 rounded-lg py-2 text-center text-[#5ec4b0] text-sm font-medium">
+                        <p>Successful one!</p>
+                        <CheckIcon></CheckIcon>
+                    </div>
+
+                    <p>Close in {updateProfileSuccess.closeIn} super seconds</p>
+
+                    <button className="w-full py-2.5 rounded-xl text-sm font-bold text-[#0a0a0d] bg-gradient-to-br from-[#e8c98a] to-[#c9a96e] border-none">
+                        Close now!!
+                    </button>
+                </div>
+            </div>}
         </div>
     );
 }
@@ -396,7 +556,7 @@ export function ProfilePage() {
 
             <CustomerNavBar />
 
-            <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 2rem 4rem" }}>
+            <div className="max-w-[900px] mx-auto pb-[4rem] px-[2rem]">
                 <ProfileHeader onBecomeSellerClick={() => navigate("/create-business")} />
 
                 {/* Customer Profile Sections - Only Personal Info, Notifications, Privacy, Bookings */}

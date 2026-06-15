@@ -39,9 +39,6 @@ public class Users {
     @Column(name="email")
     private String email;
 
-    @Column(name="password")
-    private String password;
-
     @OneToMany(mappedBy = "userId")
     private List<Roles> roles;
 

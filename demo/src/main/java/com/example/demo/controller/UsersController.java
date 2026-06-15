@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.time.Duration;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,13 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
-import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.service.JwtService;
@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 
 
@@ -104,5 +103,16 @@ public class UsersController {
                 .body(new AuthResponse(500, "error happens for a reason"));
         }
     }
+
+    @PostMapping("/api/user/profile")
+    public ResponseEntity<?> uploadProfilPic(@RequestParam MultipartFile file) {
+        
+        userService.uploadUserProfile(file);
+        
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(null);
+    }
+    
 
 }
