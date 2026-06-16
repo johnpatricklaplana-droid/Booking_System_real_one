@@ -3,6 +3,7 @@ import { CustomerNavBar } from "../components/custumerNavBar";
 import { useNavigate } from "react-router-dom";
 import { CheckIcon, CircleUser, User } from "lucide-react";
 import { useUser } from "../provider/UserContext";
+import { PostFormData } from "../api/api";
 
 type BookingTab = "upcoming" | "past";
 
@@ -325,6 +326,7 @@ function BookingsSection() {
 function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => void }) {
 
     const user = useUser()?.user;
+    const setUser = useUser()?.setUser;
 
     const dot = (color: string) => (
         <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, opacity: .7, display: "inline-block" }} />
@@ -336,7 +338,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
     };
 
     const [closeOpen, setCloseOpen] = useState(false);
-    const [profilePic, setProfilePic] = useState(null);
+    const [profilePic, setProfilePic] = useState<File | null>(null);
     const [showPreview, setShowPreview] = useState(false);
     const [saving, setSaving] = useState(false);
     const [updateProfileSuccess, setUpdateProfileSuccess] = useState<UpdateProfileSuccess>({open: false, closeIn: 3});
@@ -351,16 +353,28 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
         setShowPreview(true);
     };
 
-    const saveProfilePicChange = (e: any) => {
+    const saveProfilePicChange = async (e: any) => {
         e.stopPropagation();
+
+        if(!profilePic) return;
 
         setSaving(true);
 
-        setTimeout(() => {
-            setSaving(false);
-            setShowPreview(false);
-            showUpdateProfileSuccess();
-        }, 3000);
+        const formData = new FormData();
+        formData.append('file', profilePic);
+
+        const url = "http://localhost:8080/api/user/profile";
+
+        const result = await PostFormData(url, formData);
+
+        if(result.status === 201) {
+            setUser?.(prev => ({...prev!,  profilePic: result.message }));
+            setTimeout(() => {
+                setSaving(false);
+                setShowPreview(false);
+                showUpdateProfileSuccess();
+            }, 2000);
+        }
 
     };
 
@@ -381,7 +395,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
         <div className="pt-12 border-b border-b-[rgba(225,225,225,0.06)] mb-10">
             <div className="flex items-end gap-8 pb-8">
                 <div style={{ position: "relative", flexShrink: 0 }}>
-                    {user?.profilePic === null ? <CircleUser className="w-24 h-24 rounded-[50%] object-contain border-2 border-[rgba(201,169,110,0.3)] block" /> : <img src={mockUser.avatar} alt={mockUser.name} style={{ width: 96, height: 96, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(201,169,110,0.3)", display: "block" }} />}
+                    {user?.profilePic === null ? <CircleUser className="w-24 h-24 rounded-[50%] object-contain border-2 border-[rgba(201,169,110,0.3)] block" /> : <img src={user?.profilePic} alt={mockUser.name} style={{ width: 96, height: 96, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(201,169,110,0.3)", display: "block" }} />}
                     <button 
                         className="absolute items-center justify-center cursor-pointer text-[#9b9898] text-[13px] bottom-0.5 right-0.5 w-7 h-7 rounded-[50%] bg-[#1a1a20] border-2 border-[#0a0a0d] flex"
                         aria-label="Change photo"

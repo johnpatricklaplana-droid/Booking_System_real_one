@@ -3,8 +3,10 @@ package com.example.demo.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,11 +53,26 @@ public class UserService {
 
     }
 
-    public void uploadUserProfile(MultipartFile file) {
+    public String uploadUserProfile(MultipartFile file) {
         
         String url = supabaseStorageService.uploadProfilePic(file);
 
-        System.out.println(url);
+        try {
+            String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            UUID userId = UUID.fromString(id);
+
+            Users user = userRepo.findById(userId).orElse(null);
+            user.setAvatarUrl(url);
+
+            userRepo.save(user);
+
+            return url;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
     }
 

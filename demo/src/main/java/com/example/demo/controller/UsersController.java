@@ -86,7 +86,7 @@ public class UsersController {
 
             List<String> roles = userHelper.extractUserRole(user);
 
-            String jwtToken = jwtService.generateToken(decoded.getUid(), decoded.getEmail(), roles);
+            String jwtToken = jwtService.generateToken(user.getId().toString(), decoded.getEmail(), roles);
 
             ResponseCookie cookie = userHelper.createJwtCookie(jwtToken);
 
@@ -105,13 +105,13 @@ public class UsersController {
     }
 
     @PostMapping("/api/user/profile")
-    public ResponseEntity<?> uploadProfilPic(@RequestParam MultipartFile file) {
-        
-        userService.uploadUserProfile(file);
+    public ResponseEntity<AuthResponse> uploadProfilPic(@RequestParam MultipartFile file) {
+
+        String url = userService.uploadUserProfile(file);
         
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(null);
+            .status(HttpStatus.CREATED)
+            .body(new AuthResponse(201, url));
     }
     
 

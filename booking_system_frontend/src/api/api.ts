@@ -1,15 +1,12 @@
 export async function post(url: string, body: any) {
 
-    const csrfToken = getCookie("XSRF-TOKEN");
-
     try {
         const result = await fetch(url, {
             method: "POST",
             credentials: 'include',
             body: JSON.stringify(body),
             headers: {
-                "Content-Type": "application/json",
-                "X-XSRF-TOKEN": csrfToken ?? ""
+                "Content-Type": "application/json"
             },
         });
 
@@ -40,9 +37,20 @@ export async function login(url: string, token: string) {
     }
 }
 
-function getCookie(name: string) {
-    return document.cookie
-        .split("; ")
-        .find(row => row.startsWith(name + "="))
-        ?.split("=")[1];
+export async function PostFormData(url: string, body: any) {
+
+    try {
+        const result = await fetch(url, {
+            method: "POST",
+            body: body,
+            credentials: 'include'
+        });
+
+        const response = await result.json();
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }

@@ -19,7 +19,7 @@ public class JwtService {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    private long jwtExpiry = 60; 
+    private long jwtExpiry = 360; 
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
