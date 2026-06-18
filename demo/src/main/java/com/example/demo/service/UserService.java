@@ -56,15 +56,16 @@ public class UserService {
     }
 
     public String uploadUserProfile(MultipartFile file) {
+
+        String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UUID userId = UUID.fromString(id);
         
-        String url = supabaseStorageService.uploadProfilePic(file);
+        Users user = userRepo.findById(userId).orElse(null);
+        String url = supabaseStorageService.uploadProfilePic(file, user.getAvatarUrl());
 
         try {
-            String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            UUID userId = UUID.fromString(id);
-
-            Users user = userRepo.findById(userId).orElse(null);
             user.setAvatarUrl(url);
 
             userRepo.save(user);

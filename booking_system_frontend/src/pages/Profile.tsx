@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CustomerNavBar } from "../components/custumerNavBar";
 import { useNavigate } from "react-router-dom";
-import { CheckIcon, CircleUser, User } from "lucide-react";
+import { CheckIcon, CircleUser, User, ArrowBigLeftDash } from "lucide-react";
 import { useUser } from "../provider/UserContext";
 import { PostFormData } from "../api/api";
 
@@ -450,9 +450,13 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
 
                 {/* CTAs */}
                 <div style={{ display: "flex", gap: ".625rem", alignItems: "center", flexShrink: 0, paddingBottom: ".25rem" }}>
-                    <button onClick={onBecomeSellerClick} style={ghostBtn}>
-                        Become a seller
-                    </button>
+                    {!user?.roles.includes("business_owner") 
+                    ? <button onClick={onBecomeSellerClick} style={ghostBtn}>
+                        Create some business
+                    </button> 
+                        : <button className="border border-[rgba(255,255,255,0.09)] flex py-2 px-4 gap-1 items-center rounded-2xl cursor-pointer text-sm">
+                        <ArrowBigLeftDash></ArrowBigLeftDash> Switch to business
+                    </button>}
                     <button style={primaryBtn}>Edit profile</button>
                 </div>
             </div>

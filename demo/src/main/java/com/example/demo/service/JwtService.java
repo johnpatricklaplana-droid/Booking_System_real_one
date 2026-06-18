@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class JwtService {
             .claim("email", email)
             .claim("role", role)
             .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + 360 * 1000))
+            .expiration(Date.from(Instant.now().plus(Duration.ofHours(1))))
             .signWith(getSigningKey())
             .compact();
     }
