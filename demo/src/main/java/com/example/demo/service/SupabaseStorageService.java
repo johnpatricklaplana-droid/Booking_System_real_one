@@ -34,7 +34,7 @@ public class SupabaseStorageService {
 
             if(profileUrl != null) {
                 String filePathToDelete = profileUrl.substring(profileUrl.indexOf("/public/booking_system_user_profile/") + "/public/booking_system_user_profile/".length());
-                 webClient.delete()
+                webClient.delete()
                     .uri(supabaseUrl + "/storage/v1/object/" + buketName + "/" + filePathToDelete)
                     .header("Authorization", "Bearer " + supabaseSecretRoleKey)
                     .header("apiKey", supabaseSecretRoleKey)

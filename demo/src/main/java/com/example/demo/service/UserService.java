@@ -8,12 +8,16 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.CreateBusinessRequestDto;
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
+import com.example.demo.entity.Business;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
+import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.UserRepository;
 
 @Service
@@ -21,6 +25,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepo;
+
+    @Autowired
+    BusinessRepository businessRepo;
 
     @Autowired
     private SupabaseStorageService supabaseStorageService;
@@ -95,6 +102,31 @@ public class UserService {
         dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
 
         return dto;
+
+    }
+
+    @Transactional
+    public void createBusiness(CreateBusinessRequestDto businessDto) {
+        
+        String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UUID uid = UUID.fromString(id);
+
+        Users user = userRepo.findById(uid).orElse(null);
+
+        List<Roles> roles = new ArrayList<>();
+        Roles r = new Roles();
+        r.setCratedAt(LocalDateTime.now());
+        r.setRole("BUSINESS_OWNER");
+        r.setUserId(user);
+        roles.add(r);
+
+        user.setRoles(roles);
+
+        userRepo.save(user);
+
+        Business buss = new Business();
+        // TODO
 
     }
 

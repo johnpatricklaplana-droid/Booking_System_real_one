@@ -49,4 +49,7 @@ public class Users {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "userId")
+    private List<Business> businesses;
+
 }

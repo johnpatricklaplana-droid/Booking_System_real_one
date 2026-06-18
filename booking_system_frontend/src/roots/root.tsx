@@ -12,7 +12,7 @@ import { Appointments } from "../pages/business/Appointments";
 import { CalendarPage } from "../pages/business/CalendarPage";
 import { Landing } from "../pages/business/Landing";
 import { Reports } from "../pages/business/Reports";
-import { BusinessSetup } from "../pages/BusinessRegistrationPage";
+import { BusinessOnboardingWizard } from "../pages/BusinessRegistrationPage";
 
 export const router = createBrowserRouter([
     {
@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
     },
     {
         path: '/create-business',
-        Component: BusinessSetup
+        Component: BusinessOnboardingWizard
     }
 ]);
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.CreateBusinessRequestDto;
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Users;
@@ -123,5 +124,13 @@ public class UsersController {
             .body(new AuthResponse(200, userService.getUser()));
     }
     
+    public ResponseEntity<?> createBusiness(@RequestBody CreateBusinessRequestDto business) {
+
+        userService.createBusiness(business);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(null);
+    }
 
 }
