@@ -19,8 +19,6 @@ public class JwtService {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    private long jwtExpiry = 360; 
-
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
@@ -31,7 +29,7 @@ public class JwtService {
             .claim("email", email)
             .claim("role", role)
             .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + jwtExpiry * 1000))
+            .expiration(new Date(System.currentTimeMillis() + 360 * 1000))
             .signWith(getSigningKey())
             .compact();
     }

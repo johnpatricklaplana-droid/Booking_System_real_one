@@ -54,3 +54,20 @@ export async function PostFormData(url: string, body: any) {
         return null;
     }
 }
+
+
+export async function get(url: string) {
+    try {
+        const result = await fetch(url, {
+            method: "GET",
+            credentials: 'include'
+        });
+
+        const response = await result.json();
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}

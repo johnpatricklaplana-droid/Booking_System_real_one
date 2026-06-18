@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.UserCredentialsSignUp;
+import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
 import com.example.demo.repositories.UserRepository;
@@ -38,6 +39,7 @@ public class UserService {
         Roles r = new Roles();
         r.setCratedAt(LocalDateTime.now());
         r.setRole("CUSTOMER");
+        r.setUserId(user);
         roles.add(r);
         user.setRoles(roles);
 
@@ -73,6 +75,25 @@ public class UserService {
             e.printStackTrace();
             return null;
         }
+
+    }
+
+    public UserDto getUser () {
+
+        String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UUID uid = UUID.fromString(id);
+
+        Users user = userRepo.findById(uid).orElse(null);
+
+        UserDto dto = new UserDto();
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
+
+        return dto;
 
     }
 

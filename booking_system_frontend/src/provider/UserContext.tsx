@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { get } from "../api/api";
 
 interface User {
     firstName: string;
@@ -21,12 +22,24 @@ export function UserProvider ({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        fetch('/api/me')
-            .then(res => res.json())
-            .then(data => {
-                setUser(data);
-            })
-            .catch(() => console.log("you are not super login"));
+        const getUser = async () => {
+
+            const url = "http://localhost:8080/api/super-me";
+
+            const result = await get(url);
+
+            setUser({
+                profilePic: result.message.avatarUrl,
+                firstName: result.message.firstName,
+                lastName: result.message.lastName,
+                roles: result.message.roles,
+                email: result.message.email,
+                addres: null,
+                phone: null
+            });
+        };
+
+        getUser();
     }, []);
 
     return <UserContext.Provider value={{ user, setUser }}>

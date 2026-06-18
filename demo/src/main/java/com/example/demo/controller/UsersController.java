@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 
 
@@ -112,6 +114,13 @@ public class UsersController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(new AuthResponse(201, url));
+    }
+    
+    @GetMapping("/api/super-me")
+    public ResponseEntity<AuthResponse> getUserInfo() {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new AuthResponse(200, userService.getUser()));
     }
     
 
