@@ -6,19 +6,27 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.demo.dto.CreateBusinessRequestDto;
+import com.example.demo.dto.NominatimRawResponse;
+import com.example.demo.dto.SearchAddressDto;
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
+import com.example.demo.helper.UserHelper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.UserRepository;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class UserService {
@@ -31,6 +39,15 @@ public class UserService {
 
     @Autowired
     private SupabaseStorageService supabaseStorageService;
+
+    private final WebClient webClient;
+
+    public UserService(WebClient.Builder builder) {
+        this.webClient = builder.build();
+    }
+
+    @Autowired
+    UserHelper userHelper;
     
     public void createUser (UserCredentialsSignUp body) {   
 
@@ -128,6 +145,21 @@ public class UserService {
         Business buss = new Business();
         // TODO
 
+    }
+
+    public Mono<List<SearchAddressDto>> searchAddress(String query) {
+        return webClient
+            .get()
+            .uri(
+                    "https://nominatim.openstreetmap.org/search?q={q}&format=jsonv2&addressdetails=1",
+                    query)
+            .header(HttpHeaders.USER_AGENT, "booking-super-system")
+            .retrieve()
+            .bodyToFlux(NominatimRawResponse.class)
+            .collectList()
+            .flatMapMany(Flux::fromIterable)
+            .map(raw -> userHelper.toSearchAddressDto(raw, "flkjdlakfja"))
+            .collectList();
     }
 
 }

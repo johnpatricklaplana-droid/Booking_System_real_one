@@ -10,11 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.CreateBusinessRequestDto;
+import com.example.demo.dto.SearchAddressDto;
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Users;
@@ -25,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 
 import jakarta.servlet.http.HttpServletRequest;
+import reactor.core.publisher.Mono;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -131,6 +135,13 @@ public class UsersController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(null);
+    }
+
+    @GetMapping("/api/auth/search-test")  
+    public ResponseEntity<Mono<List<SearchAddressDto>>> searchAddress(@RequestBody String query) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.searchAddress(query));
     }
 
 }
