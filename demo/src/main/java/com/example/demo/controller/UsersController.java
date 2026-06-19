@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 
@@ -137,8 +138,8 @@ public class UsersController {
             .body(null);
     }
 
-    @GetMapping("/api/auth/search-test")  
-    public ResponseEntity<Mono<List<SearchAddressDto>>> searchAddress(@RequestBody String query) {
+    @GetMapping("/api/public/search-test/{query}")  
+    public ResponseEntity<Mono<List<SearchAddressDto>>> searchAddress(@PathVariable String query) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.searchAddress(query));

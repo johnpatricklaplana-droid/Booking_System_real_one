@@ -27,6 +27,8 @@ import {
     Loader2,
     type LucideIcon,
 } from "lucide-react";
+import  EmojiFlag, { CountryFlag }  from "ts-react-emoji-flag";
+import { get } from "../api/api";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                                */
@@ -194,17 +196,6 @@ function validateContactInfo(data: ContactInfoData) {
     else if (!EMAIL_REGEX.test(data.email.trim())) errors.email = "Enter a valid email address.";
     if (!data.phone.trim()) errors.phone = "Phone number is required.";
     else if (!PHONE_REGEX.test(data.phone.trim())) errors.phone = "Enter a valid phone number.";
-    return errors;
-}
-
-function validateLocation(data: LocationData) {
-    const errors: Partial<Record<keyof LocationData, string>> = {};
-    if (!data.addressLine.trim()) errors.addressLine = "Address line is required.";
-    if (!data.city.trim()) errors.city = "City is required.";
-    if (!data.province.trim()) errors.province = "Province/state is required.";
-    if (!data.postalCode.trim()) errors.postalCode = "Postal code is required.";
-    if (!data.country.trim()) errors.country = "Country is required.";
-    if (!data.timezone.trim()) errors.timezone = "Select a timezone.";
     return errors;
 }
 
@@ -475,25 +466,45 @@ function ContactStep({
 /* Step 3 — Business Location                                          */
 /* ------------------------------------------------------------------ */
 
+interface SearchResult {
+    city: string;
+    country: string;
+    countryCode: string;
+    displayName: string;
+    postalCode: string;
+    province: string;
+    region: string;
+    street: string;
+    timezone: string;
+    village: string;
+};
+
+function validateLocation(data: SearchResult) {
+    const errors: Partial<Record<keyof LocationData, string>> = {};
+    if (!data.street) errors.addressLine = "Address line is required.";
+    if (!data.city) errors.city = "City is required.";
+    if (!data.province.trim()) errors.province = "Province/state is required.";
+    if (!data.postalCode) errors.postalCode = "Postal code is required.";
+    if (!data.country) errors.country = "Country is required.";
+    if (!data.timezone) errors.timezone = "Select a timezone.";
+    return errors;
+}
+
 function LocationStep({
     data,
     errors,
     onChange,
 }: {
-    data: LocationData;
-    errors: Partial<Record<keyof LocationData, string>>;
-    onChange: (patch: Partial<LocationData>) => void;
+    data: SearchResult;
+    errors: Partial<Record<keyof SearchResult, string>>;
+    onChange: (patch: Partial<SearchResult>) => void;
 }) {
-    const [query, setQuery] = useState(data.addressSearch);
+    const [query, setQuery] = useState<string>("");
     const [open, setOpen] = useState(false);
-    const [selectedAddress, setSelectedAddress] = useState<string | null>(data.addressLine ? data.addressSearch : null);
+    const [selectedAddress, setSelectedAddress] = useState<SearchResult | null>(null);
+    const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const suggestions = useMemo(() => {
-        if (!query.trim()) return [];
-        const q = query.toLowerCase();
-        return MOCK_ADDRESSES.filter((a) => `${a.address} ${a.city} ${a.province} ${a.country}`.toLowerCase().includes(q)).slice(0, 6);
-    }, [query]);
+    const timeRef = useRef<any>(null);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -505,20 +516,57 @@ function LocationStep({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    function handleSelect(suggestion: AddressSuggestion) {
-        setQuery(suggestion.address);
-        setSelectedAddress(suggestion.address);
+    function handleSelect(suggestion: SearchResult) {
+        setSelectedAddress(suggestion);
         setOpen(false);
         onChange({
-            addressSearch: suggestion.address,
-            addressLine: suggestion.address,
-            postalCode: suggestion.postalCode,
             city: suggestion.city,
-            province: suggestion.province,
             country: suggestion.country,
-            timezone: suggestion.timezone || data.timezone,
+            countryCode: suggestion.countryCode,
+            displayName: suggestion.displayName,
+            postalCode: suggestion.postalCode,
+            province: suggestion.province,
+            region: suggestion.region,
+            street: suggestion.street,
+            timezone: suggestion.timezone,
+            village: suggestion.village,
         });
     }
+
+    const hanldleSearchInputChange = async (e: any) => {
+
+        const { value } = e.target;
+
+        setQuery(value);
+
+        if(timeRef.current) clearTimeout(timeRef.current);
+
+        timeRef.current = setTimeout(async () => {
+            const url = `http://localhost:8080/api/public/search-test/${value}`;
+
+            const result = await get(url);
+
+            console.log(result);
+
+            const addresses = result.map((r: any) => {
+                return {
+                    city: r.city,
+                    country: r.country,
+                    countryCode: r.countryCode,
+                    displayName: r.displayName,
+                    postalCode: r.postalCode,
+                    province: r.province,
+                    region: r.region,
+                    street: r.street,
+                    timezone: r.timezone,
+                    village: r.village
+                }
+            });
+
+            setSearchResult(addresses);
+        }, 1000);
+
+    };
 
     return (
         <div className="space-y-6">
@@ -529,8 +577,7 @@ function LocationStep({
                     <input
                         value={query}
                         onChange={(e) => {
-                            setQuery(e.target.value);
-                            setSelectedAddress(null);
+                            hanldleSearchInputChange(e)
                             setOpen(true);
                         }}
                         onFocus={() => query && setOpen(true)}
@@ -539,9 +586,9 @@ function LocationStep({
                     />
                 </div>
 
-                {open && suggestions.length > 0 && (
+                {open && searchResult.length > 0 && (
                     <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-(--border) bg-(--surface) shadow-2xl shadow-black/40">
-                        {suggestions.map((s, i) => (
+                        {searchResult.map((s: any, i:any) => (
                             <li key={i}>
                                 <button
                                     type="button"
@@ -549,21 +596,22 @@ function LocationStep({
                                     className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-(--gold)/10 ${selectedAddress === s.address ? "bg-(--gold)/10" : ""
                                         }`}
                                 >
-                                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-(--gold)" />
+                                    <CountryFlag countryCode={s.countryCode} title="United states"></CountryFlag>
+                                    {/* <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-(--gold)" /> */}
                                     <span>
-                                        <span className="block text-sm font-medium text-(--text-1)">{s.address}</span>
+                                        <span className="block text-sm font-medium text-(--text-1)">{s.displayName}</span>
                                         <span className="block text-xs text-(--text-3)">
-                                            {s.city}, {s.province}, {s.country}
+                                            {s.city} {s.province} {s.country}
                                         </span>
                                     </span>
-                                    {selectedAddress === s.address && <Check className="ml-auto h-4 w-4 shrink-0 text-(--gold)" />}
+                                    {selectedAddress === s.displayName && <Check className="ml-auto h-4 w-4 shrink-0 text-(--gold)" />}
                                 </button>
                             </li>
                         ))}
                     </ul>
                 )}
 
-                {open && query && suggestions.length === 0 && (
+                {open && query && searchResult.length === 0 && (
                     <div className="absolute z-20 mt-2 w-full rounded-xl border border-(--border) bg-(--surface) p-4 text-center text-sm text-(--text-3) shadow-2xl shadow-black/40">
                         No matches yet — fill in the details manually below.
                     </div>
@@ -582,12 +630,12 @@ function LocationStep({
                     <FieldLabel label="Address line" required />
                     <IconInput
                         icon={MapPin}
-                        value={data.addressLine}
-                        onChange={(e) => onChange({ addressLine: e.target.value })}
-                        error={errors.addressLine}
+                        value={data.street}
+                        onChange={(e) => onChange({ street: e.target.value })}
+                        error={errors.street}
                         placeholder="Street, building, unit"
                     />
-                    <FieldError message={errors.addressLine} />
+                    <FieldError message={errors.street} />
                 </div>
                 <div>
                     <FieldLabel label="City" required />
@@ -790,14 +838,17 @@ export function BusinessOnboardingWizard() {
 
     const [businessInfo, setBusinessInfo] = useState<BusinessInfoData>({ businessName: "", businessType: "", description: "" });
     const [contactInfo, setContactInfo] = useState<ContactInfoData>({ email: "", phone: "" });
-    const [location, setLocation] = useState<LocationData>({
-        addressSearch: "",
-        addressLine: "",
-        postalCode: "",
+    const [location, setLocation] = useState<SearchResult>({
         city: "",
-        province: "",
         country: "",
+        countryCode: "",
+        displayName: "",
+        postalCode: "",
+        province: "",
+        region: "",
+        street: "",
         timezone: "",
+        village: "",
     });
     const [logo, setLogo] = useState<LogoData>({ file: null, previewUrl: null, width: null, height: null, sizeBytes: null });
 
