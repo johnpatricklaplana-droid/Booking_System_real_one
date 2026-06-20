@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.dto.Address;
+import com.example.demo.dto.AddressDto;
 import com.example.demo.dto.NominatimRawResponse;
 import com.example.demo.dto.SearchAddressDto;
 import com.example.demo.dto.UserDto;
@@ -48,15 +48,14 @@ public class UserHelper {
     }
 
     public SearchAddressDto toSearchAddressDto (NominatimRawResponse raw, String timezone) {
-        Address address = raw.getAddress();
+        AddressDto address = raw.getAddress();
         return SearchAddressDto.builder()
-            .placeId(String.valueOf(raw.getPlaceId()))
-            .osmId(raw.getOsmId())
+            .lon(raw.getLon())
             .lat(raw.getLat())
             .displayName(raw.getDisplayName())
             .boundingBox(raw.getBoundingBox())
             .houseNumber(address != null ? address.getHouseNumber() : null)
-            .street(address !=  null ? address.getStreet() : null)
+            .road(address !=  null ? address.getRoad() : null)
             .village(address != null ? address.getVillage() : null)
             .city(address != null ? address.getCity() : null)
             .province(address != null ? address.getState() : null)

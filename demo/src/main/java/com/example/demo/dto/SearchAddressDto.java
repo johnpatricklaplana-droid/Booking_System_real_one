@@ -14,17 +14,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchAddressDto {
-    
-    private String placeId;
-    private String osmId;
 
-    private double lat;
-    private double lon;
+    private Double lat;
+    private Double lon;
     private String displayName;
     private List<Double> boundingBox;
 
     private String houseNumber;
-    private String street;
+    private String road;
     private String village;
     private String city;
     private String province;

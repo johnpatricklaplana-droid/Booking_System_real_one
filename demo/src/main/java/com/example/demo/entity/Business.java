@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,11 +40,12 @@ public class Business {
     @Column(name = "business_email")
     private String businessEmail;
 
-    @Column(name = "business_phone_number")
-    private String businessPhoneNumber;
+    @Column(name = "facebook_page")
+    private String facebookPage;
 
-    @Column(name = "address")
-    private String address;
+    @JoinColumn(name = "address_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    private Address addressId;
 
     @Column(name = "timezone")
     private String timezone;

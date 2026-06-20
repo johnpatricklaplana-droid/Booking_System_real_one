@@ -55,7 +55,7 @@ export function Login() {
         try {
             const result = await signInWithEmailAndPassword(auth, authData.email, authData.password);
 
-            console.log(result);
+            console.log(await result.user.getIdToken());
             setStatus("idle");
 
             const userinfo = await login("http://localhost:8080/api/auth/login", await result.user.getIdToken());

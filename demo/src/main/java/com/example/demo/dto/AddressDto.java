@@ -7,12 +7,12 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Address {
+public class AddressDto {
     @JsonProperty("house_number")
     private String houseNumber;
 
     @JsonProperty("road")
-    private String street;
+    private String road;
 
     private String village;
     private String city;

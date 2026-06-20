@@ -483,7 +483,7 @@ function validateLocation(data: SearchResult) {
     const errors: Partial<Record<keyof LocationData, string>> = {};
     if (!data.street) errors.addressLine = "Address line is required.";
     if (!data.city) errors.city = "City is required.";
-    if (!data.province.trim()) errors.province = "Province/state is required.";
+    if (!data.province) errors.province = "Province/state is required.";
     if (!data.postalCode) errors.postalCode = "Postal code is required.";
     if (!data.country) errors.country = "Country is required.";
     if (!data.timezone) errors.timezone = "Select a timezone.";
@@ -557,12 +557,12 @@ function LocationStep({
                     postalCode: r.postalCode,
                     province: r.province,
                     region: r.region,
-                    street: r.street,
+                    street: r.road,
                     timezone: r.timezone,
                     village: r.village
                 }
             });
-
+            
             setSearchResult(addresses);
         }, 1000);
 

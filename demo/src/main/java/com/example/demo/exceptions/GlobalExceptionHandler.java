@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.ErrorResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,30 +15,45 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExists(
-            UserAlreadyExistsException ex) {
+        @ExceptionHandler(UserAlreadyExistsException.class)
+        public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException ex) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
-    }
+        }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(
-            Exception ex,
-            HttpServletRequest request
-    ) {
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<AuthResponse> handleResourceNotFound(ResourceNotFoundException ex) {
 
-        ErrorResponse error = new ErrorResponse(
+            return ResponseEntity
+                .status(404)
+                .body(new AuthResponse(404, ex.getMessage()));
+        }
+
+        @ExceptionHandler(InvalidInputsException.class)
+        public ResponseEntity<AuthResponse> handleBadRequest(InvalidInputsException ex) {
+
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new AuthResponse(400, ex.getMessage()));
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handleGenericException(
+                Exception ex,
+                HttpServletRequest request
+        ) {
+
+            ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 ex.getMessage(),
                 request.getRequestURI()
-        );
+            );
 
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
 }

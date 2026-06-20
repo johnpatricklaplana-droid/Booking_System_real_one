@@ -450,7 +450,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
 
                 {/* CTAs */}
                 <div style={{ display: "flex", gap: ".625rem", alignItems: "center", flexShrink: 0, paddingBottom: ".25rem" }}>
-                    {!user?.roles.includes("business_owner") 
+                    {!user?.roles.includes("BUSINESS_OWNER") 
                     ? <button onClick={onBecomeSellerClick} style={ghostBtn}>
                         Create some business
                     </button> 

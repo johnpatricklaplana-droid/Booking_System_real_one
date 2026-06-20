@@ -11,9 +11,8 @@ public class CreateBusinessRequestDto {
     private String businessType;
     private String description;
     private String businessEmail;
-    private String businessPhoneNumber;
-    private String address;
+    private String facebookPage;
+    private SearchAddressDto address;
     private String timezone;
-    private String logoUrl;
 
 }

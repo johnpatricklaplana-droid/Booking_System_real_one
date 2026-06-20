@@ -72,4 +72,31 @@ public class SupabaseStorageService {
 
     }
 
+    public String uploadBusinessLogo(MultipartFile file) {
+
+        try {
+
+            String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+            String url = supabaseUrl + "/storage/v1/object/" + "business_logo" + "/" + fileName;
+
+            webClient.post()
+                    .uri(url)
+                    .header("Authorization", "Bearer " + supabaseSecretRoleKey)
+                    .header("apiKey", supabaseSecretRoleKey)
+                    .contentType(MediaType.parseMediaType(file.getContentType()))
+                    .bodyValue(file.getBytes())
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+            return supabaseUrl + "/storage/v1/object/public/" + "business_logo" + "/" + fileName;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
+    }
+
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -129,20 +130,27 @@ public class UsersController {
             .body(new AuthResponse(200, userService.getUser()));
     }
     
-    public ResponseEntity<?> createBusiness(@RequestBody CreateBusinessRequestDto business) {
+    @PostMapping("/api/user/business")
+    public ResponseEntity<AuthResponse> createBusiness(
+        @RequestPart("business_info") CreateBusinessRequestDto business,
+        @RequestPart("business_logo") MultipartFile businessLogo
+    ) {
 
-        userService.createBusiness(business);
+        userService.createBusiness(business, businessLogo);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(null);
+            .body(new AuthResponse(201, "business happens successfully"));
     }
 
     @GetMapping("/api/public/search-test/{query}")  
     public ResponseEntity<Mono<List<SearchAddressDto>>> searchAddress(@PathVariable String query) {
+
+        String url = "https://nominatim.openstreetmap.org/search?q=" + query + "&format=jsonv2&addressdetails=1";
+
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.searchAddress(query));
+            .body(userService.searchAddress(url));
     }
 
 }

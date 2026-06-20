@@ -13,14 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.demo.dto.AddressDto;
 import com.example.demo.dto.CreateBusinessRequestDto;
 import com.example.demo.dto.NominatimRawResponse;
 import com.example.demo.dto.SearchAddressDto;
 import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
+import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
+import com.example.demo.exceptions.InvalidInputsException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.UserRepository;
@@ -45,6 +49,9 @@ public class UserService {
     public UserService(WebClient.Builder builder) {
         this.webClient = builder.build();
     }
+
+    @Autowired
+    EmailVerifications emailVerifications;
 
     @Autowired
     UserHelper userHelper;
@@ -122,9 +129,38 @@ public class UserService {
 
     }
 
+    public void createBusiness(CreateBusinessRequestDto businessDto, MultipartFile businessLogo) {
+
+        boolean isEmailValid = emailVerifications.isEmailValid(businessDto.getBusinessEmail());
+
+        if(isEmailValid == false) {
+            throw new InvalidInputsException("Invalid email address");
+        }
+
+        SearchAddressDto addressDto = businessDto.getAddress();
+
+        String url = "https://nominatim.openstreetmap.org/search?limit=1&postalcode=" 
+            + addressDto.getPostalCode() 
+            + "&country=" + addressDto.getCountry() 
+            + "&state=" + addressDto.getProvince() 
+            + "&city=" + addressDto.getCity() 
+            + "&format=jsonv2&addressdetails=1";
+
+        SearchAddressDto address = searchAddress(url)
+            .map(add -> add.isEmpty() ? null : add.get(0))
+            .block();
+  
+        if(address == null) {
+            throw new ResourceNotFoundException("We couldn't find this address. Please check your postal code, city, or province.");
+        }
+
+        createBusinessTransAction(address, businessDto, businessLogo);
+
+    }
+
     @Transactional
-    public void createBusiness(CreateBusinessRequestDto businessDto) {
-        
+    private void createBusinessTransAction (SearchAddressDto address, CreateBusinessRequestDto businessDto, MultipartFile businessLogo) {
+
         String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         UUID uid = UUID.fromString(id);
@@ -142,17 +178,38 @@ public class UserService {
 
         userRepo.save(user);
 
-        Business buss = new Business();
-        // TODO
+        Address addressRealDeal = new Address();
+        addressRealDeal.setCity(address.getCity());
+        addressRealDeal.setCountry(address.getCountry());
+        addressRealDeal.setCountryCode(address.getCountryCode());
+        addressRealDeal.setDisplayName(address.getDisplayName());
+        addressRealDeal.setLat(address.getLat());
+        addressRealDeal.setLon(address.getLon());
+        addressRealDeal.setPostalCode(address.getPostalCode());
+        addressRealDeal.setProvince(address.getProvince());
+        addressRealDeal.setRoad(address.getRoad());
+        addressRealDeal.setTimezone(address.getTimezone());
 
+        Business buss = new Business();
+        buss.setAddressId(addressRealDeal);
+        buss.setBusinessEmail(businessDto.getBusinessEmail());
+        buss.setBusinessName(businessDto.getBusinessName());
+        buss.setFacebookPage(businessDto.getFacebookPage());
+        buss.setBusinessType(businessDto.getBusinessType());
+        buss.setCreatedAt(LocalDateTime.now());
+        buss.setDescription(businessDto.getDescription());
+        buss.setStatus("ACTIVE");
+        buss.setTimezone(businessDto.getTimezone());
+        buss.setUserId(user);
+        buss.setLogoUrl(supabaseStorageService.uploadBusinessLogo(businessLogo));
+
+        businessRepo.save(buss);
     }
 
-    public Mono<List<SearchAddressDto>> searchAddress(String query) {
+    public Mono<List<SearchAddressDto>> searchAddress(String url) {
         return webClient
             .get()
-            .uri(
-                    "https://nominatim.openstreetmap.org/search?q={q}&format=jsonv2&addressdetails=1",
-                    query)
+            .uri(url)
             .header(HttpHeaders.USER_AGENT, "booking-super-system")
             .retrieve()
             .bodyToFlux(NominatimRawResponse.class)

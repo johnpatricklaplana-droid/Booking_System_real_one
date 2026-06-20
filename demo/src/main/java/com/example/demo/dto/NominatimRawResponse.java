@@ -21,13 +21,13 @@ public class NominatimRawResponse {
     @JsonProperty("osm_id")
     private String osmId;
 
-    private double lat;
-    private double lon;
+    private Double lat;
+    private Double lon;
 
     @JsonProperty("display_name")
     private String displayName;
 
-    private Address address;
+    private AddressDto address;
 
     @JsonProperty("boundingbox")
     private List<Double> boundingBox;
