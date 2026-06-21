@@ -13,6 +13,5 @@ public class CreateBusinessRequestDto {
     private String businessEmail;
     private String facebookPage;
     private SearchAddressDto address;
-    private String timezone;
 
 }

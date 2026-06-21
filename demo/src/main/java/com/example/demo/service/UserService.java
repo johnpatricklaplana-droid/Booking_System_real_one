@@ -159,7 +159,10 @@ public class UserService {
     }
 
     @Transactional
-    private void createBusinessTransAction (SearchAddressDto address, CreateBusinessRequestDto businessDto, MultipartFile businessLogo) {
+    private void createBusinessTransAction (
+        SearchAddressDto address, 
+        CreateBusinessRequestDto businessDto, 
+        MultipartFile businessLogo) {
 
         String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -179,15 +182,15 @@ public class UserService {
         userRepo.save(user);
 
         Address addressRealDeal = new Address();
-        addressRealDeal.setCity(address.getCity());
-        addressRealDeal.setCountry(address.getCountry());
+        addressRealDeal.setCity(address.getCity() == null ? businessDto.getAddress().getCity() : address.getCity());
+        addressRealDeal.setCountry(address.getCountry() == null ? businessDto.getAddress().getCountry() : address.getCountry());
         addressRealDeal.setCountryCode(address.getCountryCode());
         addressRealDeal.setDisplayName(address.getDisplayName());
         addressRealDeal.setLat(address.getLat());
         addressRealDeal.setLon(address.getLon());
-        addressRealDeal.setPostalCode(address.getPostalCode());
-        addressRealDeal.setProvince(address.getProvince());
-        addressRealDeal.setRoad(address.getRoad());
+        addressRealDeal.setPostalCode(address.getPostalCode() == null ? businessDto.getAddress().getPostalCode() : address.getPostalCode());
+        addressRealDeal.setProvince(address.getProvince() == null ? businessDto.getAddress().getProvince() : address.getProvince());
+        addressRealDeal.setRoad(address.getRoad() == null ? businessDto.getAddress().getRoad() : address.getRoad());
         addressRealDeal.setTimezone(address.getTimezone());
 
         Business buss = new Business();
@@ -199,7 +202,7 @@ public class UserService {
         buss.setCreatedAt(LocalDateTime.now());
         buss.setDescription(businessDto.getDescription());
         buss.setStatus("ACTIVE");
-        buss.setTimezone(businessDto.getTimezone());
+        buss.setTimezone(businessDto.getAddress().getTimezone());
         buss.setUserId(user);
         buss.setLogoUrl(supabaseStorageService.uploadBusinessLogo(businessLogo));
 

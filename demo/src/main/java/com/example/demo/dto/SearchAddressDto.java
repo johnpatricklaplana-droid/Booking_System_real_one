@@ -18,14 +18,11 @@ public class SearchAddressDto {
     private Double lat;
     private Double lon;
     private String displayName;
-    private List<Double> boundingBox;
 
     private String houseNumber;
     private String road;
-    private String village;
     private String city;
     private String province;
-    private String region;
     private String postalCode;
     private String country;
     private String countryCode;

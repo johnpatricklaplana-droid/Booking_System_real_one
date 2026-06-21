@@ -28,7 +28,7 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import  EmojiFlag, { CountryFlag }  from "ts-react-emoji-flag";
-import { get } from "../api/api";
+import { get, PostFormData } from "../api/api";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                                */
@@ -58,8 +58,8 @@ interface BusinessInfoData {
 }
 
 interface ContactInfoData {
-    email: string;
-    phone: string;
+    businessEmail: string;
+    facebookPage: string;
 }
 
 interface LocationData {
@@ -91,53 +91,6 @@ interface AddressSuggestion {
     country: string;
     timezone: string;
 }
-
-/* ------------------------------------------------------------------ */
-/* Mock data                                                            */
-/* ------------------------------------------------------------------ */
-
-const MOCK_ADDRESSES: AddressSuggestion[] = [
-    {
-        address: "SM City Rosales",
-        postalCode: "2441",
-        city: "Rosales",
-        province: "Pangasinan",
-        country: "Philippines",
-        timezone: "Asia/Manila",
-    },
-    {
-        address: "Dagupan City Hall",
-        postalCode: "2400",
-        city: "Dagupan",
-        province: "Pangasinan",
-        country: "Philippines",
-        timezone: "Asia/Manila",
-    },
-    {
-        address: "Robinsons Place Dagupan",
-        postalCode: "2400",
-        city: "Dagupan",
-        province: "Pangasinan",
-        country: "Philippines",
-        timezone: "Asia/Manila",
-    },
-    {
-        address: "Times Square",
-        postalCode: "10036",
-        city: "New York",
-        province: "New York",
-        country: "United States",
-        timezone: "America/New_York",
-    },
-    {
-        address: "Tower Bridge",
-        postalCode: "SE1 2UP",
-        city: "London",
-        province: "Greater London",
-        country: "United Kingdom",
-        timezone: "Europe/London",
-    },
-];
 
 const BUSINESS_TYPES: BusinessTypeOption[] = [
     { value: "retail", label: "Retail & Shop", description: "Storefronts, boutiques, and product sellers", icon: ShoppingBag },
@@ -192,10 +145,10 @@ function validateBusinessInfo(data: BusinessInfoData) {
 
 function validateContactInfo(data: ContactInfoData) {
     const errors: Partial<Record<keyof ContactInfoData, string>> = {};
-    if (!data.email.trim()) errors.email = "Email is required.";
-    else if (!EMAIL_REGEX.test(data.email.trim())) errors.email = "Enter a valid email address.";
-    if (!data.phone.trim()) errors.phone = "Phone number is required.";
-    else if (!PHONE_REGEX.test(data.phone.trim())) errors.phone = "Enter a valid phone number.";
+    if (!data.businessEmail.trim()) errors.businessEmail = "Email is required.";
+    else if (!EMAIL_REGEX.test(data.businessEmail.trim())) errors.businessEmail = "Enter a valid email address.";
+    if (!data.businessEmail.trim()) errors.businessEmail = "Phone number is required.";
+    else if (!PHONE_REGEX.test(data.facebookPage.trim())) errors.facebookPage = "Enter a valid one.";
     return errors;
 }
 
@@ -437,12 +390,12 @@ function ContactStep({
                     icon={Mail}
                     type="email"
                     placeholder="hello@yourbusiness.com"
-                    value={data.email}
-                    onChange={(e) => onChange({ email: e.target.value })}
-                    error={touched.email ? errors.email : undefined}
-                    valid={Boolean(touched.email && !errors.email && data.email.length > 0)}
+                    value={data.businessEmail}
+                    onChange={(e) => onChange({ businessEmail: e.target.value })}
+                    error={touched.businessEmail ? errors.businessEmail : undefined}
+                    valid={Boolean(touched.businessEmail && !errors.businessEmail && data.businessEmail.length > 0)}
                 />
-                <FieldError message={touched.email ? errors.email : undefined} />
+                <FieldError message={touched.businessEmail ? errors.businessEmail : undefined} />
             </div>
 
             <div>
@@ -451,12 +404,12 @@ function ContactStep({
                     icon={Phone}
                     type="tel"
                     placeholder="+63 912 345 6789"
-                    value={data.phone}
-                    onChange={(e) => onChange({ phone: e.target.value })}
-                    error={touched.phone ? errors.phone : undefined}
-                    valid={Boolean(touched.phone && !errors.phone && data.phone.length > 0)}
+                    value={data.facebookPage}
+                    onChange={(e) => onChange({ facebookPage: e.target.value })}
+                    error={touched.facebookPage ? errors.facebookPage : undefined}
+                    valid={Boolean(touched.facebookPage && !errors.facebookPage && data.facebookPage.length > 0)}
                 />
-                <FieldError message={touched.phone ? errors.phone : undefined} />
+                <FieldError message={touched.facebookPage ? errors.facebookPage : undefined} />
             </div>
         </div>
     );
@@ -473,15 +426,13 @@ interface SearchResult {
     displayName: string;
     postalCode: string;
     province: string;
-    region: string;
-    street: string;
+    road: string;
     timezone: string;
-    village: string;
 };
 
 function validateLocation(data: SearchResult) {
     const errors: Partial<Record<keyof LocationData, string>> = {};
-    if (!data.street) errors.addressLine = "Address line is required.";
+    if (!data.road) errors.addressLine = "Address line is required.";
     if (!data.city) errors.city = "City is required.";
     if (!data.province) errors.province = "Province/state is required.";
     if (!data.postalCode) errors.postalCode = "Postal code is required.";
@@ -526,10 +477,8 @@ function LocationStep({
             displayName: suggestion.displayName,
             postalCode: suggestion.postalCode,
             province: suggestion.province,
-            region: suggestion.region,
-            street: suggestion.street,
+            road: suggestion.road,
             timezone: suggestion.timezone,
-            village: suggestion.village,
         });
     }
 
@@ -630,12 +579,12 @@ function LocationStep({
                     <FieldLabel label="Address line" required />
                     <IconInput
                         icon={MapPin}
-                        value={data.street}
-                        onChange={(e) => onChange({ street: e.target.value })}
-                        error={errors.street}
+                        value={data.road}
+                        onChange={(e) => onChange({ road: e.target.value })}
+                        error={errors.road}
                         placeholder="Street, building, unit"
                     />
-                    <FieldError message={errors.street} />
+                    <FieldError message={errors.road} />
                 </div>
                 <div>
                     <FieldLabel label="City" required />
@@ -837,18 +786,16 @@ export function BusinessOnboardingWizard() {
     const [submitting, setSubmitting] = useState(false);
 
     const [businessInfo, setBusinessInfo] = useState<BusinessInfoData>({ businessName: "", businessType: "", description: "" });
-    const [contactInfo, setContactInfo] = useState<ContactInfoData>({ email: "", phone: "" });
-    const [location, setLocation] = useState<SearchResult>({
+    const [contactInfo, setContactInfo] = useState<ContactInfoData>({ businessEmail: "", facebookPage: "" });
+    const [address, setAddress] = useState<SearchResult>({
         city: "",
         country: "",
         countryCode: "",
         displayName: "",
         postalCode: "",
         province: "",
-        region: "",
-        street: "",
-        timezone: "",
-        village: "",
+        road: "",
+        timezone: ""
     });
     const [logo, setLogo] = useState<LogoData>({ file: null, previewUrl: null, width: null, height: null, sizeBytes: null });
 
@@ -858,7 +805,7 @@ export function BusinessOnboardingWizard() {
 
     const businessInfoErrors = useMemo(() => validateBusinessInfo(businessInfo), [businessInfo]);
     const contactErrors = useMemo(() => validateContactInfo(contactInfo), [contactInfo]);
-    const locationErrors = useMemo(() => validateLocation(location), [location]);
+    const locationErrors = useMemo(() => validateLocation(address), [address]);
 
     const stepValidity: Record<StepIndex, boolean> = {
         0: Object.keys(businessInfoErrors).length === 0,
@@ -878,7 +825,7 @@ export function BusinessOnboardingWizard() {
             if (!stepValidity[0]) return;
         }
         if (currentStep === 1) {
-            setContactTouched({ email: true, phone: true });
+            setContactTouched({ businessEmail: true, facebookPage: true });
             if (!stepValidity[1]) return;
         }
         if (currentStep === 2) {
@@ -895,15 +842,33 @@ export function BusinessOnboardingWizard() {
         setCurrentStep((s) => Math.max(s - 1, 0) as StepIndex);
     }
 
-    function handleCreateBusiness() {
+    async function handleCreateBusiness() {
+
+        if(!logo.file) {
+            throw new Error('business super logo is required');
+        }
+
         setSubmitting(true);
-        // Mock submission — wire this up to your API when ready.
-        globalThis.setTimeout(() => {
+
+        const business_info = {...businessInfo, ...contactInfo, address};
+
+        const url = "http://localhost:8080/api/user/business";
+        const body = new FormData();
+
+        body.append('business_info', new Blob([JSON.stringify(business_info)], { type: 'application/json' }));
+        body.append('business_logo', logo.file);
+        
+
+        const result = await PostFormData(url, body);
+
+        if(result.status === 201) {
             setSubmitting(false);
             setCompletedSteps((prev) => new Set(prev).add(3));
-            console.log("Business onboarding payload", { businessInfo, contactInfo, location, logo });
-        }, 1200);
+        }
+
     }
+
+    console.log("LOOPING?");
 
     return (
         <div className="min-h-screen bg-(--bg) px-4 py-10 sm:py-16">
@@ -942,8 +907,8 @@ export function BusinessOnboardingWizard() {
                                     setContactInfo((prev) => ({ ...prev, ...patch }));
                                     setContactTouched((prev) => ({
                                         ...prev,
-                                        ...(patch.email !== undefined ? { email: true } : {}),
-                                        ...(patch.phone !== undefined ? { phone: true } : {}),
+                                        ...(patch.businessEmail !== undefined ? { email: true } : {}),
+                                        ...(patch.facebookPage !== undefined ? { phone: true } : {}),
                                     }));
                                 }}
                             />
@@ -951,9 +916,9 @@ export function BusinessOnboardingWizard() {
 
                         {currentStep === 2 && (
                             <LocationStep
-                                data={location}
+                                data={address}
                                 errors={showStep3Errors ? locationErrors : {}}
-                                onChange={(patch) => setLocation((prev) => ({ ...prev, ...patch }))}
+                                onChange={(patch) => setAddress((prev) => ({ ...prev, ...patch }))}
                             />
                         )}
 
