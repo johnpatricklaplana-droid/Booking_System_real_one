@@ -3,7 +3,7 @@ import { CustomerNavBar } from "../components/custumerNavBar";
 import { useNavigate } from "react-router-dom";
 import { CheckIcon, CircleUser, User, ArrowBigLeftDash } from "lucide-react";
 import { useUser } from "../provider/UserContext";
-import { PostFormData } from "../api/api";
+import { PostFormData, update } from "../api/api";
 
 type BookingTab = "upcoming" | "past";
 
@@ -328,6 +328,8 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
     const user = useUser()?.user;
     const setUser = useUser()?.setUser;
 
+    const navigate = useNavigate();
+
     const dot = (color: string) => (
         <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, opacity: .7, display: "inline-block" }} />
     );
@@ -389,6 +391,18 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
             setUpdateProfileSuccess({ open: false, closeIn: 3});
             clearInterval(interval);
         }, 3000);
+    };
+
+    const switchToBusiness = async () => {
+
+        const url = "http://localhost:8080/api/user/business";
+        const body = null;
+
+        const result = await update(url, body);
+
+        if(result.status === 200) {
+            setUser?.(prev => ({ ...prev!, activeRole: "BUSINESS_OWNER" }));
+        }
     };
 
     return (
@@ -454,7 +468,10 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
                     ? <button onClick={onBecomeSellerClick} style={ghostBtn}>
                         Create some business
                     </button> 
-                        : <button className="border border-[rgba(255,255,255,0.09)] flex py-2 px-4 gap-1 items-center rounded-2xl cursor-pointer text-sm">
+                        : <button 
+                            className="border border-[rgba(255,255,255,0.09)] flex py-2 px-4 gap-1 items-center rounded-2xl cursor-pointer text-sm"
+                            onClick={switchToBusiness}
+                        >
                         <ArrowBigLeftDash></ArrowBigLeftDash> Switch to business
                     </button>}
                     <button style={primaryBtn}>Edit profile</button>
@@ -560,6 +577,8 @@ export function ProfilePage() {
    
     const navigate = useNavigate();
 
+    console.log("LOOPING?");
+
     return (
         <div className="bg-[#0a0a0d] min-h-full text-[#e8e4de]" style={{ fontFamily: "system-ui,-apple-system,sans-serif" }}>
             <style>{`
@@ -571,8 +590,6 @@ export function ProfilePage() {
                 button { transition: all 0.2s ease; }
                 button:hover { opacity: 0.85; }
             `}</style>
-
-            <CustomerNavBar />
 
             <div className="max-w-[900px] mx-auto pb-[4rem] px-[2rem]">
                 <ProfileHeader onBecomeSellerClick={() => navigate("/create-business")} />

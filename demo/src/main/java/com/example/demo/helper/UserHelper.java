@@ -42,6 +42,7 @@ public class UserHelper {
         dto.setLastName(user.getLastName());
         dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
         dto.setEmail(user.getEmail());
+        dto.setLastActiveRole(user.getLastActiveRole());
 
         return dto;
 

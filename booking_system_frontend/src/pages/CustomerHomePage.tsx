@@ -15,9 +15,10 @@ export function HomePage() {
         }
     });
 
+    console.log("LOOPING?");
+
     return (
         <div className="bg-(--bg)">
-            <CustomerNavBar />
             <div className="page active" id="page-home">
                 <div className="py-25 pb-[80px] text-center relative overflow-hidden">
                     <div className="max-w-280 mx-auto px-8">

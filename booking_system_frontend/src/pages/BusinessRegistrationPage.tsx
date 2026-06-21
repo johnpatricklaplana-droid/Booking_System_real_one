@@ -865,7 +865,7 @@ export function BusinessOnboardingWizard() {
             setSubmitting(false);
             setCompletedSteps((prev) => new Set(prev).add(3));
         }
-
+        
     }
 
     console.log("LOOPING?");

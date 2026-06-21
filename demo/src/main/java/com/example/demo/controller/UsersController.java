@@ -1,12 +1,14 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
@@ -152,5 +155,24 @@ public class UsersController {
             .status(HttpStatus.OK)
             .body(userService.searchAddress(url));
     }
+
+    @PatchMapping("/api/user/business")
+    public ResponseEntity<AuthResponse> updateLastActiveRole(@AuthenticationPrincipal String userId) {
+        UUID uid = UUID.fromString(userId);
+        userService.updateLastActiveRoleToBusiness(uid, "BUSINESS_OWNER");
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new AuthResponse(200, "successful one"));
+    }
+
+    @PatchMapping("/api/user/customer")
+    public ResponseEntity<AuthResponse> updateLastActiveRoleCustomer(@AuthenticationPrincipal String userId) {
+        UUID uid = UUID.fromString(userId);
+        userService.updateLastActiveRoleToBusiness(uid, "CUSTOMER");
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new AuthResponse(200, "successful one"));
+    }
+    
 
 }

@@ -1,10 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Login } from "../pages/Login";
-import { HomePage } from "../pages/CustomerHomePage";
 import { Signup } from "../pages/Signup";
 import { ProfilePage } from "../pages/Profile";
 import { Overview } from "../pages/business/BussinessOverview";
-import { Root } from "../Root";
 import { Services } from "../pages/business/Services";
 import { Customers } from "../pages/business/Customers";
 import { Analytics } from "../pages/business/Analytics";
@@ -13,42 +11,29 @@ import { CalendarPage } from "../pages/business/CalendarPage";
 import { Landing } from "../pages/business/Landing";
 import { Reports } from "../pages/business/Reports";
 import { BusinessOnboardingWizard } from "../pages/BusinessRegistrationPage";
+import { BusinessGuard } from "./BusinessGuad";
+import { Settings } from "../pages/business/Settings";
+import { HomePage } from "../pages/CustomerHomePage";
+import { CustomerGuard } from "./CustomerGuard";
 
 export const router = createBrowserRouter([
-    {
-        path: 'landing',
-        Component: Landing
-    },
-    {
-        path: '/login',
-        Component: Login
-    },
-    {
-        path: '/home',
-        Component: HomePage
-    },
-    {
-        path: '/signup',
-        Component: Signup
-    },
-    {
-        path: '/profile',
-        Component: ProfilePage
-    },
-    {
-        path: '/create-business',
-        Component: BusinessOnboardingWizard
-    }
-]);
+    { path: 'landing', Component: Landing },
+    { path: '/login', Component: Login },
+    { path: '/signup', Component: Signup },
 
-export const businessRouter = createBrowserRouter([
     {
-        path: 'landing',
-        Component: Landing
+        path: '/customer',
+        Component: CustomerGuard,
+        children: [
+            { path: 'home', Component: HomePage },
+            { path: 'profile', Component: ProfilePage },
+            { path: 'create-business', Component: BusinessOnboardingWizard },
+        ]
     },
+
     {
-        path: '/',
-        Component: Root,
+        path: '/business',
+        Component: BusinessGuard,
         children: [
             { index: true, Component: Overview },
             { path: 'services', Component: Services },
@@ -57,14 +42,7 @@ export const businessRouter = createBrowserRouter([
             { path: 'appointments', Component: Appointments },
             { path: 'calendar', Component: CalendarPage },
             { path: 'reports', Component: Reports },
+            { path: 'settings', Component: Settings },
         ]
-    },
-    {
-        path: '/signup',
-        Component: Signup
-    },
-    {
-        path: '/login',
-        Component: Login
     },
 ]);

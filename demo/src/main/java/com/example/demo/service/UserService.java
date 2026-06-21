@@ -124,6 +124,7 @@ public class UserService {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
+        dto.setLastActiveRole(user.getLastActiveRole());
 
         return dto;
 
@@ -220,6 +221,19 @@ public class UserService {
             .flatMapMany(Flux::fromIterable)
             .map(raw -> userHelper.toSearchAddressDto(raw, "flkjdlakfja"))
             .collectList();
+    }
+
+    public void updateLastActiveRoleToBusiness(UUID uid, String role) {
+        
+        Users user = userRepo.findById(uid).orElse(null);
+
+        if(user == null) {
+            throw new ResourceNotFoundException("user not found");
+        }
+
+        user.setLastActiveRole(role);
+        userRepo.save(user);
+
     }
 
 }

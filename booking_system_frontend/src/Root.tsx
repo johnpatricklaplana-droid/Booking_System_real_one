@@ -17,6 +17,8 @@ export function Root() {
     const location = useLocation();
     const pageInfo = pageTitles[location.pathname] || { title: 'Overview', subtitle: 'Welcome back, John' };
 
+    console.log("Root mounted/rendered");
+
     return (
         <div className="min-h-screen bg-[#0a0a0c] dark">
             <Sidebar />

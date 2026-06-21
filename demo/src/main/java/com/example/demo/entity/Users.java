@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.DynamicInsert;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +21,7 @@ import lombok.Setter;
 @Table(name="users")
 @Getter
 @Setter
+@DynamicInsert
 public class Users {
     
     @Id
@@ -51,5 +54,8 @@ public class Users {
 
     @OneToMany(mappedBy = "userId")
     private List<Business> businesses;
+
+    @Column(name = "last_active_role")
+    private String lastActiveRole;
 
 }

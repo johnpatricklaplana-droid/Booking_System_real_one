@@ -13,4 +13,5 @@ public class UserDto {
     private String avatarUrl;
     private List<String> roles;
     private String email;
+    private String lastActiveRole;
 }

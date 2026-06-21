@@ -60,9 +60,9 @@ export function Login() {
 
             const userinfo = await login("http://localhost:8080/api/auth/login", await result.user.getIdToken());
 
-            user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null});
+            user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null, activeRole: userinfo.message.lastActiveRole });
 
-            navigate("/home");
+            navigate("/customer");
         } catch (error) {
             setStatus("error");
             setAuthError("something went super wrong");
@@ -82,6 +82,8 @@ export function Login() {
     };
 
     const isLoading = status === 'loading';
+
+    console.log("LOOPING?");
 
     return (
         <>

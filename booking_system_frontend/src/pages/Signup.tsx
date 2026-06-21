@@ -163,6 +163,8 @@ export function Signup() {
     const isLoading = status === 'loading';
     const isSuccess = status === 'success';
 
+    console.log("LOOPING?");
+
     return (
         <>
             {/* ── Keyframes ── */}

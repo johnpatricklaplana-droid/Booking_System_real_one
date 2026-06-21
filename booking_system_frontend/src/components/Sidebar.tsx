@@ -1,19 +1,39 @@
-import { Link, useLocation } from 'react-router';
+import { Link, replace, useLocation, useNavigate } from 'react-router';
 import { Calendar, BarChart3, Users, Settings, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
+import { update } from '../api/api';
+import { useUser } from '../provider/UserContext';
 
 const navItems = [
-    { icon: Grid3x3, label: 'Overview', path: '/' },
-    { icon: Calendar, label: 'Calendar', path: '/calendar' },
-    { icon: Clock, label: 'Appointments', path: '/appointments' },
-    { icon: Users, label: 'Customers', path: '/customers' },
-    { icon: Briefcase, label: 'Services', path: '/services' },
-    { icon: TrendingUp, label: 'Analytics', path: '/analytics' },
-    { icon: BarChart3, label: 'Reports', path: '/reports' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
+    { icon: Grid3x3, label: 'Overview', path: '/business' },
+    { icon: Calendar, label: 'Calendar', path: 'calendar' },
+    { icon: Clock, label: 'Appointments', path: 'appointments' },
+    { icon: Users, label: 'Customers', path: 'customers' },
+    { icon: Briefcase, label: 'Services', path: 'services' },
+    { icon: TrendingUp, label: 'Analytics', path: 'analytics' },
+    { icon: BarChart3, label: 'Reports', path: 'reports' },
+    { icon: Settings, label: 'Settings', path: 'settings' },
 ];
 
 export function Sidebar() {
+
+    const { setUser } = useUser();
+
+    const navigate = useNavigate();
+
     const location = useLocation();
+
+    const swithToCustomer = async () => {
+        const url = "http://localhost:8080/api/user/customer";
+        const body = null;
+        
+        const result = await update(url, body);
+        
+        console.log(result);
+
+        if(result.status === 200) {
+            setUser?.(prev => ({ ...prev!, activeRole: "CUSTOMER" }));
+        }
+    };
 
     return (
         <div className="fixed left-0 top-0 h-full w-64 bg-[#0f0f11] border-r border-[rgba(255,255,255,0.06)] flex flex-col">
@@ -46,13 +66,13 @@ export function Sidebar() {
             </nav>
 
             <div className="p-4 border-t border-[rgba(255,255,255,0.06)] space-y-2">
-                <Link
-                    to="/customer"
+                <button
+                    onClick={swithToCustomer}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#1a1a1e] hover:bg-[#222226] border border-[rgba(255,255,255,0.06)] hover:border-[#9d8fb5]/40 transition-all group"
                 >
                     <ArrowLeftRight size={15} className="text-[#9d8fb5]" />
                     <span className="text-[12px] font-medium text-[#9a9aa3] group-hover:text-[#9d8fb5] transition-colors">Customer View</span>
-                </Link>
+                </button>
                 <div className="bg-[#1a1a1e] rounded-lg p-4">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] flex items-center justify-center text-[13px] text-[#0a0a0c] font-medium">
