@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.demo.dto.AddServiceRequestDto;
 import com.example.demo.dto.AddressDto;
 import com.example.demo.dto.CreateBusinessRequestDto;
 import com.example.demo.dto.NominatimRawResponse;
@@ -21,14 +22,17 @@ import com.example.demo.dto.UserCredentialsSignUp;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
+import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.Users;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.repositories.BusinessRepository;
+import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.UserRepository;
 
+import jakarta.persistence.EntityManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -55,6 +59,12 @@ public class UserService {
 
     @Autowired
     UserHelper userHelper;
+
+    @Autowired
+    BusinessServiceRepository businessServiceRepo;
+
+    @Autowired
+    EntityManager entityManager;
     
     public void createUser (UserCredentialsSignUp body) {   
 
@@ -160,7 +170,7 @@ public class UserService {
     }
 
     @Transactional
-    private void createBusinessTransAction (
+    void createBusinessTransAction (
         SearchAddressDto address, 
         CreateBusinessRequestDto businessDto, 
         MultipartFile businessLogo) {
@@ -205,7 +215,7 @@ public class UserService {
         buss.setStatus("ACTIVE");
         buss.setTimezone(businessDto.getAddress().getTimezone());
         buss.setUserId(user);
-        buss.setLogoUrl(supabaseStorageService.uploadBusinessLogo(businessLogo));
+        buss.setLogoUrl(supabaseStorageService.uploadBusinessLogo(businessLogo, "business_logo"));
 
         businessRepo.save(buss);
     }
@@ -234,6 +244,25 @@ public class UserService {
         user.setLastActiveRole(role);
         userRepo.save(user);
 
+    }
+
+    public void addBusinessServices(AddServiceRequestDto request, MultipartFile file) {
+        
+        BusinessServices businessServices = new BusinessServices();
+        businessServices.setBusiness(entityManager.getReference(Business.class, request.getBusinessId()));
+        businessServices.setCapacity(request.getCapacity());
+        businessServices.setDuration(request.getInterval());
+        businessServices.setPrice(request.getPrice());
+        businessServices.setServiceName(request.getServiceName());
+        businessServices.setServiceLogoUrl(supabaseStorageService.uploadBusinessLogo(file, "business_service_logo"));
+        businessServices.setStatus("ACTIVE");
+
+        try {
+            businessServiceRepo.save(businessServices);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     }
 
 }

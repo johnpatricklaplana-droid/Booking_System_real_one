@@ -16,7 +16,7 @@ public class BusinessOwnershipCheck {
     public boolean hasAccess(UUID businessId, String userId) {
 
         return businessRepo.findById(businessId)
-            .map(business -> business.getUserId().toString().equals(userId))
+            .map(business -> business.getUserId().getId().toString().equals(userId))
             .orElse(false);
     }
 

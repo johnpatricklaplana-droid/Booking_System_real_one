@@ -176,14 +176,17 @@ public class UsersController {
             .body(new AuthResponse(200, "successful one"));
     }   
 
-    @PostMapping("/api/user/business")
-    @PreAuthorize("@businessOwnershipChecker.hasAccess(#request.businessId, authenticated.principal.id)")
-    public ResponseEntity<?> addService(@RequestBody AddServiceRequestDto request) {
-        
-        
+    @PostMapping("/api/user/business/services")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#request.businessId, #id)")
+    public ResponseEntity<AuthResponse> addService(
+        @RequestPart("body") AddServiceRequestDto request,
+        @RequestPart("file") MultipartFile file,
+        @AuthenticationPrincipal String id
+    ) {
+        userService.addBusinessServices(request, file);
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(null);
+            .body(new AuthResponse(201, "created one"));
     }
     
 

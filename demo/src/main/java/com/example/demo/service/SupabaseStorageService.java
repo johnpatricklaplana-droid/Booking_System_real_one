@@ -72,13 +72,13 @@ public class SupabaseStorageService {
 
     }
 
-    public String uploadBusinessLogo(MultipartFile file) {
+    public String uploadBusinessLogo(MultipartFile file, String bucketName) {
 
         try {
 
             String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
-            String url = supabaseUrl + "/storage/v1/object/" + "business_logo" + "/" + fileName;
+            String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
 
             webClient.post()
                     .uri(url)
@@ -90,7 +90,7 @@ public class SupabaseStorageService {
                     .toBodilessEntity()
                     .block();
 
-            return supabaseUrl + "/storage/v1/object/public/" + "business_logo" + "/" + fileName;
+            return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -37,6 +38,14 @@ public class GlobalExceptionHandler {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new AuthResponse(400, ex.getMessage()));
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<AuthResponse> handleForbedin(AccessDeniedException ex) {
+
+            return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new AuthResponse(403, ex.getMessage()));
         }
 
         @ExceptionHandler(Exception.class)
