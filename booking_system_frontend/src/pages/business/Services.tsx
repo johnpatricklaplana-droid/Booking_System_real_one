@@ -1,4 +1,5 @@
 import { Search, Filter, Plus, Clock, DollarSign, TrendingUp, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const services = [
     {
@@ -78,6 +79,9 @@ const services = [
 const categories = ['All', 'Beauty', 'Wellness', 'Fitness', 'Professional'];
 
 export function Services() {
+
+    const navigate = useNavigate();
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -85,7 +89,10 @@ export function Services() {
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Services</h2>
                     <p className="text-[13px] text-[#9a9aa3]">Manage your service offerings</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
+                <button 
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all"
+                    onClick={() => navigate('/business/add-services')}
+                >
                     <Plus size={16} strokeWidth={2} />
                     Add Service
                 </button>

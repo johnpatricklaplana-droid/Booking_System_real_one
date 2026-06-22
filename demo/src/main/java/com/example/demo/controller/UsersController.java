@@ -172,7 +172,6 @@ public class UsersController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new AuthResponse(200, "successful one"));
-    }
-    
+    }   
 
 }

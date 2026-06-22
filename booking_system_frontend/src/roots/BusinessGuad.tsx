@@ -15,7 +15,7 @@ export function BusinessGuard () {
     }
 
     if(user?.activeRole !== "BUSINESS_OWNER") { 
-        return <Navigate to="/customer" replace />
+        return <Navigate to="/customer/home" replace />
     }
 
     return <Root />;

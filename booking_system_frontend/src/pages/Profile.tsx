@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CustomerNavBar } from "../components/custumerNavBar";
 import { useNavigate } from "react-router-dom";
 import { CheckIcon, CircleUser, User, ArrowBigLeftDash } from "lucide-react";
 import { useUser } from "../provider/UserContext";

@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Login } from "../pages/Login";
 import { Signup } from "../pages/Signup";
-import { ProfilePage } from "../pages/Profile";
 import { Overview } from "../pages/business/BussinessOverview";
 import { Services } from "../pages/business/Services";
 import { Customers } from "../pages/business/Customers";
@@ -15,6 +14,10 @@ import { BusinessGuard } from "./BusinessGuad";
 import { Settings } from "../pages/business/Settings";
 import { HomePage } from "../pages/CustomerHomePage";
 import { CustomerGuard } from "./CustomerGuard";
+import ServiceForm from "../pages/business/AddServices";
+import JobsPage from "../pages/FindJobs";
+import { ProfilePage } from "../pages/Profile";
+import BusinessJobPostings from "../pages/business/JobPostings";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -28,6 +31,7 @@ export const router = createBrowserRouter([
             { path: 'home', Component: HomePage },
             { path: 'profile', Component: ProfilePage },
             { path: 'create-business', Component: BusinessOnboardingWizard },
+            { path: 'jobs', Component: JobsPage },
         ]
     },
 
@@ -37,12 +41,14 @@ export const router = createBrowserRouter([
         children: [
             { index: true, Component: Overview },
             { path: 'services', Component: Services },
+            { path: 'add-services', Component: ServiceForm },
             { path: 'customers', Component: Customers },
             { path: 'analytics', Component: Analytics },
             { path: 'appointments', Component: Appointments },
             { path: 'calendar', Component: CalendarPage },
             { path: 'reports', Component: Reports },
             { path: 'settings', Component: Settings },
+            { path: 'job-postings', Component: BusinessJobPostings },
         ]
     },
 ]);

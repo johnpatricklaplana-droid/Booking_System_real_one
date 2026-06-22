@@ -11,6 +11,7 @@ const navItems = [
     { icon: Briefcase, label: 'Services', path: 'services' },
     { icon: TrendingUp, label: 'Analytics', path: 'analytics' },
     { icon: BarChart3, label: 'Reports', path: 'reports' },
+    { icon: BarChart3, label: 'job-postings', path: 'job-postings' },
     { icon: Settings, label: 'Settings', path: 'settings' },
 ];
 
