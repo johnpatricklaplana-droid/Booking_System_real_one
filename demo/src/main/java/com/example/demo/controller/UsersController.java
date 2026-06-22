@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.AddServiceRequestDto;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.CreateBusinessRequestDto;
 import com.example.demo.dto.SearchAddressDto;
@@ -173,5 +175,16 @@ public class UsersController {
             .status(HttpStatus.OK)
             .body(new AuthResponse(200, "successful one"));
     }   
+
+    @PostMapping("/api/user/business")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#request.businessId, authenticated.principal.id)")
+    public ResponseEntity<?> addService(@RequestBody AddServiceRequestDto request) {
+        
+        
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(null);
+    }
+    
 
 }
