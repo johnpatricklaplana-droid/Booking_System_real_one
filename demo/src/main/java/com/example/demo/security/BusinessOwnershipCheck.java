@@ -13,10 +13,10 @@ public class BusinessOwnershipCheck {
     @Autowired
     private BusinessRepository businessRepo;
 
-    public boolean hasAccess(UUID businessId, String userId) {
+    public boolean hasAccess(UUID businessId, UUID userId) {
 
         return businessRepo.findById(businessId)
-            .map(business -> business.getUserId().getId().toString().equals(userId))
+            .map(business -> business.getUserId().getId().equals(userId))
             .orElse(false);
     }
 

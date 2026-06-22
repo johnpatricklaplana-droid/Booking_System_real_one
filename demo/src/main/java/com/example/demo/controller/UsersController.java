@@ -159,8 +159,7 @@ public class UsersController {
     }
 
     @PatchMapping("/api/user/business")
-    public ResponseEntity<AuthResponse> updateLastActiveRole(@AuthenticationPrincipal String userId) {
-        UUID uid = UUID.fromString(userId);
+    public ResponseEntity<AuthResponse> updateLastActiveRole(@AuthenticationPrincipal UUID uid) {
         userService.updateLastActiveRoleToBusiness(uid, "BUSINESS_OWNER");
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -168,8 +167,7 @@ public class UsersController {
     }
 
     @PatchMapping("/api/user/customer")
-    public ResponseEntity<AuthResponse> updateLastActiveRoleCustomer(@AuthenticationPrincipal String userId) {
-        UUID uid = UUID.fromString(userId);
+    public ResponseEntity<AuthResponse> updateLastActiveRoleCustomer(@AuthenticationPrincipal UUID uid) {
         userService.updateLastActiveRoleToBusiness(uid, "CUSTOMER");
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -181,7 +179,7 @@ public class UsersController {
     public ResponseEntity<AuthResponse> addService(
         @RequestPart("body") AddServiceRequestDto request,
         @RequestPart("file") MultipartFile file,
-        @AuthenticationPrincipal String id
+        @AuthenticationPrincipal UUID id
     ) {
         userService.addBusinessServices(request, file);
         return ResponseEntity
