@@ -120,11 +120,7 @@ public class UserService {
 
     }
 
-    public UserDto getUser () {
-
-        String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        UUID uid = UUID.fromString(id);
+    public UserDto getUser (UUID uid) {
 
         Users user = userRepo.findById(uid).orElse(null);
 
@@ -140,7 +136,7 @@ public class UserService {
 
     }
 
-    public void createBusiness(CreateBusinessRequestDto businessDto, MultipartFile businessLogo) {
+    public void createBusiness(CreateBusinessRequestDto businessDto, MultipartFile businessLogo, UUID uid) {
 
         boolean isEmailValid = emailVerifications.isEmailValid(businessDto.getBusinessEmail());
 
@@ -165,7 +161,7 @@ public class UserService {
             throw new ResourceNotFoundException("We couldn't find this address. Please check your postal code, city, or province.");
         }
 
-        createBusinessTransAction(address, businessDto, businessLogo);
+        createBusinessTransAction(address, businessDto, businessLogo, uid);
 
     }
 
@@ -173,11 +169,8 @@ public class UserService {
     void createBusinessTransAction (
         SearchAddressDto address, 
         CreateBusinessRequestDto businessDto, 
-        MultipartFile businessLogo) {
-
-        String id = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        UUID uid = UUID.fromString(id);
+        MultipartFile businessLogo,
+        UUID uid) {
 
         Users user = userRepo.findById(uid).orElse(null);
 

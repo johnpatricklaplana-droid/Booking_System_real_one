@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router';
-import { Calendar, BarChart3, Users, Settings, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
+import { Calendar, BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
 
@@ -13,6 +13,7 @@ const navItems = [
     { icon: BarChart3, label: 'Reports', path: 'reports' },
     { icon: BarChart3, label: 'job-postings', path: 'job-postings' },
     { icon: Settings, label: 'Settings', path: 'settings' },
+    { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
 ];
 
 export function Sidebar() {

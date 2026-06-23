@@ -52,14 +52,6 @@ export function UserProvider ({ children }: { children: ReactNode }) {
         getUser();
     }, []);
 
-    useEffect(() => {
-        setLoading(true);
-
-        setTimeout(() => {
-            setLoading(false);
-        }, 500);
-    }, [user?.activeRole]);
-
     return <UserContext.Provider value={{ user, setUser, loading, setLoading}}>
         { children } 
     </UserContext.Provider>

@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -11,6 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -19,6 +23,13 @@ import lombok.Setter;
 
 @Table(name = "business")
 @Entity
+@NamedEntityGraph(name = "Business.detail", 
+    attributeNodes = {
+        @NamedAttributeNode("userId"),
+        @NamedAttributeNode("addressId"),
+        @NamedAttributeNode("services")
+    }
+)
 @NoArgsConstructor
 @Getter
 @Setter
@@ -62,5 +73,8 @@ public class Business {
 
     @Column(name = "logo_url")
     private String logoUrl;
+
+    @OneToMany(mappedBy = "business")
+    private List<BusinessServices> services;
 
 }

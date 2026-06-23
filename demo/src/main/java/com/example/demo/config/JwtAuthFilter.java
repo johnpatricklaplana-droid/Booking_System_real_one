@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,7 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtService.validateToken(token);
 
-                String uid = claims.getSubject();
+                UUID uid = UUID.fromString(claims.getSubject());
                 List<String> roles = claims.get("role", List.class);
 
                 List<SimpleGrantedAuthority> authorities = roles.stream()

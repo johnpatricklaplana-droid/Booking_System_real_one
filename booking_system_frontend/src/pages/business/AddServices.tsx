@@ -14,21 +14,49 @@ import { useNavigate } from 'react-router-dom';
  */
 
 const categories = ['Beauty', 'Wellness', 'Fitness', 'Professional'];
-const staffMembers = ['Sarah Mitchell', 'Emma Davis', 'Alex Rivera', 'Jordan Lee', 'David Kim', 'Mike Thompson'];
-const accentOptions = ['#c9a87c', '#9d8fb5', '#6b9fa3', '#b89c7e', '#c97c7c', '#7cc9a8'];
 
 const inputClass =
     'w-full px-4 py-2.5 bg-[#101012] border border-[rgba(255,255,255,0.08)] rounded-lg text-[13px] text-[#e8e8ea] placeholder-[#6a6a73] focus:outline-none focus:border-[#c9a87c]/40 transition-all disabled:cursor-not-allowed';
 
-export default function ServiceForm() {
-    const [selectedStaff, setSelectedStaff] = useState<string[]>(['Sarah Mitchell']);
-    const [selectedCategory, setSelectedCategory] = useState<string>('Beauty');
-    const [accent, setAccent] = useState<string>('#c9a87c');
+interface Services {
+    businessId: string;
+    serviceName: string;
+    description: string;
+    duration: string;
+    price: number; 
+    capacity: number;
+};
 
-    const toggleStaff = (name: string) => {
-        setSelectedStaff((prev) =>
-            prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
-        );
+export default function ServiceForm() {
+    const [selectedCategory, setSelectedCategory] = useState<string>('Beauty');
+    const [service, setService] = useState<Services>({
+        businessId: "",
+        serviceName: "",
+        description: "",
+        duration: "",
+        price: 0,
+        capacity: 0
+    });
+    const [serviceLogo, setServiceLogo] = useState<File | undefined>(undefined);
+    const [durationUnit, setDurationUnit] = useState("min");
+
+    const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const id = e.target.id;
+        const value = e.target.value;
+
+        setService(prev => ({...prev, [id]: value}));
+
+    };
+
+    const handleServiceLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newImage = e.target.files?.[0];
+
+        setServiceLogo(newImage);
+    };
+
+    const saveService = () => {
+        console.log(service);
+        console.log(serviceLogo);
     };
 
     const navigate = useNavigate();
@@ -54,7 +82,10 @@ export default function ServiceForm() {
                         <button className="px-4 py-2.5 text-[13px] font-medium text-[#9a9aa3] hover:text-[#e8e8ea] transition-all">
                             Discard
                         </button>
-                        <button className="px-5 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
+                        <button 
+                            className="px-5 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all"
+                            onClick={saveService}
+                        >
                             Save service
                         </button>
                     </div>
@@ -69,14 +100,21 @@ export default function ServiceForm() {
                         <Field label="Service name" required>
                             <input
                                 type="text"
+                                id='serviceName'
+                                value={service.serviceName}
+                                onChange={(e) => handleInputsChange(e)}
                                 placeholder="e.g. Deep Tissue Massage"
                                 className={inputClass}
                             />
+                            <input type="time" />
                         </Field>
 
                         <Field label="Description">
                             <textarea
                                 rows={3}
+                                id='description'
+                                value={service.description}
+                                onChange={(e) => handleInputsChange(e)}
                                 placeholder="What's included, what to expect, any prep needed..."
                                 className={`${inputClass} resize-none`}
                             />
@@ -109,14 +147,49 @@ export default function ServiceForm() {
                         <div className="grid grid-cols-2 gap-4">
                             <Field label="Duration" required>
                                 <div className="relative">
-                                    <input type="number" placeholder="45" className={inputClass} />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-[#9a9aa3]">min</span>
+                                    <input 
+                                        onChange={(e) => handleInputsChange(e)} 
+                                        id='duration'
+                                        value={service.duration}
+                                        type="text" 
+                                        placeholder="45" 
+                                        className={inputClass} 
+                                    />
+                                    <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex bg-[#1a1a1d] border border-[rgba(255,255,255,0.06)] rounded-md p-0.5">
+                                        <button
+                                            type="button"
+                                            onClick={() => setDurationUnit('min')}
+                                            className={`px-2 py-1 text-[11px] rounded-sm transition-colors ${durationUnit === 'min'
+                                                    ? 'bg-[#2a2a2e] text-[#e8e8ea]'
+                                                    : 'text-[#9a9aa3]'
+                                                }`}
+                                        >
+                                            min
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setDurationUnit('hr')}
+                                            className={`px-2 py-1 text-[11px] rounded-sm transition-colors ${durationUnit === 'hr'
+                                                    ? 'bg-[#2a2a2e] text-[#e8e8ea]'
+                                                    : 'text-[#9a9aa3]'
+                                                }`}
+                                        >
+                                            hr
+                                        </button>
+                                    </div>
                                 </div>
                             </Field>
                             <Field label="Price" required>
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] text-[#9a9aa3]">$</span>
-                                    <input type="number" placeholder="85.00" className={`${inputClass} pl-8`} />
+                                    <input 
+                                        type="number" 
+                                        placeholder="85.00" 
+                                        className={`${inputClass} pl-8`} 
+                                        id='price'
+                                        value={service.price}
+                                        onChange={(e) => handleInputsChange(e)}
+                                    />
                                 </div>
                             </Field>
                         </div>
@@ -129,7 +202,14 @@ export default function ServiceForm() {
                                 </div>
                             </Field>
                             <Field label="Capacity" hint="Customers per slot">
-                                <input type="number" placeholder="1" className={inputClass} />
+                                <input 
+                                    type="number" 
+                                    placeholder="1" 
+                                    className={inputClass} 
+                                    id='capacity'
+                                    value={service.capacity}
+                                    onChange={(e) => handleInputsChange(e)}
+                                />
                             </Field>
                         </div>
 
@@ -142,28 +222,6 @@ export default function ServiceForm() {
                                 </div>
                             </div>
                             <Toggle />
-                        </div>
-                    </Section>
-
-                    {/* Staff */}
-                    <Section icon={Users} title="Staff" subtitle="Who can perform this service">
-                        <div className="flex flex-wrap gap-2">
-                            {staffMembers.map((name) => {
-                                const active = selectedStaff.includes(name);
-                                return (
-                                    <button
-                                        key={name}
-                                        onClick={() => toggleStaff(name)}
-                                        className={`px-3.5 py-2 rounded-lg text-[12px] font-medium border transition-all flex items-center gap-1.5 ${active
-                                                ? 'bg-[#1a1a1e] border-[rgba(255,255,255,0.15)] text-[#e8e8ea]'
-                                                : 'bg-[#101012] border-[rgba(255,255,255,0.06)] text-[#9a9aa3] hover:border-[rgba(255,255,255,0.12)] hover:text-[#e8e8ea]'
-                                            }`}
-                                    >
-                                        {name}
-                                        {active && <X size={12} />}
-                                    </button>
-                                );
-                            })}
                         </div>
                     </Section>
 
@@ -189,43 +247,13 @@ export default function ServiceForm() {
                 <div className="space-y-6">
                     {/* Image */}
                     <SidePanel title="Image">
-                        <button className="w-full aspect-[4/3] rounded-lg border border-dashed border-[rgba(255,255,255,0.12)] bg-[#101012] flex flex-col items-center justify-center gap-2 text-[#9a9aa3] hover:border-[rgba(255,255,255,0.2)] hover:text-[#e8e8ea] transition-all">
+                        <label htmlFor='serviceLogo' className="relative overflow-hidden w-full aspect-[4/3] rounded-lg border border-dashed border-[rgba(255,255,255,0.12)] bg-[#101012] flex flex-col items-center justify-center gap-2 text-[#9a9aa3] hover:border-[rgba(255,255,255,0.2)] hover:text-[#e8e8ea] transition-all">
+                            <img className='absolute top-0 left-0 w-full h-full' src={serviceLogo === undefined ? '' : URL.createObjectURL(serviceLogo)} alt="" />
                             <ImageIcon size={22} strokeWidth={1.5} />
                             <span className="text-[12px] font-medium">Upload image</span>
                             <span className="text-[11px] text-[#6a6a73]">PNG, JPG up to 5MB</span>
-                        </button>
-                    </SidePanel>
-
-                    {/* Color tag */}
-                    <SidePanel title="Color tag" subtitle="Used on cards and calendar">
-                        <div className="flex gap-2">
-                            {accentOptions.map((color) => (
-                                <button
-                                    key={color}
-                                    onClick={() => setAccent(color)}
-                                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
-                                    style={{
-                                        backgroundColor: color,
-                                        boxShadow: accent === color ? `0 0 0 2px #0a0a0c, 0 0 0 4px ${color}` : 'none',
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </SidePanel>
-
-                    {/* Status */}
-                    <SidePanel title="Status">
-                        <button className="w-full flex items-center justify-between px-4 py-3 bg-[#101012] border border-[rgba(255,255,255,0.08)] rounded-lg text-[13px] text-[#e8e8ea] hover:border-[rgba(255,255,255,0.15)] transition-all">
-                            <span className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#7cc9a8]" />
-                                Active
-                            </span>
-                            <ChevronDown size={14} className="text-[#9a9aa3]" />
-                        </button>
-                        <p className="text-[11px] text-[#6a6a73] mt-2 flex items-start gap-1.5">
-                            <Info size={12} className="mt-0.5 flex-shrink-0" />
-                            Inactive services are hidden from the booking flow but keep their history
-                        </p>
+                        </label>
+                        <input onChange={(e) => handleServiceLogoChange(e)} id='serviceLogo' type="file" hidden />
                     </SidePanel>
 
                     {/* Tags — placeholder for future field */}

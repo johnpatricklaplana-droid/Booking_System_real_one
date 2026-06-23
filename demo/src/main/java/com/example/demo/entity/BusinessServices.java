@@ -37,6 +37,9 @@ public class BusinessServices {
     @Column(name = "service_name")
     private String serviceName;
 
+    @Column(name="description")
+    private String description;
+
     @Column(name = "duration", columnDefinition = "interval")
     private Duration duration;
 

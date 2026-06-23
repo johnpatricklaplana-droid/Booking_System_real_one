@@ -129,19 +129,20 @@ public class UsersController {
     }
     
     @GetMapping("/api/super-me")
-    public ResponseEntity<AuthResponse> getUserInfo() {
+    public ResponseEntity<AuthResponse> getUserInfo(@AuthenticationPrincipal UUID uid) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(new AuthResponse(200, userService.getUser()));
+            .body(new AuthResponse(200, userService.getUser(uid)));
     }
     
     @PostMapping("/api/user/business")
     public ResponseEntity<AuthResponse> createBusiness(
         @RequestPart("business_info") CreateBusinessRequestDto business,
-        @RequestPart("business_logo") MultipartFile businessLogo
+        @RequestPart("business_logo") MultipartFile businessLogo,
+        @AuthenticationPrincipal UUID uid
     ) {
 
-        userService.createBusiness(business, businessLogo);
+        userService.createBusiness(business, businessLogo, uid);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
