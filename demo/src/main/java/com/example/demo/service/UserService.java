@@ -28,6 +28,7 @@ import com.example.demo.entity.Users;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.helper.UserHelper;
+import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.UserRepository;
@@ -65,6 +66,9 @@ public class UserService {
 
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    BusinessMapper businessMapper;
     
     public void createUser (UserCredentialsSignUp body) {   
 
@@ -241,14 +245,9 @@ public class UserService {
 
     public void addBusinessServices(AddServiceRequestDto request, MultipartFile file) {
         
-        BusinessServices businessServices = new BusinessServices();
-        businessServices.setBusiness(entityManager.getReference(Business.class, request.getBusinessId()));
-        businessServices.setCapacity(request.getCapacity());
-        businessServices.setDuration(request.getInterval());
-        businessServices.setPrice(request.getPrice());
-        businessServices.setServiceName(request.getServiceName());
+        BusinessServices businessServices = businessMapper.toSaveBusinessServices(request, entityManager);
+
         businessServices.setServiceLogoUrl(supabaseStorageService.uploadBusinessLogo(file, "business_service_logo"));
-        businessServices.setStatus("ACTIVE");
 
         try {
             businessServiceRepo.save(businessServices);

@@ -26,8 +26,7 @@ import lombok.Setter;
 @NamedEntityGraph(name = "Business.detail", 
     attributeNodes = {
         @NamedAttributeNode("userId"),
-        @NamedAttributeNode("addressId"),
-        @NamedAttributeNode("services")
+        @NamedAttributeNode("addressId")
     }
 )
 @NoArgsConstructor

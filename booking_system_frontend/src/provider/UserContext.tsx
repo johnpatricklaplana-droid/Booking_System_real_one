@@ -17,6 +17,24 @@ interface UserContextType {
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    business: Business[] | null;
+    setBusiness: React.Dispatch<React.SetStateAction<Business[] | null>>;
+    activeBusiness: Business | null;
+    setActiveBusiness: React.Dispatch<React.SetStateAction<Business | null>>;
+}
+
+interface Business {
+    address: string;
+    businessEmail: string;
+    businessId: string;
+    businessLogoUrl: string;
+    businessName: string;
+    description: string;
+    facebookPage: string;
+    ownerName: string;
+    startedAt: string;
+    timezone: string;
+    type: string;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -24,6 +42,8 @@ const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider ({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [business, setBusiness] = useState<Business[] | null>([]);
+    const [activeBusiness, setActiveBusiness] = useState<Business | null>(null);
 
     useEffect(() => {
         const getUser = async () => {
@@ -31,8 +51,6 @@ export function UserProvider ({ children }: { children: ReactNode }) {
             const url = "http://localhost:8080/api/super-me";
 
             const result = await get(url);
-            console.log("Happening?");
-            console.log(result);
 
             if(result.status === 200) {
                 setUser({
@@ -47,12 +65,59 @@ export function UserProvider ({ children }: { children: ReactNode }) {
                 });
                 setLoading(false);
             }
+
+            if(result.message.roles.includes("BUSINESS_OWNER")) {
+                const url = "http://localhost:8080/api/business";
+
+                const result = await get(url);
+
+                setBusiness(
+                    result.map((bus: any) => {
+                        return {
+                            address: bus.address,
+                            businessEmail: bus.businessEmail,
+                            businessId: bus.businessId,
+                            businessLogoUrl: bus.businessLogoUrl,
+                            businessName: bus.businessName,
+                            description: bus.description,
+                            facebookPage: bus.facebookPage,
+                            ownerName: bus.ownerName,
+                            startedAt: bus.startedAt,
+                            timezone: bus.timezone,
+                            type: bus.type
+                        }
+                    })
+                );        
+                
+                setActiveBusiness({
+                    address: result?.[0].address,
+                    businessEmail: result?.[0].businessEmail,
+                    businessId: result?.[0].businessId,
+                    businessLogoUrl: result?.[0].businessLogoUrl,
+                    businessName: result?.[0].businessName,
+                    description: result?.[0].description,
+                    facebookPage: result?.[0].facebookPage,
+                    ownerName: result?.[0].ownerName,
+                    startedAt: result?.[0].startedAt,
+                    timezone: result?.[0].timezone,
+                    type: result?.[0].type
+                })
+            }
         };
 
         getUser();
     }, []);
 
-    return <UserContext.Provider value={{ user, setUser, loading, setLoading}}>
+    return <UserContext.Provider value={{ 
+        user, 
+        setUser, 
+        loading, 
+        setLoading, 
+        business, 
+        setBusiness,
+        activeBusiness,
+        setActiveBusiness
+    }}>
         { children } 
     </UserContext.Provider>
 

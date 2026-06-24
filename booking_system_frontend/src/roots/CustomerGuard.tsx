@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { useUser } from "../provider/UserContext";
-import { Root } from "../Root";
 import { CustomerRoot } from "../customerRoot";
 
 export function CustomerGuard() {

@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     ArrowLeft, Clock, DollarSign, Tag, FileText, Users, Image as ImageIcon,
     Plus, X, ChevronDown, Info, Sparkles, type LucideIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toISODuration } from '../../helper/convertSome';
+import { PostFormData } from '../../api/api';
+import { useUser } from '../../provider/UserContext';
 
 /**
  * Add / Edit Service — full page layout
@@ -22,7 +25,7 @@ interface Services {
     businessId: string;
     serviceName: string;
     description: string;
-    duration: string;
+    duration: string | number;
     price: number; 
     capacity: number;
 };
@@ -38,7 +41,16 @@ export default function ServiceForm() {
         capacity: 0
     });
     const [serviceLogo, setServiceLogo] = useState<File | undefined>(undefined);
-    const [durationUnit, setDurationUnit] = useState("min");
+    const [durationUnit, setDurationUnit] = useState<'min' | 'hr'>("min");
+
+    const bussId = useUser().activeBusiness?.businessId;
+
+    useEffect(() => {
+        if(!bussId) return;
+
+        setService(prev => ({...prev, businessId: bussId}));
+
+    }, [bussId]);
 
     const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const id = e.target.id;
@@ -54,9 +66,26 @@ export default function ServiceForm() {
         setServiceLogo(newImage);
     };
 
-    const saveService = () => {
+    const saveService = async () => {
+
+        if(!serviceLogo) return;
+
+        const url = "http://localhost:8080/api/user/business/services";
+
+        service.duration = toISODuration(Number(service.duration), durationUnit);
+
         console.log(service);
-        console.log(serviceLogo);
+
+        const body = new FormData();
+        body.append('body', new Blob([JSON.stringify(service)], { type: 'application/json' }));
+        body.append('file', serviceLogo);
+
+        const result = await PostFormData(url, body);
+      
+        if(result.status === 201) {
+            console.log("good one");
+        }
+
     };
 
     const navigate = useNavigate();
@@ -92,7 +121,7 @@ export default function ServiceForm() {
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-8 py-8 grid grid-cols-[1fr_320px] gap-6">
+            <div className="max-w-5xl mx-auto px-8 py-8 grid lg:grid-cols-[1fr_320px] gap-6">
                 {/* Main column */}
                 <div className="space-y-6">
                     {/* Basics */}
@@ -106,7 +135,6 @@ export default function ServiceForm() {
                                 placeholder="e.g. Deep Tissue Massage"
                                 className={inputClass}
                             />
-                            <input type="time" />
                         </Field>
 
                         <Field label="Description">

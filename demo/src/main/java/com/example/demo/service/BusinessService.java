@@ -6,19 +6,28 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BusinessDetailsDto;
-import com.example.demo.repositories.BusinessMapper;
+import com.example.demo.dto.ServicesDetailsDto;
+import com.example.demo.entity.BusinessServices;
+import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.repositories.BusinessRepository;
+import com.example.demo.repositories.BusinessServiceRepository;
 
 @Service
 public class BusinessService {
     
     private final BusinessRepository businessRepo;
     private final BusinessMapper businessMapper;
+    private final BusinessServiceRepository businessServiceRepo;
 
-    public BusinessService(BusinessRepository businessRepository,
-            BusinessMapper businessMapper) {
+    public BusinessService(
+        BusinessRepository businessRepository,
+        BusinessMapper businessMapper,
+        BusinessServiceRepository businessServiceRepo
+    ) 
+    {
         this.businessRepo = businessRepository;
         this.businessMapper = businessMapper;
+        this.businessServiceRepo = businessServiceRepo;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {
@@ -27,6 +36,16 @@ public class BusinessService {
             .map(b -> businessMapper.toBusinessDetailsDto(b))
             .toList();
         
+    }
+
+    public List<ServicesDetailsDto> getServices(UUID businessId) {
+        
+        List<BusinessServices> services = businessServiceRepo.findByBusiness_Id(businessId);
+
+        return services.stream()
+            .map(s -> businessMapper.toBusinessServices(s))
+            .toList();
+
     }
 
 }

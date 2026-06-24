@@ -25,6 +25,4 @@ public class BusinessDetailsDto {
     private String timezone;
     private String businessLogoUrl;
 
-    private List<ServicesDetailsDto> services;
-
 }

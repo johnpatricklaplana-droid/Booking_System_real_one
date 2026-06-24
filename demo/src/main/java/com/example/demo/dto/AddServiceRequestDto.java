@@ -13,7 +13,7 @@ public class AddServiceRequestDto {
     private UUID businessId;
     private String serviceName;
     private String description;
-    private Duration interval;
+    private Duration duration;
     private double price;
     private int capacity;
 

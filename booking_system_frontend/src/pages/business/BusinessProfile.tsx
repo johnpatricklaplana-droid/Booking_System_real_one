@@ -1,9 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, act } from 'react';
 import {
     Building2, Mail, Book, MapPin, Clock, Calendar, User,
     ChevronDown, Check, Plus, Camera, Pencil, ExternalLink,
     CircleDot, Tag, Image as ImageIcon, DollarSign, Sparkles,
 } from 'lucide-react';
+import { useUser } from '../../provider/UserContext';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import { get } from '../../api/api';
 
 // ----------------------------------------------------------------------------
 // Types
@@ -11,18 +15,7 @@ import {
 
 type BusinessStatus = 'active' | 'pending' | 'suspended' | 'inactive';
 
-type ServiceStatus = 'active' | 'draft' | 'paused';
-
-interface Service {
-    id: string;
-    businessId: string;
-    name: string;
-    description: string;
-    durationMinutes: number;
-    price: number;
-    status: ServiceStatus;
-    imageUrl?: string;
-}
+type ServiceStatus = 'ACTIVE' | 'DRAFT' | 'PAUSED';
 
 interface Business {
     id: string;
@@ -36,100 +29,8 @@ interface Business {
     status: BusinessStatus;
     createdAt: string; // ISO date
     ownerName: string;
-    logoUrl?: string;
+    logoUrl: string;
 }
-
-// ----------------------------------------------------------------------------
-// Mock data — wire this up to your API later
-// ----------------------------------------------------------------------------
-
-const MOCK_BUSINESSES: Business[] = [
-    {
-        id: 'biz_1',
-        name: "Daddy's Home Barbershop",
-        category: 'Barbershop & Grooming',
-        description:
-            "A neighborhood barbershop built on craft and consistency. We've spent over a decade perfecting the classic fade and the modern beard line — same chair, same care, every visit.",
-        email: 'hello@daddyshome.ph',
-        facebookUrl: 'https://facebook.com/daddyshomebarbershop',
-        address: '142 Rizal Avenue, Urdaneta, Pangasinan, Philippines',
-        timezone: 'Asia/Manila (GMT+8)',
-        status: 'active',
-        createdAt: '2024-03-12',
-        ownerName: 'Johny Reyes',
-        logoUrl: '',
-    },
-    {
-        id: 'biz_2',
-        name: 'Lumen Skin Studio',
-        category: 'Skincare & Aesthetics',
-        description:
-            'Clinical-grade facials and skin treatments in a calm, private setting. Every plan starts with a real consultation, not a menu.',
-        email: 'contact@lumenskin.ph',
-        facebookUrl: '',
-        address: '88 Mabini Street, Urdaneta, Pangasinan, Philippines',
-        timezone: 'Asia/Manila (GMT+8)',
-        status: 'pending',
-        createdAt: '2025-11-02',
-        ownerName: 'Johny Reyes',
-        logoUrl: '',
-    },
-];
-
-const MOCK_SERVICES: Service[] = [
-    {
-        id: 'svc_1',
-        businessId: 'biz_1',
-        name: 'Classic fade & line-up',
-        description: 'Precision fade with a clean hairline finish, hot towel included.',
-        durationMinutes: 45,
-        price: 85,
-        status: 'active',
-        imageUrl: '',
-    },
-    {
-        id: 'svc_2',
-        businessId: 'biz_1',
-        name: 'Beard sculpt & hot towel shave',
-        description: 'Full beard shaping with straight-razor edging and a traditional hot towel shave.',
-        durationMinutes: 30,
-        price: 60,
-        status: 'active',
-        imageUrl: '',
-    },
-    {
-        id: 'svc_3',
-        businessId: 'biz_1',
-        name: 'Father & son combo',
-        description: 'Two haircuts back-to-back, same chair, scheduled together.',
-        durationMinutes: 75,
-        price: 140,
-        status: 'paused',
-        imageUrl: '',
-    },
-    {
-        id: 'svc_4',
-        businessId: 'biz_1',
-        name: 'Color & grey blending',
-        description: 'Subtle grey blending designed to look natural, not dyed.',
-        durationMinutes: 60,
-        price: 110,
-        status: 'draft',
-        imageUrl: '',
-    },
-    {
-        id: 'svc_5',
-        businessId: 'biz_2',
-        name: 'Signature hydrating facial',
-        description: 'A 60-minute facial with extraction, mask, and LED finish.',
-        durationMinutes: 60,
-        price: 95,
-        status: 'active',
-        imageUrl: '',
-    },
-];
-
-
 
 const STATUS_CONFIG: Record<BusinessStatus, { label: string; dot: string; text: string; bg: string; border: string }> = {
     active: { label: 'Active', dot: 'bg-[#1d9e75]', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
@@ -143,9 +44,9 @@ function formatDate(iso: string) {
 }
 
 const SERVICE_STATUS_CONFIG: Record<ServiceStatus, { label: string; text: string; bg: string; border: string }> = {
-    active: { label: 'Active', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
-    draft: { label: 'Draft', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
-    paused: { label: 'Paused', text: 'text-[#e0c46b]', bg: 'bg-[#d4af37]/10', border: 'border-[#d4af37]/30' },
+    ACTIVE: { label: 'Active', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
+    DRAFT: { label: 'Draft', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
+    PAUSED: { label: 'Paused', text: 'text-[#e0c46b]', bg: 'bg-[#d4af37]/10', border: 'border-[#d4af37]/30' },
 };
 
 function formatDuration(minutes: number) {
@@ -174,19 +75,14 @@ function initials(name: string) {
 // ----------------------------------------------------------------------------
 
 function BusinessSwitcher({
-    businesses,
-    activeId,
-    onSelect,
-    onAddNew,
+    business,
+    businesses
 }: {
     businesses: Business[];
-    activeId: string;
-    onSelect: (id: string) => void;
-    onAddNew: () => void;
+    business: Business;
 }) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const active = businesses.find((b) => b.id === activeId)!;
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -202,13 +98,13 @@ function BusinessSwitcher({
                 onClick={() => setOpen((v) => !v)}
                 className="flex items-center gap-3 pl-2 pr-3 py-2 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141416] hover:border-[rgba(255,255,255,0.16)] transition-colors"
             >
-                <div className="w-7 h-7 rounded-md bg-[#1a1a1d] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[10px] font-medium text-[#d4af37] shrink-0">
-                    {initials(active.name)}
+                <div className="w-7 h-7 py-2 px-4 rounded-md bg-[#1a1a1d] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[10px] font-medium text-[#d4af37] shrink-0">
+                    {business.name}
                 </div>
                 <div className="text-left">
                     <p className="text-[12px] text-[#6b6b72] leading-none">Viewing</p>
                     <p className="text-[13px] font-medium text-[#e8e8ea] leading-tight mt-0.5 max-w-[160px] truncate">
-                        {active.name}
+                        {business.name}
                     </p>
                 </div>
                 <ChevronDown size={14} className={`text-[#9a9aa3] transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -220,14 +116,11 @@ function BusinessSwitcher({
                         <p className="text-[11px] font-medium tracking-wide text-[#6b6b72] uppercase">Your businesses</p>
                     </div>
                     <div className="max-h-72 overflow-y-auto">
-                        {businesses.map((b) => {
-                            const cfg = STATUS_CONFIG[b.status];
-                            const isActive = b.id === activeId;
+                        {businesses?.map((b) => {
                             return (
                                 <button
                                     key={b.id}
-                                    onClick={() => { onSelect(b.id); setOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${isActive ? 'bg-[#1a1a1d]' : 'hover:bg-[#1a1a1d]'}`}
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${b.status === "active" ? 'bg-[#1a1a1d]' : 'hover:bg-[#1a1a1d]'}`}
                                 >
                                     <div className="w-8 h-8 rounded-md bg-[#101012] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[11px] font-medium text-[#d4af37] shrink-0">
                                         {initials(b.name)}
@@ -235,18 +128,17 @@ function BusinessSwitcher({
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[13px] font-medium text-[#e8e8ea] truncate">{b.name}</p>
                                         <div className="flex items-center gap-1.5 mt-0.5">
-                                            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-                                            <p className="text-[11px] text-[#9a9aa3]">{cfg.label}</p>
+                                            <span className={`w-1.5 h-1.5 rounded-full`} />
+                                            <p className="text-[11px] text-[#9a9aa3]">{b.status}</p>
                                         </div>
                                     </div>
-                                    {isActive && <Check size={15} className="text-[#d4af37] shrink-0" />}
+                                    {true && <Check size={15} className="text-[#d4af37] shrink-0" />}
                                 </button>
                             );
                         })}
                     </div>
                     <div className="border-t border-[rgba(255,255,255,0.06)] p-1.5">
                         <button
-                            onClick={() => { onAddNew(); setOpen(false); }}
                             className="w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-[13px] text-[#9a9aa3] hover:text-[#e8e8ea] hover:bg-[#1a1a1d] transition-colors"
                         >
                             <Plus size={15} />
@@ -259,9 +151,6 @@ function BusinessSwitcher({
     );
 }
 
-// ----------------------------------------------------------------------------
-// Detail row
-// ----------------------------------------------------------------------------
 
 function DetailRow({
     icon: Icon,
@@ -292,25 +181,23 @@ function DetailRow({
                         <ExternalLink size={11} className="text-[#6b6b72] shrink-0" />
                     </a>
                 ) : (
-                    <p className="text-[13px] text-[#e8e8ea] break-words">{value}</p>
+                    <p className="text-[13px] text-[#e8e8ea] wrap-break-word">{value}</p>
                 )}
             </div>
         </div>
     );
 }
 
-// ----------------------------------------------------------------------------
-// Service card — Facebook-post-style layout, only the fields requested
-// ----------------------------------------------------------------------------
 
-function ServiceCard({ service }: { service: Service }) {
+function ServiceCard({ service }: { service: ServiceResponse }) {
     const cfg = SERVICE_STATUS_CONFIG[service.status];
+    console.log(service);
     return (
         <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#101012] overflow-hidden">
             {/* Image block, like a post's media */}
             <div className="h-36 bg-[#141416] relative flex items-center justify-center">
-                {service.imageUrl ? (
-                    <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover" />
+                {service.serviceLogoUrl ? (
+                    <img src={service.serviceLogoUrl} alt={service.serviceName} className="w-full h-full object-cover" />
                 ) : (
                     <ImageIcon size={22} className="text-[#3a3a3e]" />
                 )}
@@ -320,15 +207,14 @@ function ServiceCard({ service }: { service: Service }) {
                 </span>
             </div>
 
-            {/* Content block, like a post's caption */}
             <div className="px-4 py-3.5">
-                <h3 className="text-[14px] font-medium text-[#e8e8ea] leading-tight">{service.name}</h3>
+                <h3 className="text-[14px] font-medium text-[#e8e8ea] leading-tight">{service.serviceName}</h3>
                 <p className="text-[12.5px] text-[#9a9aa3] leading-relaxed mt-1.5">{service.description}</p>
 
                 <div className="flex items-center gap-4 mt-3.5 pt-3 border-t border-[rgba(255,255,255,0.06)]">
                     <div className="flex items-center gap-1.5">
                         <Clock size={12} className="text-[#6b6b72]" />
-                        <span className="text-[12px] text-[#e8e8ea]">{formatDuration(service.durationMinutes)}</span>
+                        <span className="text-[12px] text-[#e8e8ea]">{formatDuration(Number(service.duration))}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <DollarSign size={12} className="text-[#6b6b72]" />
@@ -340,15 +226,110 @@ function ServiceCard({ service }: { service: Service }) {
     );
 }
 
-
+interface ServiceResponse {
+    capacity: number;
+    description: string;
+    duration: string,
+    id: string;
+    price: number;
+    serviceLogoUrl: string;
+    serviceName: string;
+    status: ServiceStatus;
+}
 
 export default function BusinessProfilePage() {
-    const [businesses] = useState<Business[]>(MOCK_BUSINESSES);
-    const [services] = useState<Service[]>(MOCK_SERVICES);
-    const [activeId, setActiveId] = useState(businesses[0].id);
-    const business = businesses.find((b) => b.id === activeId)!;
-    const businessServices = services.filter((s) => s.businessId === activeId);
-    const cfg = STATUS_CONFIG[business.status];
+    const [businesses, setBusinesses] = useState<Business[]>([]);
+    const [activeBusiness, setActiveBusiness] = useState<Business>({
+        id: "",
+        name: "",
+        category: "",
+        description: "",
+        email: "",
+        facebookUrl: "",
+        address: "",
+        timezone: "",
+        status: "active",
+        createdAt: "",
+        ownerName: "",
+        logoUrl: ""
+    });
+    const [services, setServices] = useState<ServiceResponse[]>([]);
+
+    const user = useUser();
+
+    useEffect(() => {
+
+        if(!user) return;
+        if(!user.business) return;
+        
+        setBusinesses(user.business?.map(bus => ({
+            id: bus.businessId,
+            name: bus.businessName,
+            category: bus.type,
+            description: bus.description,
+            email: bus.businessEmail,
+            facebookUrl: bus.facebookPage,
+            address: bus.address,
+            timezone: bus.timezone,
+            status: "active",
+            createdAt: bus.startedAt,
+            ownerName: bus.ownerName,
+            logoUrl: bus.businessLogoUrl
+        })));
+
+        const activeByDefault = user.activeBusiness;
+
+        setActiveBusiness({
+            id: activeByDefault?.businessId ?? "",
+            name: activeByDefault?.businessName ?? "",
+            category: activeByDefault?.type ?? "",
+            description: activeByDefault?.description ?? "",
+            email: activeByDefault?.businessEmail ?? "",
+            facebookUrl: activeByDefault?.facebookPage,
+            address: activeByDefault?.address ?? "",
+            timezone: activeByDefault?.timezone ?? "",
+            status: "active",
+            createdAt: activeByDefault?.startedAt ?? "",
+            ownerName: activeByDefault?.ownerName ?? "",
+            logoUrl: activeByDefault?.businessLogoUrl ?? ""
+        });
+
+    }, [user]);
+
+    useEffect(() => {
+        
+        if(!activeBusiness) return;
+
+        const getServices = async () => {
+
+            const url = `http://localhost:8080/api/business/services/${activeBusiness.id}`;
+
+            const services = await get(url);
+
+            setServices(services.map((s: ServiceResponse) => {
+
+                dayjs.extend(duration);
+
+                const dur = dayjs.duration(s.duration);
+
+                return {
+                    id: s.id, 
+                    serviceName: s.serviceName,
+                    description: s.description ?? "",
+                    duration: dur.asMinutes(),
+                    price: s.price,
+                    status: s.status,
+                    serviceLogoUrl: s.serviceLogoUrl
+                }
+            }));
+
+        };
+
+        getServices();
+
+    }, [activeBusiness.id]);
+
+    console.log(services);
 
     return (
         <div className="min-h-screen bg-[#0a0a0c] text-[#e8e8ea]">
@@ -358,9 +339,7 @@ export default function BusinessProfilePage() {
                 <div className="flex items-center justify-between mb-8">
                     <BusinessSwitcher
                         businesses={businesses}
-                        activeId={activeId}
-                        onSelect={setActiveId}
-                        onAddNew={() => { }}
+                        business={activeBusiness}
                     />
                     <button className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-[rgba(255,255,255,0.08)] text-[13px] text-[#e8e8ea] hover:border-[#d4af37]/40 hover:text-[#d4af37] transition-colors">
                         <Pencil size={13} />
@@ -384,11 +363,7 @@ export default function BusinessProfilePage() {
                         <div className="flex items-end gap-4 -mt-10">
                             <div className="relative shrink-0">
                                 <div className="w-20 h-20 rounded-xl bg-[#1a1a1d] border-2 border-[#101012] ring-1 ring-[rgba(255,255,255,0.08)] flex items-center justify-center overflow-hidden">
-                                    {business.logoUrl ? (
-                                        <img src={business.logoUrl} alt={`${business.name} logo`} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <span className="text-[22px] font-semibold text-[#d4af37]">{initials(business.name)}</span>
-                                    )}
+                                    <img src={activeBusiness.logoUrl} alt='' className="w-full h-full object-cover" />
                                 </div>
                                 <button
                                     aria-label="Change logo"
@@ -403,22 +378,22 @@ export default function BusinessProfilePage() {
                         <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
                             <div>
                                 <div className="flex items-center gap-2.5 flex-wrap">
-                                    <h1 className="text-[20px] font-semibold text-[#e8e8ea] tracking-tight">{business.name}</h1>
-                                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${cfg.border} ${cfg.bg}`}>
-                                        <CircleDot size={9} className={cfg.text} />
-                                        <span className={`text-[11px] font-medium ${cfg.text}`}>{cfg.label}</span>
+                                    <h1 className="text-[20px] font-semibold text-[#e8e8ea] tracking-tight">{activeBusiness.name}</h1>
+                                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border`}>
+                                        <CircleDot size={9}  />
+                                        <span className={`text-[11px] font-medium`}>{activeBusiness.status}</span>
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 mt-1.5 text-[#9a9aa3]">
                                     <Tag size={12} />
-                                    <span className="text-[13px]">{business.category}</span>
+                                    <span className="text-[13px]">{activeBusiness.category}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Description */}
                         <p className="mt-4 text-[13px] leading-relaxed text-[#b5b5ba] max-w-xl">
-                            {business.description}
+                            {activeBusiness.description}
                         </p>
 
                         {/* Meta strip: owner + created */}
@@ -429,7 +404,7 @@ export default function BusinessProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-[#6b6b72] leading-none">Owner</p>
-                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{business.ownerName}</p>
+                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{activeBusiness.ownerName}</p>
                                 </div>
                             </div>
                             <div className="w-px h-7 bg-[rgba(255,255,255,0.08)]" />
@@ -439,7 +414,7 @@ export default function BusinessProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-[#6b6b72] leading-none">Started</p>
-                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{formatDate(business.createdAt)}</p>
+                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{formatDate(activeBusiness.createdAt)}</p>
                                 </div>
                             </div>
                         </div>
@@ -453,12 +428,12 @@ export default function BusinessProfilePage() {
                         <h2 className="text-[13px] font-medium text-[#e8e8ea]">Business details</h2>
                     </div>
                     <div className="pb-1">
-                        <DetailRow icon={Mail} label="Business email" value={business.email} href={`mailto:${business.email}`} />
-                        {business.facebookUrl && (
-                            <DetailRow icon={Book} label="Facebook page" value={business.facebookUrl.replace('https://', '')} href={business.facebookUrl} />
+                        <DetailRow icon={Mail} label="Business email" value={activeBusiness.email} />
+                        {activeBusiness.facebookUrl && (
+                            <DetailRow icon={Book} label="Facebook page" value={activeBusiness.facebookUrl.replace('https://', '')} />
                         )}
-                        <DetailRow icon={MapPin} label="Address" value={business.address} />
-                        <DetailRow icon={Clock} label="Timezone" value={business.timezone} />
+                        <DetailRow icon={MapPin} label="Address" value={activeBusiness.address} />
+                        <DetailRow icon={Clock} label="Timezone" value={activeBusiness.timezone} />
                     </div>
                 </div>
 
@@ -468,7 +443,7 @@ export default function BusinessProfilePage() {
                         <div className="flex items-center gap-2">
                             <Sparkles size={14} className="text-[#d4af37]" />
                             <h2 className="text-[13px] font-medium text-[#e8e8ea]">Services</h2>
-                            <span className="text-[12px] text-[#6b6b72]">({businessServices.length})</span>
+                            <span className="text-[12px] text-[#6b6b72]">{services.length}</span>
                         </div>
                         <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)] text-[12px] text-[#e8e8ea] hover:border-[#d4af37]/40 hover:text-[#d4af37] transition-colors">
                             <Plus size={13} />
@@ -476,13 +451,13 @@ export default function BusinessProfilePage() {
                         </button>
                     </div>
 
-                    {businessServices.length === 0 ? (
+                    {services.length === 0 ? (
                         <div className="rounded-xl border border-dashed border-[rgba(255,255,255,0.1)] py-10 text-center">
                             <p className="text-[13px] text-[#9a9aa3]">No services added yet.</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-3 gap-4">
-                            {businessServices.map((s) => (
+                            {services.map((s) => (
                                 <ServiceCard key={s.id} service={s} />
                             ))}
                         </div>

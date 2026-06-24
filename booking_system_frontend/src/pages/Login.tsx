@@ -62,6 +62,7 @@ export function Login() {
 
             user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null, activeRole: userinfo.message.lastActiveRole });
 
+            user.setLoading(false);
             navigate("/customer");
         } catch (error) {
             setStatus("error");
