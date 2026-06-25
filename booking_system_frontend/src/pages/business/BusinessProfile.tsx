@@ -8,14 +8,14 @@ import { useUser } from '../../provider/UserContext';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { get } from '../../api/api';
+import type { ServiceResponse, ServiceStatus } from '../../interfaces/Types';
+import { getServices } from '../../hooks/service';
 
 // ----------------------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------------------
 
 type BusinessStatus = 'active' | 'pending' | 'suspended' | 'inactive';
-
-type ServiceStatus = 'ACTIVE' | 'DRAFT' | 'PAUSED';
 
 interface Business {
     id: string;
@@ -226,16 +226,6 @@ function ServiceCard({ service }: { service: ServiceResponse }) {
     );
 }
 
-interface ServiceResponse {
-    capacity: number;
-    description: string;
-    duration: string,
-    id: string;
-    price: number;
-    serviceLogoUrl: string;
-    serviceName: string;
-    status: ServiceStatus;
-}
 
 export default function BusinessProfilePage() {
     const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -300,32 +290,11 @@ export default function BusinessProfilePage() {
         
         if(!activeBusiness) return;
 
-        const getServices = async () => {
+        const getIt = async () => {
+            setServices(await getServices(activeBusiness.id));
+        }
 
-            const url = `http://localhost:8080/api/business/services/${activeBusiness.id}`;
-
-            const services = await get(url);
-
-            setServices(services.map((s: ServiceResponse) => {
-
-                dayjs.extend(duration);
-
-                const dur = dayjs.duration(s.duration);
-
-                return {
-                    id: s.id, 
-                    serviceName: s.serviceName,
-                    description: s.description ?? "",
-                    duration: dur.asMinutes(),
-                    price: s.price,
-                    status: s.status,
-                    serviceLogoUrl: s.serviceLogoUrl
-                }
-            }));
-
-        };
-
-        getServices();
+        getIt();
 
     }, [activeBusiness.id]);
 

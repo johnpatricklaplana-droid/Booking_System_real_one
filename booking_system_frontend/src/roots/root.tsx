@@ -19,6 +19,7 @@ import JobsPage from "../pages/FindJobs";
 import { ProfilePage } from "../pages/Profile";
 import BusinessJobPostings from "../pages/business/JobPostings";
 import BusinessProfilePage from "../pages/business/BusinessProfile";
+import StaffManagementPage from "../pages/business/Staff";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
             { path: 'settings', Component: Settings },
             { path: 'job-postings', Component: BusinessJobPostings },
             { path: 'profile', Component: BusinessProfilePage },
+            { path: 'staff', Component: StaffManagementPage },
         ]
     },
 ]);

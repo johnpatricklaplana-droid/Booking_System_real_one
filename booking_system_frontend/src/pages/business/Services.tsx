@@ -1,85 +1,32 @@
-import { Search, Filter, Plus, Clock, DollarSign, TrendingUp, Users } from 'lucide-react';
+import { Search, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
-
-const services = [
-    {
-        id: '1',
-        name: 'Hair Styling',
-        category: 'Beauty',
-        duration: '45 min',
-        price: '$85',
-        bookings: 124,
-        revenue: '$10,540',
-        popularity: 92,
-        staff: ['Sarah Mitchell', 'Emma Davis'],
-        accent: '#c9a87c',
-    },
-    {
-        id: '2',
-        name: 'Deep Tissue Massage',
-        category: 'Wellness',
-        duration: '60 min',
-        price: '$120',
-        bookings: 98,
-        revenue: '$11,760',
-        popularity: 88,
-        staff: ['Alex Rivera', 'Jordan Lee'],
-        accent: '#9d8fb5',
-    },
-    {
-        id: '3',
-        name: 'Consultation',
-        category: 'Professional',
-        duration: '30 min',
-        price: '$60',
-        bookings: 86,
-        revenue: '$5,160',
-        popularity: 75,
-        staff: ['David Kim'],
-        accent: '#6b9fa3',
-    },
-    {
-        id: '4',
-        name: 'Personal Training',
-        category: 'Fitness',
-        duration: '90 min',
-        price: '$150',
-        bookings: 142,
-        revenue: '$21,300',
-        popularity: 95,
-        staff: ['Mike Thompson', 'Chris Wilson'],
-        accent: '#b89c7e',
-    },
-    {
-        id: '5',
-        name: 'Facial Treatment',
-        category: 'Beauty',
-        duration: '60 min',
-        price: '$95',
-        bookings: 76,
-        revenue: '$7,220',
-        popularity: 82,
-        staff: ['Sarah Mitchell'],
-        accent: '#c9a87c',
-    },
-    {
-        id: '6',
-        name: 'Yoga Session',
-        category: 'Fitness',
-        duration: '45 min',
-        price: '$70',
-        bookings: 68,
-        revenue: '$4,760',
-        popularity: 78,
-        staff: ['Mike Thompson'],
-        accent: '#9d8fb5',
-    },
-];
+import { useEffect, useState } from 'react';
+import type { ServiceResponse } from '../../interfaces/Types';
+import { useUser } from '../../provider/UserContext';
+import { getServices } from '../../hooks/service';
 
 const categories = ['All', 'Beauty', 'Wellness', 'Fitness', 'Professional'];
 
 export function Services() {
+
+    const businessId = useUser().activeBusiness?.businessId;
+
+    const [services, setServices] = useState<ServiceResponse[] | null>(null);
+
+    useEffect(() => {
+
+        if(!businessId) return;
+
+        const getIt = async () => {
+            setServices(await getServices(businessId));
+        };
+
+        getIt();
+
+    }, [businessId]);
+
+    console.log(services);
 
     const navigate = useNavigate();
 
@@ -129,8 +76,8 @@ export function Services() {
             </div>
 
             <div className="grid grid-cols-3 gap-6">
-                {services.map((service) => (
-                    <ServiceBox />
+                {services?.map((service) => (
+                    <ServiceBox services={service}  />
                 ))}
             </div>
         </div>
