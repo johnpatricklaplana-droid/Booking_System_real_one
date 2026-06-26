@@ -17,7 +17,6 @@ import { CustomerGuard } from "./CustomerGuard";
 import ServiceForm from "../pages/business/AddServices";
 import JobsPage from "../pages/FindJobs";
 import { ProfilePage } from "../pages/Profile";
-import BusinessJobPostings from "../pages/business/JobPostings";
 import BusinessProfilePage from "../pages/business/BusinessProfile";
 import StaffManagementPage from "../pages/business/Staff";
 
@@ -50,7 +49,6 @@ export const router = createBrowserRouter([
             { path: 'calendar', Component: CalendarPage },
             { path: 'reports', Component: Reports },
             { path: 'settings', Component: Settings },
-            { path: 'job-postings', Component: BusinessJobPostings },
             { path: 'profile', Component: BusinessProfilePage },
             { path: 'staff', Component: StaffManagementPage },
         ]

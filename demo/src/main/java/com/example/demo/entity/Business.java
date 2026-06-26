@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +27,7 @@ import lombok.Setter;
 @Entity
 @NamedEntityGraph(name = "Business.detail", 
     attributeNodes = {
-        @NamedAttributeNode("userId"),
+        @NamedAttributeNode("user"),
         @NamedAttributeNode("addressId")
     }
 )
@@ -35,7 +37,7 @@ import lombok.Setter;
 public class Business {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "business_name")
@@ -63,17 +65,21 @@ public class Business {
     @Column(name = "status")
     private String status;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users userId;
+    private Users user;
 
     @Column(name = "logo_url")
     private String logoUrl;
 
     @OneToMany(mappedBy = "business")
     private List<BusinessServices> services;
+
+    @OneToMany(mappedBy = "business")
+    private List<Staff> staffs;
 
 }

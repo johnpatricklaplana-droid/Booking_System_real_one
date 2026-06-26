@@ -11,5 +11,7 @@ import com.example.demo.service.BusinessService;
 public interface BusinessServiceRepository extends JpaRepository<BusinessServices, UUID> {
 
     List<BusinessServices> findByBusiness_Id(UUID businessId);
+
+    long countByBusiness_IdAndIdIn(UUID businessId, List<UUID> serviceId);
     
 } 

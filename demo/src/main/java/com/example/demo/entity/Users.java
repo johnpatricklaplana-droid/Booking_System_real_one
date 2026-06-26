@@ -25,7 +25,7 @@ import lombok.Setter;
 public class Users {
     
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
 
     @Column(name="first_name")
@@ -52,7 +52,7 @@ public class Users {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "userId")
+    @OneToMany(mappedBy = "user")
     private List<Business> businesses;
 
     @Column(name = "last_active_role")

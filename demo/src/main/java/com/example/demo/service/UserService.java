@@ -211,7 +211,7 @@ public class UserService {
         buss.setDescription(businessDto.getDescription());
         buss.setStatus("ACTIVE");
         buss.setTimezone(businessDto.getAddress().getTimezone());
-        buss.setUserId(user);
+        buss.setUser(user);
         buss.setLogoUrl(supabaseStorageService.uploadBusinessLogo(businessLogo, "business_logo"));
 
         businessRepo.save(buss);

@@ -3,11 +3,13 @@ package com.example.demo.service;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -92,6 +94,51 @@ public class SupabaseStorageService {
 
             return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
+    }
+
+    public String uploadProfilePicOfStaff(MultipartFile file, String bucketName, UUID userId) {
+       
+        try {
+
+            String fileName = String.join("_", userId.toString(), file.getOriginalFilename());
+
+            String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
+
+            webClient.post()
+                    .uri(url)
+                    .header("Authorization", "Bearer " + supabaseSecretRoleKey)
+                    .header("apiKey", supabaseSecretRoleKey)
+                    .contentType(MediaType.parseMediaType(file.getContentType()))
+                    .bodyValue(file.getBytes())
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+            return fileName; 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public byte[] getStaffProfilePic(String userId, String fileName, String bucketName) {
+        String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + userId + "_" + fileName;
+      
+        try {
+            return  webClient.get()
+                    .uri(url)
+                    .header("Authorization", "Bearer " + supabaseSecretRoleKey)
+                    .header("apiKey", supabaseSecretRoleKey)
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .block();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

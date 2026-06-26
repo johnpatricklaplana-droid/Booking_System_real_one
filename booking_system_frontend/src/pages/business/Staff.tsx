@@ -192,7 +192,7 @@ function ServiceMultiSelect({
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
-                className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-white/10 bg-[--bg] px-3 py-2 text-left text-sm text-white"
+                className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-left text-sm text-white"
             >
                 <span className={selected.length ? "text-white" : "text-white/40"}>
                     {selected.length
@@ -205,7 +205,7 @@ function ServiceMultiSelect({
             </button>
 
             {open && (
-                <div className="absolute z-20 mt-1 w-full rounded-lg border border-white/10 bg-[--surface] py-1 shadow-xl shadow-black/40">
+                <div className="absolute z-20 mt-1 w-full rounded-lg border border-white/10 bg-(--surface) py-1 shadow-xl shadow-black/40">
                     {ALL_SERVICES.map((service) => {
                         const checked = selected.includes(service.id);
                         return (
@@ -215,7 +215,7 @@ function ServiceMultiSelect({
                             >
                                 <span
                                     className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${checked
-                                            ? "border-[--teal] bg-[--teal]"
+                                            ? "border-(--teal) bg-(--teal)"
                                             : "border-white/30"
                                         }`}
                                 >
@@ -293,7 +293,7 @@ function StaffCard({
                 </p>
             </div>
 
-            <p className="text-(--text-2) px-6 text-sm mt-4">Services</p>
+            <p className="text-(--text-2) px-6 text-[12px] mt-4 font-semibold">Services</p>
 
             <div className="mt-2 px-6">
                 {assignedServices.length > 0 ? (
@@ -395,7 +395,7 @@ function StaffModal({
             aria-modal="true"
             aria-label={initial ? "Edit staff member" : "Add staff member"}
         >
-            <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[--surface] shadow-2xl">
+            <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-(--surface) shadow-2xl">
                 <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
                     <h2 className="text-lg font-semibold text-white">
                         {initial ? "Edit Staff Member" : "Add Staff Member"}
@@ -411,7 +411,7 @@ function StaffModal({
 
                 <div className="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5">
                     <div className="flex items-center gap-4">
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[--bg] text-sm font-semibold text-[--gold] ring-1 ring-white/10">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--bg) text-sm font-semibold text-(--gold) ring-1 ring-white/10">
                             {avatarUrl ? (
                                 <img
                                     src={avatarUrl}
@@ -434,7 +434,7 @@ function StaffModal({
                                 value={avatarUrl}
                                 onChange={(e) => setAvatarUrl(e.target.value)}
                                 placeholder="https://..."
-                                className="w-full rounded-lg border border-white/10 bg-[--bg] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[--gold]/60 focus:outline-none"
+                                className="w-full rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-(--gold)/60 focus:outline-none"
                             />
                         </div>
                     </div>
@@ -448,7 +448,7 @@ function StaffModal({
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             placeholder="e.g. Sarah Jimenez"
-                            className="w-full rounded-lg border border-white/10 bg-[--bg] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[--gold]/60 focus:outline-none"
+                            className="w-full rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-(--gold)/60 focus:outline-none"
                         />
                     </div>
 
@@ -461,7 +461,7 @@ function StaffModal({
                             value={position}
                             onChange={(e) => setPosition(e.target.value)}
                             placeholder="e.g. Senior Stylist"
-                            className="w-full rounded-lg border border-white/10 bg-[--bg] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[--gold]/60 focus:outline-none"
+                            className="w-full rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-(--gold)/60 focus:outline-none"
                         />
                     </div>
 
@@ -472,7 +472,7 @@ function StaffModal({
                         <ServiceMultiSelect selected={serviceIds} onChange={setServiceIds} />
                     </div>
 
-                    <div className="flex items-center justify-between rounded-lg border border-white/10 bg-[--bg] px-3 py-3">
+                    <div className="flex items-center justify-between rounded-lg border border-white/10 bg-(--bg) px-3 py-3">
                         <div>
                             <p className="text-sm font-medium text-white">Active Status</p>
                             <p className="text-xs text-white/50">
@@ -500,7 +500,7 @@ function StaffModal({
                     <button
                         onClick={handleSubmit}
                         disabled={saving}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-[--gold] px-4 py-2 text-sm font-semibold text-black transition-opacity hover:opacity-90 disabled:opacity-60"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-(--gold) px-4 py-2 text-sm font-semibold text-black transition-opacity hover:opacity-90 disabled:opacity-60"
                     >
                         {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                         Save Staff

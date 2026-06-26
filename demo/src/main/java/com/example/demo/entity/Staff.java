@@ -1,13 +1,10 @@
 package com.example.demo.entity;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -23,13 +21,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "services")
 @Entity
-@Setter
-@Getter
+@Table(name = "staff")
 @NoArgsConstructor
-@DynamicInsert
-public class BusinessServices {
+@Getter
+@Setter
+public class Staff {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,36 +36,28 @@ public class BusinessServices {
     @ManyToOne
     private Business business;
 
-    @Column(name = "service_name")
-    private String serviceName;
+    @Column(name = "full_name")
+    private String fullName;
 
-    @Column(name="description")
-    private String description;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "duration", columnDefinition = "interval")
-    private Duration duration;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
-    @Column(name = "price")
-    private double price;
-
-    @Column(name = "status")
-    private String status;
-
-    @Column(name = "capacity")
-    private Integer capacity;
+    @Column(name = "is_active")
+    private boolean isActive;
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "service_logo_url")
-    private String serviceLogoUrl;
-
-    @ManyToMany(mappedBy = "services")
-    private List<Staff> staffs;
+    @ManyToMany
+    @JoinTable(
+        name = "staff_services",
+        joinColumns = @JoinColumn(name = "staff_id"),
+        inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<BusinessServices> services;
 
 }

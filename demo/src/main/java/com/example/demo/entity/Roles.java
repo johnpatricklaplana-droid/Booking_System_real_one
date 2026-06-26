@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Roles {
     
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.UUID)
     private String id;
 
     @ManyToOne(cascade = CascadeType.ALL)

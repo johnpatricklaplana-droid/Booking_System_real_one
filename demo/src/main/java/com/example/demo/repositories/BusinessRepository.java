@@ -14,7 +14,9 @@ import com.example.demo.entity.Business;
 public interface BusinessRepository extends JpaRepository<Business, UUID> {
     
     @EntityGraph(value = "Business.detail", type = EntityGraphType.FETCH)
-    @Query("SELECT b FROM Business b WHERE b.userId.id = :userId")
+    @Query("SELECT b FROM Business b WHERE b.user.id = :userId")
     List<Business> getBusinesses(@Param("userId") UUID uid);
+
+    boolean existsByUser_IdAndId(UUID userId, UUID businessId);
 
 }

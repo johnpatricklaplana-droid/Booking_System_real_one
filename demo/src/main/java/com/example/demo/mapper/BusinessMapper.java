@@ -4,28 +4,22 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.example.demo.dto.AddServiceRequestDto;
+import com.example.demo.dto.AddStaffDto;
 import com.example.demo.dto.BusinessDetailsDto;
 import com.example.demo.dto.ServicesDetailsDto;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.Staff;
 import com.example.demo.entity.Users;
-import com.example.demo.service.BusinessService;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @Mapper(componentModel = "spring")
 public interface BusinessMapper {
@@ -39,7 +33,7 @@ public interface BusinessMapper {
     @Mapping(source = "createdAt", target = "startedAt")
     @Mapping(source = "businessEmail", target = "businessEmail")
     @Mapping(source = "facebookPage", target = "facebookPage")
-    @Mapping(source = "userId", target = "ownerName") 
+    @Mapping(source = "user", target = "ownerName") 
     @Mapping(source = "addressId", target = "address") 
     @Mapping(source = "timezone", target = "timezone") 
     @Mapping(source = "logoUrl", target = "businessLogoUrl") 
@@ -53,7 +47,24 @@ public interface BusinessMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "serviceLogoUrl", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "staffs", ignore = true)
     BusinessServices toSaveBusinessServices(AddServiceRequestDto request, @Context EntityManager entityManager);
+
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "avatarUrl", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "services", expression = "java(fromListOfUUIDToListOfBusinessServices(staff.getServiceId(), entityManager))")
+    @Mapping(target = "business", expression = "java(entityManager.getReference(Business.class, staff.getBusinessId()))")
+    Staff toStaffSave(AddStaffDto staff, @Context EntityManager entityManager);
+
+    default List<BusinessServices> fromListOfUUIDToListOfBusinessServices(List<UUID> servicesIds, EntityManager entityManager) {
+
+        return servicesIds.stream()
+            .map(sid -> entityManager.getReference(BusinessServices.class, sid))
+            .toList();
+
+    }
 
     default String mapUserToOwnerName(Users user) {
         return user != null ? user.getFirstName() + " " + user.getLastName() : "Unknown";
