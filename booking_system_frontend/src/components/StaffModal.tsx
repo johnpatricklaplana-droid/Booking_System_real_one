@@ -1,7 +1,10 @@
-import { useState } from "react";
-import type { Staff } from "../interfaces/Types";
-import { Loader2, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronDown, Loader2, X, Image } from "lucide-react";
 import { ServiceMultiSelect } from "./MultiSelect";
+import { useUser } from "../provider/UserContext";
+import type { ServiceResponse } from "../interfaces/Types";
+import { getServices } from "../hooks/service";
+import { PostFormData } from "../api/api";
 
 export function StaffModal({
     onClose,
@@ -10,6 +13,74 @@ export function StaffModal({
 }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [selected, setSelected] = useState<string[]>([]);
+    const [open, setOpen] = useState(false);
+    const [services, setServices] = useState<ServiceResponse[]>([]);
+    const [image, setImage] = useState(null);
+    const [inputs, setInputs] = useState({
+        fullName: "",
+        title: ""
+    });
+
+    const businessId = useUser().activeBusiness?.businessId;
+
+    useEffect(() => {
+
+        if (!businessId) return;
+
+        const getIt = async () => {
+
+            const result: ServiceResponse[] = await getServices(businessId);
+
+            setServices(result);
+
+        };
+
+        getIt();
+
+    }, [businessId]);
+
+    const handleImageChange = (e: any) => {
+        const file = e.target.files[0];
+
+        setImage(file);
+    };
+
+    const saveStaff = async () => {
+
+        if(!image) return;
+
+        const body = {
+            businessId: businessId,
+            serviceId: selected,
+            fullName: inputs.fullName,
+            title: inputs.title
+        };
+
+        const url = "http://localhost:8080/api/staff";
+        const requestBody = new FormData();
+        requestBody.append('body', new Blob([JSON.stringify(body)], { type: 'application/json' }));
+        requestBody.append('image', image);
+
+        setSaving(true);
+
+        const result = await PostFormData(url, requestBody);
+
+        if(result.status === 201) {
+            setSaving(false);
+        } else {
+            setError("bad one");
+        }
+
+    }
+
+    const handleInputChange = (e: any) => {
+        const id = e.target.id;
+        const value = e.target.value;
+
+        setInputs(prev => ({...prev, [id]: value}));
+
+    }
 
     return (
         <div
@@ -32,17 +103,23 @@ export function StaffModal({
                     </button>
                 </div>
 
-                <div className="max-h-[70vh] space-y-4 px-6 py-5">
+                <div className="max-h-[70vh] overflow-y-auto space-y-4 px-6 py-5">
                     <div className="flex items-center gap-4">
-                        <div className="flex h-36 w-36 mx-auto shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--bg) text-sm font-semibold text-(--gold) ring-1 ring-white/10">
-                            <img
-                                src="https://picsum.photos/200/300?random=1"
+                        <div className="flex h-36 w-36 mx-auto relative group shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--bg) text-sm font-semibold text-(--gold) ring-1 ring-white/10">
+                            {image !== null 
+                            && <img
+                                src={URL.createObjectURL(image)}
                                 alt="Avatar preview"
-                                className="h-full w-full object-cover"
+                                className="h-full w-full z-10 object-cover"
                                 onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = "none";
+                                        (e.target as HTMLImageElement).style.display = "none";
                                 }}
-                            />
+                            />}
+                            <label htmlFor="imageInput" className="flex justify-center top-[50%] group-hover:backdrop-blur-2xl group-hover:z-20 left-[50%] translate-x-[-50%] translate-y-[-50%] w-full absolute h-full flex-col items-center">
+                                <Image />
+                                <p>upload some</p>
+                                <input type="file" onChange={handleImageChange} hidden id="imageInput" />
+                            </label>
                         </div>
                     </div>
 
@@ -52,6 +129,9 @@ export function StaffModal({
                         </label>
                         <input
                             type="text"
+                            id="fullName"
+                            value={inputs.fullName}
+                            onChange={handleInputChange}
                             placeholder="e.g. Sarah Jimenez"
                             className="w-full rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-(--gold)/60 focus:outline-none"
                         />
@@ -63,6 +143,9 @@ export function StaffModal({
                         </label>
                         <input
                             type="text"
+                            id="title"
+                            value={inputs.title}
+                            onChange={handleInputChange}
                             placeholder="e.g. Senior Stylist"
                             className="w-full rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-(--gold)/60 focus:outline-none"
                         />
@@ -72,7 +155,43 @@ export function StaffModal({
                         <label className="mb-1 block text-xs font-medium text-white/60">
                             Services Offered
                         </label>
-                        <ServiceMultiSelect />
+                        <div
+                            className="relative"
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setOpen((o) => !o)}
+                                className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-white/10 bg-(--bg) px-3 py-2 text-left text-sm text-white"
+                            >
+                                {/* <span className={selected.length ? "text-white" : "text-white/40"}>
+                                    {selected.length
+                                    ? `${selected.length} service${selected.length > 1 ? "s" : ""} selected`
+                                    : "Select services offered by this staff member"}
+                                </span> */}
+                                <ChevronDown
+                                    className={`h-4 w-4 text-white/50 transition-transform ${open ? "rotate-180" : ""}`}
+                                />
+                            </button>
+                            {open && (
+                                <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-white/10 bg-(--surface) py-1 shadow-xl shadow-black/40">
+                                    {services.map(s => 
+                                        <button
+                                            className="w-full"
+                                            key={s.id}
+                                            onClick={() => setSelected(prev => {
+                                                const isSelected = prev.find(p => s.id === p);
+
+                                                return isSelected
+                                                    ? prev.filter(p => s.id !== p)
+                                                    : [...prev, s.id];
+                                            })}
+                                        >
+                                            <ServiceMultiSelect service={s} checked={selected.includes(s.id)} />
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {error && <p className="text-sm text-red-400">{error}</p>}
@@ -89,6 +208,7 @@ export function StaffModal({
                     <button
                         disabled={saving}
                         className="flex cursor-pointer items-center gap-2 rounded-lg bg-(--gold) px-4 py-2 text-sm font-semibold text-black transition-opacity hover:opacity-90 disabled:opacity-60"
+                        onClick={saveStaff}
                     >
                         {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                         Save Staff
