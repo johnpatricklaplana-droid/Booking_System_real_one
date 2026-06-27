@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,13 +14,21 @@ import com.example.demo.dto.AddServiceRequestDto;
 import com.example.demo.dto.AddStaffDto;
 import com.example.demo.dto.BusinessDetailsDto;
 import com.example.demo.dto.ServicesDetailsDto;
+import com.example.demo.dto.StaffResponseDto;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.Users;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 
 @Mapper(componentModel = "spring")
 public interface BusinessMapper {
@@ -40,6 +49,8 @@ public interface BusinessMapper {
     BusinessDetailsDto toBusinessDetailsDto(Business business);
     
     ServicesDetailsDto toBusinessServices(BusinessServices services);
+
+    StaffResponseDto toStaffResponseDto(Staff staff);
 
     @Mapping(target = "business", expression = "java(entityManager.getReference(Business.class, request.getBusinessId()))")
     @Mapping(target = "status", constant = "ACTIVE")

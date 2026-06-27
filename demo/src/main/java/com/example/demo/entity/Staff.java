@@ -15,7 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@NamedEntityGraph(name = "staffWithServices", 
+    attributeNodes = {
+        @NamedAttributeNode("services")
+    }
+)
 public class Staff {
     
     @Id

@@ -110,17 +110,9 @@ export function Overview() {
                         Manage staff
                     </button>
                 </div>
-
+{/* 
                 <div className="grid grid-cols-4 gap-6">
-                    <StaffCard
-                        name="Sarah Mitchell"
-                        role="Hair Stylist"
-                        appointments={7}
-                        revenue="$845"
-                        availability="available"
-                        initials="SM"
-                        accent="#c9a87c"
-                    />
+                    <StaffCard/>
                     <StaffCard
                         name="Alex Rivera"
                         role="Massage Therapist"
@@ -148,7 +140,7 @@ export function Overview() {
                         initials="MT"
                         accent="#b89c7e"
                     />
-                </div>
+                </div> */}
             </div>
         </div>
     );

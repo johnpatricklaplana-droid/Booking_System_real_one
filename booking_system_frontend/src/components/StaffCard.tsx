@@ -1,48 +1,99 @@
-interface StaffCardProps {
-    name: string;
-    role: string;
-    appointments: number;
-    revenue: string;
-    availability: 'available' | 'busy' | 'offline';
-    initials: string;
-    accent: string;
-}
+import { Pencil, Trash2 } from "lucide-react";
+import type { ServiceResponse, Staff } from "../interfaces/Types";
+import { useUser } from "../provider/UserContext";
 
-export function StaffCard({ name, role, appointments, revenue, availability, initials, accent }: StaffCardProps) {
-    const statusColors = {
-        available: 'bg-emerald-500',
-        busy: 'bg-amber-500',
-        offline: 'bg-[#9a9aa3]'
-    };
+export function StaffCard({
+    staff,
+    onEdit,
+}: {
+    staff: Staff;
+    onEdit: () => void;
+}) {
+    const assignedServices: ServiceResponse[] = staff.services;
+
+    const businessId = useUser().activeBusiness?.businessId;
+
+    function getInitials(name: string) {
+        return name
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((p) => p[0]?.toUpperCase())
+            .join("");
+    }
 
     return (
-        <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-5 hover:border-[rgba(255,255,255,0.12)] transition-all group">
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <div
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-[14px] font-medium text-[#0a0a0c]"
-                            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}
-                        >
-                            {initials}
-                        </div>
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-[#151518] ${statusColors[availability]}`} />
+        <div
+            className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-[--surface] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/30 ${staff.active ? "" : "opacity-60"
+                }`}
+        >
+            <div className="flex flex-col items-center px-6 pt-6">
+                <div className="relative">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[--bg] text-xl font-semibold text-[--gold] ring-2 ring-[--gold]/40 ring-offset-2 ring-offset-[--surface] overflow-hidden">
+                        {staff.avatarUrl ? (
+                            <img
+                                src={`http://localhost:8080/api/staff/${staff.avatarUrl}`}
+                                alt={staff.fullName}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            getInitials(staff.fullName)
+                        )}
                     </div>
-                    <div>
-                        <p className="text-[14px] font-medium text-[#e8e8ea]">{name}</p>
-                        <p className="text-[12px] text-[#9a9aa3]">{role}</p>
-                    </div>
+                    {!staff.active && (
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/70">
+                            Inactive
+                        </span>
+                    )}
                 </div>
+
+                <h3 className="mt-4 text-center text-lg font-semibold text-white">
+                    {staff.fullName}
+                </h3>
+                <p className="text-center text-sm text-white/50">
+                    {staff.title || "Staff"}
+                </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <p className="text-[11px] text-[#9a9aa3] mb-1">Today's appointments</p>
-                    <p className="text-[18px] font-medium text-[#e8e8ea]">{appointments}</p>
-                </div>
-                <div>
-                    <p className="text-[11px] text-[#9a9aa3] mb-1">Revenue (MTD)</p>
-                    <p className="text-[18px] font-medium text-[#e8e8ea]">{revenue}</p>
+            <p className="text-(--text-2) px-6 text-[12px] mt-4 font-semibold">Services</p>
+
+            <div className="mt-2 px-6">
+                {assignedServices.length > 0 ? (
+                    <div className="hide-scrollbar gap-2 flex overflow-x-auto pb-1">
+                        {assignedServices.map((service) => (
+                            <span
+                                key={service.id}
+                                className="shrink-0 flex items-center gap-2 whitespace-nowrap text-xs bg-(--teal)/15 rounded-full px-4 py-1 font-medium text-(--teal)"
+                            >
+                                <img className="w-4 h-4 rounded-[50%]" src={service.serviceLogoUrl} alt="" /> {service.serviceName}
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-center text-xs text-white/30">
+                        No services assigned
+                    </p>
+                )}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between border-t border-white/10 px-6 py-4">
+
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={onEdit}
+                        title="Edit"
+                        aria-label={`Edit ${staff.fullName}`}
+                        className="cursor-pointer rounded-lg p-2 text-white/50 transition-colors hover:bg-white/5 hover:text-[--gold]"
+                    >
+                        <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                        title="Archive"
+                        aria-label={`Archive ${staff.fullName}`}
+                        className="cursor-pointer rounded-lg p-2 text-white/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </button>
                 </div>
             </div>
         </div>

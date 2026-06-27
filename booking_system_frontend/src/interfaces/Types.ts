@@ -10,3 +10,13 @@ export interface ServiceResponse {
     serviceName: string;
     status: ServiceStatus;
 }
+
+export interface Staff {
+    id: string;
+    fullName: string;
+    title: string;
+    avatarUrl: string;
+    active: boolean;
+    createdAt: string;
+    services: ServiceResponse[];
+}
