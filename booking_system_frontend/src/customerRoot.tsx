@@ -7,7 +7,7 @@ export function CustomerRoot() {
         <div className="min-h-screen bg-[#0a0a0c] dark">
             <CustomerNavBar />
 
-            <main className="p-8">
+            <main>
                 <Outlet />
             </main>
         </div>

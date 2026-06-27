@@ -44,6 +44,8 @@
 }
 
 @layer components {
+    .star { @apply text-(--gold) text-[0.8125rem]; }
+    .starEmpty { @apply text-(--text-3); }
     .btn {
         @apply inline-flex items-center gap-1.75 text-[0.875rem] font-semibold rounded-md px-5 py-2.5 transition-all whitespace-nowrap;
     }
