@@ -48,4 +48,12 @@ public class BusinessService {
 
     }
 
+    public List<ServicesDetailsDto> getServices() {
+        
+        return businessServiceRepo.findAllWithBusinessAndAddress().stream()
+            .map(service -> businessMapper.toBusinessServices(service))
+            .toList();
+
+    }
+
 }

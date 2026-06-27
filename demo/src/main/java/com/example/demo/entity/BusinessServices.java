@@ -17,7 +17,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,14 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @DynamicInsert
+@NamedEntityGraph(
+    name = "BusinessServices.withBusinessAndAddress",
+    attributeNodes = @NamedAttributeNode(value = "business", subgraph = "business-address"),
+    subgraphs = @NamedSubgraph(
+        name = "business-address",
+        attributeNodes = @NamedAttributeNode("address")
+    )
+)
 public class BusinessServices {
     
     @Id

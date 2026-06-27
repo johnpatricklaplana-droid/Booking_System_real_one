@@ -19,6 +19,7 @@ import JobsPage from "../pages/FindJobs";
 import { ProfilePage } from "../pages/Profile";
 import BusinessProfilePage from "../pages/business/BusinessProfile";
 import StaffManagementPage from "../pages/business/Staff";
+import { ExploreServices } from "../pages/ExploreServices";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
             { path: 'profile', Component: ProfilePage },
             { path: 'create-business', Component: BusinessOnboardingWizard },
             { path: 'jobs', Component: JobsPage },
+            { path: 'explore', Component: ExploreServices }
         ]
     },
 

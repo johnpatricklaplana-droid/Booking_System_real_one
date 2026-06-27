@@ -44,7 +44,7 @@ public class Address {
 
     private String timezone;
 
-    @OneToOne(mappedBy = "addressId")
+    @OneToOne(mappedBy = "address")
     private Business businessId;
 
 }

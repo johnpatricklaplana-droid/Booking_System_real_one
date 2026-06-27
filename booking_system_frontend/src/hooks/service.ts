@@ -21,8 +21,37 @@ export async function getServices(businessId: string) {
             price: s.price,
             status: s.status,
             serviceLogoUrl: s.serviceLogoUrl,
-            capacity: s.capacity
+            capacity: s.capacity,
+            address: s.address,
+            businessName: s.businessName
         }
     })
 
 }
+
+export async function getAllServices() {
+    const url = `http://localhost:8080/api/services`;
+    
+    const services: ServiceResponse[] = await get(url);
+    
+    dayjs.extend(duration);
+    
+    return services.map((s: ServiceResponse) => {
+        const dur = dayjs.duration(s.duration);
+
+        return {
+            id: s.id,
+            serviceName: s.serviceName,
+            description: s.description ?? "",
+            duration: dur.asMinutes().toString(),
+            price: s.price,
+            status: s.status,
+            serviceLogoUrl: s.serviceLogoUrl,
+            capacity: s.capacity,
+            address: s.address,
+            businessName: s.businessName
+        }
+    })
+
+}
+

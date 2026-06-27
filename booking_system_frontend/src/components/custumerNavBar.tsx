@@ -6,7 +6,7 @@ export function CustomerNavBar () {
 
     return (
         <nav 
-            className="sticky top-0 z-50 bg-black/85 backdrop-blur-lg border-b border-white/10 px-8 h-16 flex items-center justify-between"
+            className="sticky hidden sm:flex top-0 z-50 bg-black/85 backdrop-blur-lg border-b border-white/10 px-8 h-16 items-center justify-between"
         >
             <div className="text-[1.25rem] font-bold tracking-tight bg-[linear-gradient(135deg,_#e8c98a,_#c9a96e)] bg-clip-text text-transparent">Daddy's home</div>
             <div className="flex gap-2 items-center">

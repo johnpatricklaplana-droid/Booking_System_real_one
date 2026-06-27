@@ -28,7 +28,7 @@ import lombok.Setter;
 @NamedEntityGraph(name = "Business.detail", 
     attributeNodes = {
         @NamedAttributeNode("user"),
-        @NamedAttributeNode("addressId")
+        @NamedAttributeNode("address")
     }
 )
 @NoArgsConstructor
@@ -57,7 +57,7 @@ public class Business {
 
     @JoinColumn(name = "address_id")
     @OneToOne(cascade = CascadeType.ALL)
-    private Address addressId;
+    private Address address;
 
     @Column(name = "timezone")
     private String timezone;

@@ -16,4 +16,6 @@ public class ServicesDetailsDto {
     private String duration;
     private double price;
     private int capacity;
+    private String address;
+    private String businessName;
 }

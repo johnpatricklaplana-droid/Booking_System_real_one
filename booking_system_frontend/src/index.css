@@ -47,6 +47,12 @@
     .btn {
         @apply inline-flex items-center gap-1.75 text-[0.875rem] font-semibold rounded-md px-5 py-2.5 transition-all whitespace-nowrap;
     }
+    .btn-primary {
+        @apply bg-[linear-gradient(135deg,var(--gold-light)0%,var(--gold)100%)] text-[#0a0a0c] shadow-[0_2px_16px_rgba(201,169,110,0.25)];
+    }
+    .btn-primary:hover {
+        @apply shadow-[0_4px_24px_rgba(201,169,110,0.4)] translate-y-[1px];
+    }
     .btn-secondary {
         @apply bg-(--surface-2) text-(--text-1) border border-(--border-2);
     }

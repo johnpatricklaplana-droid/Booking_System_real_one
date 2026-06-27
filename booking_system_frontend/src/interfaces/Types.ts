@@ -9,6 +9,8 @@ export interface ServiceResponse {
     serviceLogoUrl: string;
     serviceName: string;
     status: ServiceStatus;
+    address: string;
+    businessName: string;
 }
 
 export interface Staff {

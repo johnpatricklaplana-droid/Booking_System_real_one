@@ -202,7 +202,7 @@ public class UserService {
         addressRealDeal.setTimezone(address.getTimezone());
 
         Business buss = new Business();
-        buss.setAddressId(addressRealDeal);
+        buss.setAddress(addressRealDeal);
         buss.setBusinessEmail(businessDto.getBusinessEmail());
         buss.setBusinessName(businessDto.getBusinessName());
         buss.setFacebookPage(businessDto.getFacebookPage());

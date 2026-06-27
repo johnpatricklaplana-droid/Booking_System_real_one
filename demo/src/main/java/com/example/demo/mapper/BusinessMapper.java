@@ -21,14 +21,7 @@ import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.Users;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 
 @Mapper(componentModel = "spring")
 public interface BusinessMapper {
@@ -43,11 +36,13 @@ public interface BusinessMapper {
     @Mapping(source = "businessEmail", target = "businessEmail")
     @Mapping(source = "facebookPage", target = "facebookPage")
     @Mapping(source = "user", target = "ownerName") 
-    @Mapping(source = "addressId", target = "address") 
+    @Mapping(source = "address", target = "address") 
     @Mapping(source = "timezone", target = "timezone") 
     @Mapping(source = "logoUrl", target = "businessLogoUrl") 
     BusinessDetailsDto toBusinessDetailsDto(Business business);
     
+    @Mapping(source = "business.businessName", target = "businessName")
+    @Mapping(source = "business.address.displayName", target = "address")
     ServicesDetailsDto toBusinessServices(BusinessServices services);
 
     StaffResponseDto toStaffResponseDto(Staff staff);
