@@ -82,7 +82,7 @@ public class BusinessServices {
     @ManyToMany(mappedBy = "services")
     private List<Staff> staffs;
 
-    @OneToMany(mappedBy = "services")
+    @OneToMany(mappedBy = "service")
     private List<Schedule> schedules;
 
 }

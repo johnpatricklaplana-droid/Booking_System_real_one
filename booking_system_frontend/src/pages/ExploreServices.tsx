@@ -124,7 +124,7 @@ export function ExploreServices() {
                                 </p>
                                 <div className="flex mt-2 items-center justify-between">
                                     <div className="font-semibold text-(--text-1) text-[1rem]">₱{service.price}</div>
-                                    <div className="text-[0.75rem] text-(--teal) font-medium">Today 3:30 PM</div>
+                                    <div className="text-[0.75rem] text-(--teal) font-medium">{service.timezone}</div>
                                 </div>
                             </div>
                             {/* <div className="absolute group-hover:opacity-100 inset-0 flex items-end p-4.5 opacity-0 transition-opacity duration-200 bg-[linear-gradient(to_top,rgba(10,10,12,0.95)0%,transparent_60%)]">

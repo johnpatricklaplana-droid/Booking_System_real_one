@@ -68,6 +68,6 @@ public class Staff {
     private List<BusinessServices> services;
 
     @OneToMany(mappedBy = "staff")
-    private List<Staff> staffs;
+    private List<Schedule> staffs;
 
 }

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +17,12 @@ public interface StaffRepository extends JpaRepository<Staff, UUID> {
     @Query("SELECT s FROM Staff s WHERE s.business.id = :businessId")
     List<Staff> getStaffs(UUID businessId);
     
+    @Query("""
+        SELECT COUNT(s) > 0
+        FROM Staff s
+        JOIN s.services svc 
+        WHERE s.id = :staffId AND svc.id = :serviceId
+    """)
+    boolean existByStaffIdAndServiceId(@Param("staffId") UUID staffId, @Param("serviceId") UUID serviceId);
+
 }

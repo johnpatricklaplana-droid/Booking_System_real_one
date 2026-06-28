@@ -18,4 +18,5 @@ public class ServicesDetailsDto {
     private int capacity;
     private String address;
     private String businessName;
+    private String timezone;
 }

@@ -11,6 +11,7 @@ export interface ServiceResponse {
     status: ServiceStatus;
     address: string;
     businessName: string;
+    timezone: string;
 }
 
 export interface Staff {

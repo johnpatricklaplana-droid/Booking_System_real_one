@@ -59,6 +59,6 @@ public class Users {
     private String lastActiveRole;
 
     @OneToMany(mappedBy = "user")
-    private List<Users> user;
+    private List<Schedule> schedules;
 
 }

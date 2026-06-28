@@ -7,11 +7,11 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.query.range.Range;
 
 import com.example.demo.enums.ScheduleStatus;
 
 import io.hypersistence.utils.hibernate.type.range.PostgreSQLRangeType;
+import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,7 +44,7 @@ public class Schedule {
     private Users user;
 
     @Column(name = "starts_at")
-    private LocalDateTime startsAt;
+    private ZonedDateTime startsAt;
 
     @ManyToOne
     @JoinColumn(name = "staff_id")

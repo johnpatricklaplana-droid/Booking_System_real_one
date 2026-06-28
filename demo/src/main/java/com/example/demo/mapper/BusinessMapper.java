@@ -43,6 +43,7 @@ public interface BusinessMapper {
     
     @Mapping(source = "business.businessName", target = "businessName")
     @Mapping(source = "business.address.displayName", target = "address")
+    @Mapping(source = "business.timezone", target = "timezone")
     ServicesDetailsDto toBusinessServices(BusinessServices services);
 
     StaffResponseDto toStaffResponseDto(Staff staff);

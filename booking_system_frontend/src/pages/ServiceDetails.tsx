@@ -16,7 +16,8 @@ export function ServiceDetails() {
             serviceName: "love me like you do",
             status: "ACTIVE",
             address: "palina east",
-            businessName: "too much"
+            businessName: "too much",
+            timezone: "Asia/Manila"
         },
         {
             capacity: 1,
@@ -28,7 +29,8 @@ export function ServiceDetails() {
             serviceName: "love me like you do",
             status: "ACTIVE",
             address: "palina east",
-            businessName: "too much"
+            businessName: "too much",
+            timezone: "Asia/Manila"
         },
         {
             capacity: 1,
@@ -40,7 +42,8 @@ export function ServiceDetails() {
             serviceName: "love me like you do",
             status: "ACTIVE",
             address: "palina east",
-            businessName: "too much"
+            businessName: "too much",
+            timezone: "Asia/Manila"
         },
         {
             capacity: 1,
@@ -52,7 +55,8 @@ export function ServiceDetails() {
             serviceName: "love me like you do",
             status: "ACTIVE",
             address: "palina east",
-            businessName: "too much"
+            businessName: "too much",
+            timezone: "Asia/Manila"
         },
         {
             capacity: 1,
@@ -64,7 +68,8 @@ export function ServiceDetails() {
             serviceName: "love me like you do",
             status: "ACTIVE",
             address: "palina east",
-            businessName: "too much"
+            businessName: "too much",
+            timezone: "Asia/Manila"
         },
     ]
 

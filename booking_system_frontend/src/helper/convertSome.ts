@@ -13,3 +13,13 @@ export function toISODuration (value: number, unit: 'min' | 'hr') {
     return iso;
 
 }
+
+export function TimezoneLabel(timezone: string) {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: timezone,
+        timeZoneName: "longOffset",
+    });
+    const parts = formatter.formatToParts(now);
+    return parts.find(p => p.type === "timeZoneName")?.value;
+}
