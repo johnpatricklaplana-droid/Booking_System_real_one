@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
             { path: 'create-business', Component: BusinessOnboardingWizard },
             { path: 'jobs', Component: JobsPage },
             { path: 'explore', Component: ExploreServices },
-            { path: 'service', Component: ServiceDetails }
+            { path: 'service/:serviceId', Component: ServiceDetails }
         ]
     },
 

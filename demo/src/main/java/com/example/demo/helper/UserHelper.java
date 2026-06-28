@@ -60,7 +60,7 @@ public class UserHelper {
             .province(address != null ? address.getState() : null)
             .postalCode(address != null ? address.getPostalCode() : null)
             .country(address != null ? address.getCountry() : null)
-            .countryCode(address != null ? address.getCounrtyCode() : null)
+            .countryCode(address != null ? address.getCountryCode() : null)
             .timezone(timezone)
             .build();
     }

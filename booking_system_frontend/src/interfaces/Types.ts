@@ -9,7 +9,7 @@ export interface ServiceResponse {
     serviceLogoUrl: string;
     serviceName: string;
     status: ServiceStatus;
-    address: string;
+    address: BusinessAddress;
     businessName: string;
     timezone: string;
 }
@@ -22,4 +22,14 @@ export interface Staff {
     active: boolean;
     createdAt: string;
     services: ServiceResponse[];
+}
+
+export interface BusinessAddress {
+    houseNumber: string;
+    road: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    countryCode: string;
 }

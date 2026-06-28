@@ -18,7 +18,7 @@ export function ServiceBox( { services } : { services:  ServiceResponse }) {
                         className="text-[0.8125rem] text-(-gold)">★</span><span className="text-[0.8125rem] text-(--text-3)">★</span><span className="text-[0.8125rem] text-(--text-3)">★</span></div>
                     4.9 (218)
                 </div>
-                <span className="text-(--text-3) flex items-start gap-1 text-[0.8125rem] "><MapPin color="lightblue" />{business?.address} · 0.8 km</span>
+                <span className="text-(--text-3) flex items-start gap-1 text-[0.8125rem] "><MapPin color="lightblue" />{business?.address.city} · 0.8 km</span>
                 <div className="flex items-center mt-4 justify-between">
                     <div className="text-[1rem] text-(--gold) font-semibold">₱{services.price.toLocaleString()}</div>
                     <div className="text-[0.75rem] text-(--teal) font-medium">todo: Today 3:00 PM</div>

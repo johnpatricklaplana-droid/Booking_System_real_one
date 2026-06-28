@@ -64,7 +64,7 @@ public class ScheduleService {
         schedule.setService(entityManager.getReference(BusinessServices.class, scheduleDto.getServiceId()));
         schedule.setStaff(entityManager.getReference(Staff.class, scheduleDto.getStaffId()));
         schedule.setStartsAt(ZonedDateTime.parse(scheduleDto.getStartsAt()));
-        schedule.setStatus(ScheduleStatus.PENDING);
+        schedule.setStatus(ScheduleStatus.PENDING.toString());
         schedule.setUser(entityManager.getReference(Users.class, userId));
 
         ZonedDateTime start = schedule.getStartsAt();

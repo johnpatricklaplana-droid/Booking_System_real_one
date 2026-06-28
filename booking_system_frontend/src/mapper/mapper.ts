@@ -9,6 +9,9 @@ export function toServices(someService: any): ServiceResponse {
         description: someService.description,
         duration: someService.description,
         price: someService.price,
-        capacity: someService.capacity
+        capacity: someService.capacity,
+        address: someService.address,
+        businessName: someService.businessName,
+        timezone: someService.timezone
     } 
 }

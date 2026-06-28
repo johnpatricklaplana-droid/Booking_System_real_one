@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
 import type { ServiceResponse } from "../interfaces/Types";
 import { ServiceBox } from "../components/ServiceBox";
+import { StaffCard } from "../components/StaffCard";
 
 export function ServiceDetails() {
 
@@ -15,7 +16,15 @@ export function ServiceDetails() {
             serviceLogoUrl: "https://picsum.photos/200/300.jpg",
             serviceName: "love me like you do",
             status: "ACTIVE",
-            address: "palina east",
+            address: {
+                houseNumber: "202020",
+                road: "fkasfkldaf",
+                city: "urd",
+                state: "pang",
+                postalCode: "2029",
+                country: "Philippines",
+                countryCode: "PH"
+            },
             businessName: "too much",
             timezone: "Asia/Manila"
         },
@@ -28,7 +37,15 @@ export function ServiceDetails() {
             serviceLogoUrl: "https://picsum.photos/200/300.jpg",
             serviceName: "love me like you do",
             status: "ACTIVE",
-            address: "palina east",
+            address: {
+                houseNumber: "202020",
+                road: "fkasfkldaf",
+                city: "urd",
+                state: "pang",
+                postalCode: "2029",
+                country: "Philippines",
+                countryCode: "PH"
+            },
             businessName: "too much",
             timezone: "Asia/Manila"
         },
@@ -41,7 +58,15 @@ export function ServiceDetails() {
             serviceLogoUrl: "https://picsum.photos/200/300.jpg",
             serviceName: "love me like you do",
             status: "ACTIVE",
-            address: "palina east",
+            address: {
+                houseNumber: "202020",
+                road: "fkasfkldaf",
+                city: "urd",
+                state: "pang",
+                postalCode: "2029",
+                country: "Philippines",
+                countryCode: "PH"
+            },
             businessName: "too much",
             timezone: "Asia/Manila"
         },
@@ -54,7 +79,15 @@ export function ServiceDetails() {
             serviceLogoUrl: "https://picsum.photos/200/300.jpg",
             serviceName: "love me like you do",
             status: "ACTIVE",
-            address: "palina east",
+            address: {
+                houseNumber: "202020",
+                road: "fkasfkldaf",
+                city: "urd",
+                state: "pang",
+                postalCode: "2029",
+                country: "Philippines",
+                countryCode: "PH"
+            },
             businessName: "too much",
             timezone: "Asia/Manila"
         },
@@ -67,25 +100,57 @@ export function ServiceDetails() {
             serviceLogoUrl: "https://picsum.photos/200/300.jpg",
             serviceName: "love me like you do",
             status: "ACTIVE",
-            address: "palina east",
+            address: {
+                houseNumber: "202020",
+                road: "fkasfkldaf",
+                city: "urd",
+                state: "pang",
+                postalCode: "2029",
+                country: "Philippines",
+                countryCode: "PH"
+            },
             businessName: "too much",
             timezone: "Asia/Manila"
         },
     ]
+
+    const staff = [
+        {
+            id: "kfjaklfa",
+            fullName: "lebron james jr.",
+            title: "GOAT",
+            avatarUrl: "https://picsum.photos/200/300?random=1",
+            active: true,
+            createdAt: "klfjaf",
+            services: MOCK_SERVICES
+        },
+        {
+            id: "kfjaklfa",
+            fullName: "lebron james jr.",
+            title: "GOAT",
+            avatarUrl: "https://picsum.photos/200/300?random=2",
+            active: true,
+            createdAt: "klfjaf",
+            services: MOCK_SERVICES
+        },
+        {
+            id: "kfjaklfa",
+            fullName: "lebron james jr.",
+            title: "GOAT",
+            avatarUrl: "https://picsum.photos/200/300?random=3",
+            active: true,
+            createdAt: "klfjaf",
+            services: MOCK_SERVICES
+        },
+    ]
+
+    
 
     const [featuredServices, setFeaturedServices] = useState<ServiceResponse[]>(MOCK_SERVICES);
 
 
 
     return (
-    //     height: 340px;
-    //     display: flex;
-    //     align-items: center;
-    // justify - content: center;
-    // font - size: 6rem;
-    // position: relative;
-    // overflow: hidden;
-    // border - bottom: 1px solid var(--border);
         <div className="min-h-screen">
             <div className="h-85 flex items-center justify-center text-[6rem] relative overflow-hidden border-b border-(--border) bg-[linear-gradient(135deg,#140e20,#1e1530,#0f1e1c)]">
                 <img className="rounded-[50%] w-40 h-40" src="https://picsum.photos/200/300.jpg" alt="" />
@@ -146,6 +211,21 @@ export function ServiceDetails() {
                             <div className="bg-(--surface-2) text-center text-[0.8125rem] font-medium cursor-pointer transition-all duration-150 text-(--text-2) border border-(--border) rounded-(---radius-sm) py-2.25 px-1.5">3:00 PM</div>
                             <div className="bg-(--surface-2) text-center text-[0.8125rem] font-medium cursor-pointer transition-all duration-150 text-(--text-2) border border-(--border) rounded-(---radius-sm) py-2.25 px-1.5">4:00 PM</div>
                             <div className="bg-(--surface-2) text-center text-[0.8125rem] font-medium cursor-pointer transition-all duration-150 text-(--text-2) border border-(--border) rounded-(---radius-sm) py-2.25 px-1.5">5:00 PM</div>
+                        </div>  
+                        <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
+                        <div className="mb-8 grid grid-cols-3 gap-4">
+                            {staff.map(s => 
+                                <div
+                                    key={s.id}
+                                    className="flex gap-2 bg-(--surface-2) border border-(--border) cursor-pointer py-2 px-4"
+                                >
+                                    <img className="w-9 h-9 rounded-[50%]" src={s.avatarUrl} alt="" />
+                                    <div>
+                                        <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
+                                        <p className="text-(--text-2) text-xs">{s.title}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">What clients say</p>
                         <div className="flex flex-col mb-8 gap-5">
@@ -196,7 +276,7 @@ export function ServiceDetails() {
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div className="sticky top-[25%]">
                         <div className="bg-(--surface) border border-(--border) rounded-xl p-7 sticky top-21">
                             <div className="text-[1rem] text-(--text-1) font-semibold mb-5">Reserve your spot</div>
                             <div className="bg-(--surface-2) border border-(--border) rounded-(--radius) py-3.5 px-4 mb-4">

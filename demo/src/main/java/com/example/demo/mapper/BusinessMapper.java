@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,16 +11,24 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.demo.dto.AddServiceRequestDto;
 import com.example.demo.dto.AddStaffDto;
+import com.example.demo.dto.AddressDto;
 import com.example.demo.dto.BusinessDetailsDto;
+import com.example.demo.dto.ServiceDetailsDto;
 import com.example.demo.dto.ServicesDetailsDto;
 import com.example.demo.dto.StaffResponseDto;
+import com.example.demo.dto.StaffResponseDtoWithoutServices;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.Users;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.OneToOne;
 
 @Mapper(componentModel = "spring")
 public interface BusinessMapper {
@@ -55,6 +62,7 @@ public interface BusinessMapper {
     @Mapping(target = "serviceLogoUrl", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "staffs", ignore = true)
+    @Mapping(target = "schedules", ignore = true)
     BusinessServices toSaveBusinessServices(AddServiceRequestDto request, @Context EntityManager entityManager);
 
     @Mapping(target = "createdAt", ignore = true)
@@ -63,7 +71,20 @@ public interface BusinessMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "services", expression = "java(fromListOfUUIDToListOfBusinessServices(staff.getServiceId(), entityManager))")
     @Mapping(target = "business", expression = "java(entityManager.getReference(Business.class, staff.getBusinessId()))")
+    @Mapping(target = "staffs", ignore = true)
     Staff toStaffSave(AddStaffDto staff, @Context EntityManager entityManager);
+
+    ServiceDetailsDto toServicesDetailsDto(BusinessServices services);
+
+    @Mapping(source = "province", target = "state")
+    @Mapping(target = "houseNumber", ignore = true)
+    @Mapping(target = "village", ignore = true)
+    @Mapping(target = "region", ignore = true)
+    @Mapping(source = "countryCode", target = "countryCode")
+    AddressDto toAddressDto(Address address);
+
+    @Mapping(source = "id", target = "staffId")
+    StaffResponseDtoWithoutServices toStaffResponseDtoWithoutServices(Staff staff);
 
     default List<BusinessServices> fromListOfUUIDToListOfBusinessServices(List<UUID> servicesIds, EntityManager entityManager) {
 
@@ -75,10 +96,6 @@ public interface BusinessMapper {
 
     default String mapUserToOwnerName(Users user) {
         return user != null ? user.getFirstName() + " " + user.getLastName() : "Unknown";
-    }
-
-    default String mapAddressToString(Address address) {
-        return address != null ? address.getDisplayName() : null;
     }
 
     default String mapDurationToString(Duration duration) {

@@ -59,7 +59,7 @@ public class Schedule {
     private LocalDateTime updatedAt;
 
     @Column(name = "status")
-    private ScheduleStatus status;
+    private String status;
 
     @Column(name = "time_range", columnDefinition = "tstzrange")
     @Type(PostgreSQLRangeType.class)
