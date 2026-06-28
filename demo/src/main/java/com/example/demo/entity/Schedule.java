@@ -1,0 +1,68 @@
+package com.example.demo.entity;
+
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.query.range.Range;
+
+import com.example.demo.enums.ScheduleStatus;
+
+import io.hypersistence.utils.hibernate.type.range.PostgreSQLRangeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Table(name = "schedule")
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+public class Schedule {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private BusinessServices service;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
+
+    @Column(name = "starts_at")
+    private LocalDateTime startsAt;
+
+    @ManyToOne
+    @JoinColumn(name = "staff_id")
+    private Staff staff;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @Column(name = "status")
+    private ScheduleStatus status;
+
+    @Column(name = "time_range", columnDefinition = "tstzrange")
+    @Type(PostgreSQLRangeType.class)
+    private Range<ZonedDateTime> timeRange;
+
+}

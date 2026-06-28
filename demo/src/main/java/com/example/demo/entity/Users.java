@@ -58,4 +58,7 @@ public class Users {
     @Column(name = "last_active_role")
     private String lastActiveRole;
 
+    @OneToMany(mappedBy = "user")
+    private List<Users> user;
+
 }

@@ -16,7 +16,7 @@ export function BookingDatePicker() {
             selected={selected}
             // onSelect={handleSelect}
             disabled={{ before: new Date() }} // can't book past dates
-            className="bg-(--surface) border border-(--border) rounded-2xl p-4"
+            className="bg-(--surface) text-(--text-2) border border-(--border) rounded-2xl p-4"
         />
     );
 }

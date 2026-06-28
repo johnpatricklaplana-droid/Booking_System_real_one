@@ -43,6 +43,29 @@
     border-radius: 9999px;
 }
 
+.rdp-root {
+    width: 100% !important;
+    --rdp-day-width: 100%;
+    --rdp-day_button-width: 100%;
+    --rdp-accent-color: var(--gold) !important;
+}
+
+.rdp-day {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rdp-month_grid {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.rdp-weekdays,
+.rdp-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
 @layer components {
     .star { @apply text-(--gold) text-[0.8125rem]; }
     .starEmpty { @apply text-(--text-3); }
