@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import type { ServiceResponse } from "../interfaces/Types";
 import { getAllServices } from "../hooks/service";
+import { useNavigate } from "react-router-dom";
 
 export function ExploreServices() {
 
     const [services, setServices] = useState<ServiceResponse[]>([]);
+
+    const navigate = useNavigate();
     
     useEffect(() => {
         
@@ -114,22 +117,20 @@ export function ExploreServices() {
                         <div 
                             className="service-card group relative bg-(--surface) border border-(--border) rounded-2xl overflow-hidden transition-transform duration-200 cursor-pointer hover:-translate-y-1.5"
                             key={service.id}
+                            onClick={() => navigate(`/customer/service/${service.id}`)}
                         >
                             <img src={service.serviceLogoUrl} className="h-40 w-full object-contain" />
                             <div className="pt-4 px-4.5 pb-4.5">
                                 <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{service.businessName}</div>
                                 <div className="text-[0.9375rem] text-(--text-1)">{service.serviceName}</div>
                                 <p className="flex items-center gap-2.5 text-[0.8125rem] text-(--text-2) mt-2">
-                                    {service.address}
+                                    {service.address.country}
                                 </p>
                                 <div className="flex mt-2 items-center justify-between">
                                     <div className="font-semibold text-(--text-1) text-[1rem]">₱{service.price}</div>
                                     <div className="text-[0.75rem] text-(--teal) font-medium">{service.timezone}</div>
                                 </div>
                             </div>
-                            {/* <div className="absolute group-hover:opacity-100 inset-0 flex items-end p-4.5 opacity-0 transition-opacity duration-200 bg-[linear-gradient(to_top,rgba(10,10,12,0.95)0%,transparent_60%)]">
-                                <button className="btn btn-primary w-full justify-center">Book now</button>
-                            </div> */}
                         </div>
                     )}
 
