@@ -14,12 +14,13 @@ export function toISODuration (value: number, unit: 'min' | 'hr') {
 
 }
 
-export function TimezoneLabel(timezone: string) {
+export function TimezoneLabel(timezone: string): string {
     const now = new Date();
+    const city = timezone.split("/").pop();
     const formatter = new Intl.DateTimeFormat("en-US", {
         timeZone: timezone,
         timeZoneName: "longOffset",
     });
     const parts = formatter.formatToParts(now);
-    return parts.find(p => p.type === "timeZoneName")?.value;
+    return `${city} ${parts.find(p => p.type === "timeZoneName")?.value}`;
 }
