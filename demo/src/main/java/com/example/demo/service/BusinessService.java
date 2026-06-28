@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BusinessDetailsDto;
+import com.example.demo.dto.ServiceDetailsDto;
 import com.example.demo.dto.ServicesDetailsDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.mapper.BusinessMapper;
@@ -53,6 +54,12 @@ public class BusinessService {
         return businessServiceRepo.findAllWithBusinessAndAddress().stream()
             .map(service -> businessMapper.toBusinessServices(service))
             .toList();
+
+    }
+
+    public ServiceDetailsDto getServiceDetails(UUID serviceId) {
+        
+        return businessMapper.toServicesDetailsDto(businessServiceRepo.getServiceDetails(serviceId));
 
     }
 
