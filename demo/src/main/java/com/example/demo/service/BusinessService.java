@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,9 +10,12 @@ import com.example.demo.dto.BusinessDetailsDto;
 import com.example.demo.dto.ServiceDetailsDto;
 import com.example.demo.dto.ServicesDetailsDto;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.Schedule;
+import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
+import com.example.demo.repositories.ScheduleRepository;
 
 @Service
 public class BusinessService {
@@ -19,16 +23,19 @@ public class BusinessService {
     private final BusinessRepository businessRepo;
     private final BusinessMapper businessMapper;
     private final BusinessServiceRepository businessServiceRepo;
+    private final ScheduleRepository scheduleRepo;
 
     public BusinessService(
         BusinessRepository businessRepository,
         BusinessMapper businessMapper,
-        BusinessServiceRepository businessServiceRepo
+        BusinessServiceRepository businessServiceRepo,
+        ScheduleRepository scheduleRepo
     ) 
     {
         this.businessRepo = businessRepository;
         this.businessMapper = businessMapper;
         this.businessServiceRepo = businessServiceRepo;
+        this.scheduleRepo = scheduleRepo;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {
@@ -58,8 +65,14 @@ public class BusinessService {
     }
 
     public ServiceDetailsDto getServiceDetails(UUID serviceId) {
-        
-        return businessMapper.toServicesDetailsDto(businessServiceRepo.getServiceDetails(serviceId));
+
+        ServiceDetailsDto serviceDto = businessMapper.toServicesDetailsDto(businessServiceRepo.getServiceDetails(serviceId));
+
+        if(serviceDto == null) {
+            throw new InvalidInputsException("super bad request");
+        }
+
+        return serviceDto;
 
     }
 

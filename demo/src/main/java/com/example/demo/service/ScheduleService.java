@@ -2,11 +2,11 @@ package com.example.demo.service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,18 @@ import com.example.demo.dto.SaveScheduleDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.Staff;
+import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
 import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.StaffRepository;
+import com.example.demo.repositories.StaffUnavailableRepository;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ScheduleService {
@@ -41,6 +44,10 @@ public class ScheduleService {
     @Autowired
     BusinessServiceRepository businessServiceRepo;
 
+    @Autowired
+    StaffUnavailableRepository staffUnavailableRepo;
+
+    @Transactional
     public void addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
         
         boolean staffOffersService = staffRepo.existByStaffIdAndServiceId(scheduleDto.getStaffId(), scheduleDto.getServiceId());
@@ -72,6 +79,12 @@ public class ScheduleService {
 
         schedule.setTimeRange(Range.closedOpen(start, end));
 
+        StaffUnavailable unavailable = new StaffUnavailable();
+        unavailable.setStaffs(entityManager.getReference(Staff.class, scheduleDto.getStaffId()));
+        unavailable.setTimeRange(Range.closedOpen(start, end));
+
+        staffUnavailableRepo.save(unavailable);
+        
         scheduleRepo.save(schedule);
 
     }

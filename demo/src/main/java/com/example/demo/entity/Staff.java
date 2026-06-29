@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,5 +70,8 @@ public class Staff {
 
     @OneToMany(mappedBy = "staff")
     private List<Schedule> staffs;
+
+    @OneToMany(mappedBy = "staffs", cascade = CascadeType.ALL)
+    private List<StaffUnavailable> unavailable;
 
 }

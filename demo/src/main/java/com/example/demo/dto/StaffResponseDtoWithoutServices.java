@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +15,5 @@ public class StaffResponseDtoWithoutServices {
     private String avatarUrl;
     private boolean isActive;
     private LocalDateTime createdAt;
+    private List<StaffUnavailableDto> unavailable;
 }

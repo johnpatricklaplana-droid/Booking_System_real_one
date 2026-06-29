@@ -6,12 +6,13 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.demo.entity.Schedule;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     
     @Query("SELECT s FROM Schedule s WHERE s.service.id = :serviceId AND s.startsAt >= :now AND s.status != 'CANCELLED'")
-    List<Schedule> findUpcomingByServiceId(UUID serviceId, ZonedDateTime now);
+    List<Schedule> findUpcomingByServiceId(@Param("serviceId") UUID serviceId, @Param("now") ZonedDateTime now);
 
 }

@@ -1,6 +1,7 @@
 package com.example.demo.mapper;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,13 +18,16 @@ import com.example.demo.dto.ServiceDetailsDto;
 import com.example.demo.dto.ServicesDetailsDto;
 import com.example.demo.dto.StaffResponseDto;
 import com.example.demo.dto.StaffResponseDtoWithoutServices;
+import com.example.demo.dto.StaffUnavailableDto;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;
+import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
@@ -72,6 +76,7 @@ public interface BusinessMapper {
     @Mapping(target = "services", expression = "java(fromListOfUUIDToListOfBusinessServices(staff.getServiceId(), entityManager))")
     @Mapping(target = "business", expression = "java(entityManager.getReference(Business.class, staff.getBusinessId()))")
     @Mapping(target = "staffs", ignore = true)
+    @Mapping(target = "unavailable", ignore = true)
     Staff toStaffSave(AddStaffDto staff, @Context EntityManager entityManager);
 
     ServiceDetailsDto toServicesDetailsDto(BusinessServices services);
@@ -84,6 +89,7 @@ public interface BusinessMapper {
     AddressDto toAddressDto(Address address);
 
     @Mapping(source = "id", target = "staffId")
+    @Mapping(source = "unavailable", target = "unavailable")    
     StaffResponseDtoWithoutServices toStaffResponseDtoWithoutServices(Staff staff);
 
     default List<BusinessServices> fromListOfUUIDToListOfBusinessServices(List<UUID> servicesIds, EntityManager entityManager) {
@@ -94,12 +100,24 @@ public interface BusinessMapper {
 
     }
 
+    @Mapping(target = "start", expression = "java(mapStart(unavailable.getTimeRange()))" )
+    @Mapping(target = "end", expression = "java(mapEnd(unavailable.getTimeRange()))")
+    StaffUnavailableDto toStaffUnavailableDto(StaffUnavailable unavailable);
+
     default String mapUserToOwnerName(Users user) {
         return user != null ? user.getFirstName() + " " + user.getLastName() : "Unknown";
     }
 
     default String mapDurationToString(Duration duration) {
         return duration.toString();
+    }
+
+    default ZonedDateTime mapStart(Range<ZonedDateTime> range) {
+        return range != null ? range.lower() : null;
+    }
+
+    default ZonedDateTime mapEnd(Range<ZonedDateTime> range) {
+        return range != null ? range.upper() : null;
     }
 
 }
