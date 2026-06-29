@@ -14,6 +14,7 @@ public class ServiceDetailsDto {
     private BusinessDetailsDto business;
 
     // service
+    private String serviceName;
     private String serviceLogoUrl;
     private String status;
     private String description;

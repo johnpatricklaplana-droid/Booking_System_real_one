@@ -289,7 +289,6 @@ export default function BusinessProfilePage() {
     useEffect(() => {
         
         if(!activeBusiness) return;
-
         const getIt = async () => {
             setServices(await getServices(activeBusiness.id));
         }
@@ -401,7 +400,7 @@ export default function BusinessProfilePage() {
                         {activeBusiness.facebookUrl && (
                             <DetailRow icon={Book} label="Facebook page" value={activeBusiness.facebookUrl.replace('https://', '')} />
                         )}
-                        <DetailRow icon={MapPin} label="Address" value={activeBusiness.address} />
+                        <DetailRow icon={MapPin} label="Address" value={activeBusiness.address.city} />
                         <DetailRow icon={Clock} label="Timezone" value={activeBusiness.timezone} />
                     </div>
                 </div>

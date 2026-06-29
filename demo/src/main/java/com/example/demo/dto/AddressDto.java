@@ -13,6 +13,7 @@ public class AddressDto {
 
     @JsonProperty("road")
     private String road;
+    private String displayName;
 
     private String village;
     private String city;

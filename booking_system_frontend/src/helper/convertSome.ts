@@ -1,3 +1,6 @@
+import { formatInTimeZone } from "date-fns-tz";
+import type { Time } from "../interfaces/Types";
+
 export function toISODuration (value: number, unit: 'min' | 'hr') {
     const totalMinutes = unit === 'hr' ? value * 60 : value;
 
@@ -23,4 +26,16 @@ export function TimezoneLabel(timezone: string): string {
     });
     const parts = formatter.formatToParts(now);
     return `${city} ${parts.find(p => p.type === "timeZoneName")?.value}`;
+}
+
+export function buildBookingPayloadTime(date: Date, time: string, businessTimezone: string): string {
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const offset = formatInTimeZone(date, businessTimezone, "XXX");
+
+    return `${year}-${month}-${day}T${time}:00${offset}`;
+    
 }

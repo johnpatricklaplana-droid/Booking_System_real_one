@@ -71,6 +71,8 @@ export function UserProvider ({ children }: { children: ReactNode }) {
 
                 const result = await get(url);
 
+                console.log(result);
+
                 setBusiness(
                     result.map((bus: any) => {
                         return {

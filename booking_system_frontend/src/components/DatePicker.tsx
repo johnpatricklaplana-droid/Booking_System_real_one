@@ -2,19 +2,17 @@ import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
-export function BookingDatePicker() {
-    const [selected, setSelected] = useState();
-
-    // const handleSelect = (date: any) => {
-    //     setSelected(date);
-    //     onSelect?.(date);
-    // };
+export function BookingDatePicker({ selectDate }: { selectDate: (date: Date) => void }) {
+    const [selected, setSelected] = useState<Date>();
 
     return (
         <DayPicker
             mode="single"
             selected={selected}
-            // onSelect={handleSelect}
+            onSelect={(date) => {
+                selectDate(date ?? new Date());
+                setSelected(date);
+            }}
             disabled={{ before: new Date() }} // can't book past dates
             className="bg-(--surface) text-(--text-2) border border-(--border) rounded-2xl p-4"
         />
