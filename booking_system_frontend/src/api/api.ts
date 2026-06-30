@@ -10,11 +10,16 @@ export async function post(url: string, body: any) {
             },
         });
 
+        if(!result.ok) {
+            throw new Error("super bad one");
+        }
+
         const response = await result.json();
         console.log(response);
         return response;
     } catch (error) {
         console.error(error);
+        throw new Error("super bad one");
     }
 }
 
@@ -79,11 +84,15 @@ export async function update(url: string, body: any) {
             body: JSON.stringify(body)
         });
 
+        if(!result.ok) {
+            throw new Error("super bad one");
+        }
+
         const response = await result.json();
         console.log(response);
         return response;
     } catch (error) {
         console.error(error);
-        return null;
+        throw new Error("bad one");
     }
 }

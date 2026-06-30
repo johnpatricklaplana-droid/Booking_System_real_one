@@ -1,16 +1,43 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
 import type { ServiceDetails, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
 
+function BookingResultModal ({ serviceDetails, selectedStaff, selectedTime, selectedDate }: { serviceDetails: ServiceDetails | null, selectedStaff: string, selectedTime: Time | null, selectedDate: Date }) {
+    return (
+        <div className="bg-(--surface) w-[90%] top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] z-50 lg:w-[500px] fixed border border-(--teal)/30 rounded-xl p-8 text-center">
+            <div className="w-12 h-12 rounded-full bg-(--teal-dim) flex items-center justify-center mx-auto mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-(--teal)">
+                    <path d="M20 6L9 17l-5-5" />
+                </svg>
+            </div>
+            <div className="text-(--text-1) text-[1.125rem] font-semibold mb-1.5">You're all set</div>
+            <p className="text-(--text-2) text-sm mb-1">{serviceDetails?.serviceName} with {selectedStaff}</p>
+            <p className="text-(--text-3) text-[0.8125rem] mb-6">
+                {selectedDate?.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · {selectedTime?.label}
+            </p>
+            <button
+                className="text-(--gold) text-sm font-medium hover:underline"
+            >
+                View my bookings →
+            </button>
+        </div> 
+    );
+}
+
 export function ServiceDetails() {
 
-    const [serviceDetails, setServiceDetails] = useState<ServiceDetails | undefined>(undefined);
+    const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date>((new Date()));
     const [selectedTime, setSelectedTime] = useState<Time | null>(null);
     const [selectedStaff, setSelectedStaff] = useState<string>("");
+    const [missingFields, setMissingFields] = useState<"time" | "staff" | null>(null);
+    const [bookingResult, setBookingResult] = useState<{ success: boolean, message: string } | null>(null);
+
+    const timeFieldRef = useRef<HTMLButtonElement>(null);
+    const staffFieldRef = useRef<HTMLButtonElement>(null);
     
     const { serviceId } = useParams();
 
@@ -44,7 +71,20 @@ export function ServiceDetails() {
 
     const book = async () => {
 
-        if(!selectedTime) return;
+        if(!selectedTime) {
+            timeFieldRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            setMissingFields("time");
+            return;
+        };
+
+        if(!selectedStaff) {
+            staffFieldRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            setMissingFields("staff");
+            return;
+        }
+
+        // TODO
+        if(!selectedDate) return;
 
         const datetimeWithTimeZone = buildBookingPayloadTime(selectedDate, selectedTime?.value, serviceDetails?.business.timezone ?? "");
 
@@ -55,11 +95,21 @@ export function ServiceDetails() {
         }
         const url = "http://localhost:8080/api/schedule";
 
-        const result = await post(url, body);
+        try {
+            const result = await post(url, body);
 
-        if(result.status === 201) {
-            console.log("good one");
+            if (result.status === 201) {
+                console.log("good one");
+                setBookingResult({ success: true, message: "super success" });
+            }
+        } catch (error) {
+            console.log(error);
+            setBookingResult({ success: false, message: "something went super wrong try again later" });
         }
+
+        setTimeout(() => {
+            setBookingResult(null);
+        }, 2000);
 
     };
 
@@ -67,7 +117,9 @@ export function ServiceDetails() {
         <div className="min-h-screen">
             <div className="h-85 flex items-center justify-center text-[6rem] relative overflow-hidden border-b border-(--border) bg-[linear-gradient(135deg,#140e20,#1e1530,#0f1e1c)]">
                 <img className="rounded-[50%] w-40 h-40" src={serviceDetails?.business.businessLogoUrl} alt="" />
-            </div>
+            </div>  
+
+            {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff} />}
 
             <div className="min-h-screen pb-20 max-w-280 mx-auto">
                 <div className="grid grid-cols-[1fr_340px] gap-12 pt-12 px-0 items-start">
@@ -103,6 +155,9 @@ export function ServiceDetails() {
                         <p className="text-[0.75rem] font-semibold uppercase leading-[0.8em] text-(--text-3) mb-3.5">Pick a date</p>
                         <BookingDatePicker selectDate={setSelectedDate} />
                         <p className="text-[0.75rem] mt-8 font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5">Available times</p>
+                        {missingFields === "time" && <p className="text-[0.8125rem] text-center text-red-600 mb-2 animate-bounce">
+                            Please select a time to continue
+                        </p>}
                         <div className="grid grid-cols-3 gap-2 mb-8">
                             {/* DESIGN IF BOOKED : 
                                 opacity: 0.35;
@@ -112,19 +167,32 @@ export function ServiceDetails() {
                             {availableTime.map(time => {
                                 const selectedOne = time.value === selectedTime?.value;
                                 return <button
-                                    className={`hover:border-(--gold) ${selectedOne ? 'border-(--gold-light) text-(--gold) bg-(--gold-dim)' : 'border-(--border) bg-(--surface-2) text-(--text-2)'} text-center text-[0.8125rem] font-medium cursor-pointer transition-all duration-150 border rounded-sm py-2.25 px-1.5`}
+                                    ref={timeFieldRef}
+                                    className={`hover:border-(--gold) ${missingFields === "time" ? 'ring-1 ring-red-600 ring-offset-2 ring-offset-(--bg)' : ""} ${selectedOne ? 'border-(--gold-light) text-(--gold) bg-(--gold-dim)' : 'border-(--border) bg-(--surface-2) text-(--text-2)'} text-center text-[0.8125rem] font-medium cursor-pointer transition-all duration-150 border rounded-sm py-2.25 px-1.5`}
                                     key={time.value}
-                                    onClick={() => setSelectedTime(time)}
+                                    onClick={() => {
+                                        setSelectedTime(time);
+                                        if(missingFields === "time") {
+                                            setMissingFields(null);
+                                        }
+                                    }}
                                 >{time.label}</button> 
                             })}
                         </div>  
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
+                        {missingFields === "staff" && <p className="text-[0.8125rem] text-center text-red-600 mb-2 animate-bounce">
+                            Please select a staff to continue
+                        </p>}
                         <div className="mb-8 grid grid-cols-3 gap-4">
                             {serviceDetails?.staffs.map(s => 
                                 <button
                                     key={s.staffId}
-                                    className="flex gap-2 bg-(--surface-2) border border-(--border) cursor-pointer py-2 px-4"
-                                    onClick={() => setSelectedStaff(s.staffId)}
+                                    ref={staffFieldRef}
+                                    className={`flex gap-2 ${missingFields === "staff" ? 'ring-1 ring-red-600 ring-offset-2 ring-offset-(--bg)' : ""} ${selectedStaff === s.staffId ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
+                                    onClick={() => {
+                                        setSelectedStaff(s.staffId);
+                                        setMissingFields(null);
+                                    }}
                                 >
                                     <img className="w-9 h-9 rounded-[50%]" src={`http://localhost:8080/api/staff/${s.avatarUrl}`} alt="" />
                                     <div>
