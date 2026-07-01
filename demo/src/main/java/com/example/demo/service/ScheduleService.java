@@ -17,6 +17,7 @@ import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.dto.response.ScheduleDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
+import com.example.demo.dto.response.UserDtoPublic;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.Staff;
@@ -25,6 +26,7 @@ import com.example.demo.entity.Users;
 import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.StaffRepository;
@@ -54,6 +56,9 @@ public class ScheduleService {
 
     @Autowired
     private BusinessMapper businessMapper;
+
+    @Autowired 
+    UserMapper userMapper;
 
     @Transactional
     public void addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
@@ -108,9 +113,12 @@ public class ScheduleService {
                 ServicesDetailsDto services = businessMapper.toBusinessServices(sched.getService());
                 StaffResponseDto staff = businessMapper.toStaffResponseDto(sched.getStaff());
                 ScheduleDto schedule = businessMapper.toScheduleDto(sched);
-                return new BookingsDto(services, staff, schedule);
+                UserDtoPublic user = userMapper.toUserDtoPublic(sched.getUser());
+                return new BookingsDto(services, staff, schedule, user);
             })
             .toList();
+
+        
 
     }
 

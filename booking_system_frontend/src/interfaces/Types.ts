@@ -16,6 +16,12 @@ export interface Time {
     label: string;
 }
 
+export interface UserPublic {
+    avatarUrl: string;
+    firstName: string;
+    lastName: string;
+}
+
 export interface Business {
     address: BusinessAddress;
     businessEmail: string;

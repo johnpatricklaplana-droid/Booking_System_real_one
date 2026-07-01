@@ -32,7 +32,8 @@ import lombok.Setter;
 @NamedEntityGraph(name = "schedule.staff.service",
     attributeNodes = {
         @NamedAttributeNode("service"),
-        @NamedAttributeNode("staff")
+        @NamedAttributeNode("staff"),
+        @NamedAttributeNode("user")
     }
 )
 public class Schedule {

@@ -2,91 +2,10 @@ import { Search, Filter, Download, Plus, Clock, CheckCircle, XCircle, AlertCircl
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
-import type { ServiceResponse, Staff } from '../../interfaces/Types';
+import type { ServiceResponse, Staff, UserPublic } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-
-// const appointments = [
-//     {
-//         id: '1',
-//         time: '09:00 AM',
-//         date: 'Jun 6, 2026',
-//         customer: 'Emma Wilson',
-//         email: 'emma.wilson@email.com',
-//         service: 'Hair Styling',
-//         staff: 'Sarah Mitchell',
-//         duration: '45 min',
-//         price: '$85',
-//         status: 'confirmed',
-//         accent: '#c9a87c',
-//     },
-//     {
-//         id: '2',
-//         time: '10:30 AM',
-//         date: 'Jun 6, 2026',
-//         customer: 'Michael Chen',
-//         email: 'michael.chen@email.com',
-//         service: 'Deep Tissue Massage',
-//         staff: 'Alex Rivera',
-//         duration: '60 min',
-//         price: '$120',
-//         status: 'confirmed',
-//         accent: '#9d8fb5',
-//     },
-//     {
-//         id: '3',
-//         time: '12:00 PM',
-//         date: 'Jun 6, 2026',
-//         customer: 'Lisa Anderson',
-//         email: 'lisa.anderson@email.com',
-//         service: 'Consultation',
-//         staff: 'David Kim',
-//         duration: '30 min',
-//         price: '$60',
-//         status: 'pending',
-//         accent: '#6b9fa3',
-//     },
-//     {
-//         id: '4',
-//         time: '02:00 PM',
-//         date: 'Jun 6, 2026',
-//         customer: 'James Taylor',
-//         email: 'james.taylor@email.com',
-//         service: 'Personal Training',
-//         staff: 'Mike Thompson',
-//         duration: '90 min',
-//         price: '$150',
-//         status: 'confirmed',
-//         accent: '#b89c7e',
-//     },
-//     {
-//         id: '5',
-//         time: '03:30 PM',
-//         date: 'Jun 6, 2026',
-//         customer: 'Sarah Johnson',
-//         email: 'sarah.j@email.com',
-//         service: 'Facial Treatment',
-//         staff: 'Sarah Mitchell',
-//         duration: '60 min',
-//         price: '$95',
-//         status: 'completed',
-//         accent: '#c9a87c',
-//     },
-//     {
-//         id: '6',
-//         time: '04:00 PM',
-//         date: 'Jun 6, 2026',
-//         customer: 'Robert Martinez',
-//         email: 'r.martinez@email.com',
-//         service: 'Yoga Session',
-//         staff: 'Mike Thompson',
-//         duration: '45 min',
-//         price: '$70',
-//         status: 'cancelled',
-//         accent: '#9d8fb5',
-//     },
-// ];
 
 const statusIcons = {
     CONFIRMED: CheckCircle,
@@ -113,6 +32,7 @@ interface Appointment {
     schedule: Schedule;
     service: ServiceResponse;
     staff: Staff;
+    user: UserPublic;
 }
 
 export function Appointments() {
@@ -254,7 +174,7 @@ export function Appointments() {
 
                                     {/* customer + service — primary content */}
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[14px] font-medium text-[#e8e8ea] truncate">TODO: CUSTOMER</p>
+                                        <p className="text-[14px] font-medium text-[#e8e8ea] truncate">{apt.user.firstName} {apt.user.lastName}</p>
                                         <p className="text-[12px] text-[#9a9aa3] truncate">
                                             {apt.service.serviceName} · {apt.staff.fullName} · {formatDuration(Number(apt.service.duration))}
                                         </p>
