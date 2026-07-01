@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,16 @@ import lombok.Setter;
         @NamedAttributeNode("staff"),
         @NamedAttributeNode("user")
     }
+)
+@NamedEntityGraph(name = "customer.appointments",
+    attributeNodes = {
+        @NamedAttributeNode("staff"),
+        @NamedAttributeNode(value = "service", subgraph = "service-business")
+    },
+    subgraphs = @NamedSubgraph(
+        name = "service-business",
+        attributeNodes = @NamedAttributeNode("business")
+    )
 )
 public class Schedule {
     

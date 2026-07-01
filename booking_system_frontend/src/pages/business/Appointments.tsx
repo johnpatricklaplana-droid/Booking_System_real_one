@@ -2,7 +2,7 @@ import { Search, Filter, Download, Plus, Clock, CheckCircle, XCircle, AlertCircl
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
-import type { ServiceResponse, Staff, UserPublic } from '../../interfaces/Types';
+import type { Appointment, ServiceResponse, Staff, UserPublic } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -20,20 +20,6 @@ const statusColors = {
     "0": 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     CANCELLED: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
-
-interface Schedule {
-    createdAt: string;
-    id: string;
-    startsAt: string;
-    status: string;
-}
-
-interface Appointment {
-    schedule: Schedule;
-    service: ServiceResponse;
-    staff: Staff;
-    user: UserPublic;
-}
 
 export function Appointments() {
 
@@ -172,7 +158,6 @@ export function Appointments() {
                                         </p>
                                     </div>
 
-                                    {/* customer + service — primary content */}
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[14px] font-medium text-[#e8e8ea] truncate">{apt.user.firstName} {apt.user.lastName}</p>
                                         <p className="text-[12px] text-[#9a9aa3] truncate">

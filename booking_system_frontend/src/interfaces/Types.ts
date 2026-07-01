@@ -60,3 +60,24 @@ export interface BusinessAddress {
     country: string;
     countryCode: string;
 }
+
+export interface CustomerAppointments {
+    schedule: Schedule;
+    service: ServiceResponse;
+    staff: Staff;
+    business: Business;
+}
+
+export interface Schedule {
+    createdAt: string;
+    id: string;
+    startsAt: string;
+    status: string;
+}
+
+export interface Appointment {
+    schedule: Schedule;
+    service: ServiceResponse;
+    staff: Staff;
+    user: UserPublic;
+}

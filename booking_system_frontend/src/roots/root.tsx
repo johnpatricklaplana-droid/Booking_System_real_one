@@ -21,6 +21,7 @@ import BusinessProfilePage from "../pages/business/BusinessProfile";
 import StaffManagementPage from "../pages/business/Staff";
 import { ExploreServices } from "../pages/ExploreServices";
 import { ServiceDetails } from "../pages/ServiceDetails";
+import MyBookingsPage from "../pages/MyBookings";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -36,7 +37,8 @@ export const router = createBrowserRouter([
             { path: 'create-business', Component: BusinessOnboardingWizard },
             { path: 'jobs', Component: JobsPage },
             { path: 'explore', Component: ExploreServices },
-            { path: 'service/:serviceId', Component: ServiceDetails }
+            { path: 'service/:serviceId', Component: ServiceDetails },
+            { path: 'bookings', Component: MyBookingsPage }
         ]
     },
 

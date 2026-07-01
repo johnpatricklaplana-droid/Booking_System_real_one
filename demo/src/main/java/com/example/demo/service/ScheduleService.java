@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.request.SaveScheduleDto;
 import com.example.demo.dto.response.BookingsDto;
+import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.CustomerAppointmentDto;
 import com.example.demo.dto.response.ScheduleDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
@@ -117,8 +119,27 @@ public class ScheduleService {
                 return new BookingsDto(services, staff, schedule, user);
             })
             .toList();
-
         
+    }
+
+    public List<CustomerAppointmentDto> getUserAppointments(UUID uid) {
+        
+        List<Schedule> schedules = scheduleRepo.getCustomerAppointments(uid);
+
+        return schedules.stream()
+            .map(sched -> {
+                ServicesDetailsDto service = businessMapper.toBusinessServices(sched.getService());
+                StaffResponseDto staff = businessMapper.toStaffResponseDto(sched.getStaff());
+                ScheduleDto schedule = businessMapper.toScheduleDto(sched);
+                BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(sched.getService().getBusiness());
+                return new CustomerAppointmentDto(
+                    service, 
+                    staff, 
+                    schedule, 
+                    business
+                );
+            })
+            .toList();
 
     }
 

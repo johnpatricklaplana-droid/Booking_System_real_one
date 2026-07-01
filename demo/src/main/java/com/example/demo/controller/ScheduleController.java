@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.request.SaveScheduleDto;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.BookingsDto;
+import com.example.demo.dto.response.CustomerAppointmentDto;
 import com.example.demo.service.ScheduleService;
 
 import java.util.List;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -49,6 +52,14 @@ public class ScheduleController {
             .status(HttpStatus.OK)
             .body(scheduleService.getBookings(businessId));
     }
+
+    @GetMapping("/api/schedule")
+    public ResponseEntity<List<CustomerAppointmentDto>> getMethodName(@AuthenticationPrincipal UUID uid) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(scheduleService.getUserAppointments(uid));
+    }
+    
  
 
 }
