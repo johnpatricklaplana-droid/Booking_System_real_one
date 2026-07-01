@@ -10,21 +10,21 @@ const categories = ['All', 'Beauty', 'Wellness', 'Fitness', 'Professional'];
 
 export function Services() {
 
-    const businessId = useUser().activeBusiness?.businessId;
+    const business = useUser().activeBusiness;
 
     const [services, setServices] = useState<ServiceResponse[] | null>(null);
 
     useEffect(() => {
 
-        if(!businessId) return;
+        if(!business?.businessId) return;
 
         const getIt = async () => {
-            setServices(await getServices(businessId));
+            setServices(await getServices(business.businessId));
         };
 
         getIt();
 
-    }, [businessId]);
+    }, [business?.businessId]);
 
     console.log(services);
 

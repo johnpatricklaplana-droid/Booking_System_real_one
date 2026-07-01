@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import type { ServiceResponse } from "../interfaces/Types";
 import { getAllServices } from "../hooks/service";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../provider/UserContext";
+import { TimezoneLabel } from "../helper/convertSome";
 
 export function ExploreServices() {
 
     const [services, setServices] = useState<ServiceResponse[]>([]);
+
+    const activeBusiness = useUser().activeBusiness;
 
     const navigate = useNavigate();
     
@@ -121,14 +125,14 @@ export function ExploreServices() {
                         >
                             <img src={service.serviceLogoUrl} className="h-40 w-full object-contain" />
                             <div className="pt-4 px-4.5 pb-4.5">
-                                <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{service.businessName}</div>
+                                <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{activeBusiness?.businessName}</div>
                                 <div className="text-[0.9375rem] text-(--text-1)">{service.serviceName}</div>
                                 <p className="flex items-center gap-2.5 text-[0.8125rem] text-(--text-2) mt-2">
-                                    {service.address.country}
+                                    todo: some address
                                 </p>
                                 <div className="flex mt-2 items-center justify-between">
                                     <div className="font-semibold text-(--text-1) text-[1rem]">₱{service.price}</div>
-                                    <div className="text-[0.75rem] text-(--teal) font-medium">{service.timezone}</div>
+                                    <div className="text-[0.75rem] text-(--teal) font-medium">{activeBusiness ? TimezoneLabel(activeBusiness?.timezone) : ""}</div>
                                 </div>
                             </div>
                         </div>

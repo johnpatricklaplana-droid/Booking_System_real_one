@@ -108,8 +108,7 @@ export default function StaffManagementPage() {
                     title: r.title,
                     avatarUrl: r.avatarUrl,
                     active: r.active,
-                    createdAt: r.createdAt,
-                    services: r.services.map((s) => toServices(s)),
+                    createdAt: r.createdAt
                 })))
             }
 

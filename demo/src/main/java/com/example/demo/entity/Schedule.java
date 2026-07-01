@@ -8,8 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.example.demo.enums.ScheduleStatus;
-
 import io.hypersistence.utils.hibernate.type.range.PostgreSQLRangeType;
 import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.persistence.Column;
@@ -19,6 +17,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +29,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@NamedEntityGraph(name = "schedule.staff.service",
+    attributeNodes = {
+        @NamedAttributeNode("service"),
+        @NamedAttributeNode("staff")
+    }
+)
 public class Schedule {
     
     @Id

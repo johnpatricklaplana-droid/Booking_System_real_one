@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.dto.AddStaffDto;
+import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;

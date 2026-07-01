@@ -10,29 +10,26 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import com.example.demo.dto.AddServiceRequestDto;
-import com.example.demo.dto.AddStaffDto;
-import com.example.demo.dto.AddressDto;
-import com.example.demo.dto.BusinessDetailsDto;
-import com.example.demo.dto.ServiceDetailsDto;
-import com.example.demo.dto.ServicesDetailsDto;
-import com.example.demo.dto.StaffResponseDto;
-import com.example.demo.dto.StaffResponseDtoWithoutServices;
-import com.example.demo.dto.StaffUnavailableDto;
+import com.example.demo.dto.request.AddServiceRequestDto;
+import com.example.demo.dto.request.AddStaffDto;
+import com.example.demo.dto.response.AddressDto;
+import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.ScheduleDto;
+import com.example.demo.dto.response.ServiceDetailsDto;
+import com.example.demo.dto.response.ServicesDetailsDto;
+import com.example.demo.dto.response.StaffResponseDto;
+import com.example.demo.dto.response.StaffResponseDtoWithoutServices;
+import com.example.demo.dto.response.StaffUnavailableDto;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.Schedule;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToOne;
 
 @Mapper(componentModel = "spring")
 public interface BusinessMapper {
@@ -46,18 +43,16 @@ public interface BusinessMapper {
     @Mapping(source = "createdAt", target = "startedAt")
     @Mapping(source = "businessEmail", target = "businessEmail")
     @Mapping(source = "facebookPage", target = "facebookPage")
-    @Mapping(source = "user", target = "ownerName") 
-    @Mapping(source = "address", target = "address") 
     @Mapping(source = "timezone", target = "timezone") 
     @Mapping(source = "logoUrl", target = "businessLogoUrl") 
+    @Mapping(source = "address", target = "address")
     BusinessDetailsDto toBusinessDetailsDto(Business business);
     
-    @Mapping(source = "business.businessName", target = "businessName")
-    @Mapping(source = "business.address.displayName", target = "address")
-    @Mapping(source = "business.timezone", target = "timezone")
     ServicesDetailsDto toBusinessServices(BusinessServices services);
 
     StaffResponseDto toStaffResponseDto(Staff staff);
+
+    ScheduleDto toScheduleDto(Schedule schedule);
 
     @Mapping(target = "business", expression = "java(entityManager.getReference(Business.class, request.getBusinessId()))")
     @Mapping(target = "status", constant = "ACTIVE")

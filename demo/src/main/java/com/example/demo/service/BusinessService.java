@@ -6,9 +6,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.BusinessDetailsDto;
-import com.example.demo.dto.ServiceDetailsDto;
-import com.example.demo.dto.ServicesDetailsDto;
+import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.ServiceDetailsDto;
+import com.example.demo.dto.response.ServicesDetailsDto;
+import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
 import com.example.demo.exceptions.InvalidInputsException;
@@ -66,13 +67,19 @@ public class BusinessService {
 
     public ServiceDetailsDto getServiceDetails(UUID serviceId) {
 
-        ServiceDetailsDto serviceDto = businessMapper.toServicesDetailsDto(businessServiceRepo.getServiceDetails(serviceId));
+        BusinessServices businessServices = businessServiceRepo.getServiceDetails(serviceId);
 
-        if(serviceDto == null) {
+        if (businessServices == null) {
             throw new InvalidInputsException("super bad request");
         }
 
-        return serviceDto;
+        BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(businessServices.getBusiness());
+        ServicesDetailsDto services = businessMapper.toBusinessServices(businessServices);
+        List<StaffResponseDto> staff = businessServices.getStaffs().stream()
+            .map(s -> businessMapper.toStaffResponseDto(s))
+            .toList();
+
+        return new ServiceDetailsDto(business, services, staff);
 
     }
 

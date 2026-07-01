@@ -8,8 +8,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.ErrorResponse;
+import com.example.demo.dto.request.ErrorResponse;
+import com.example.demo.dto.response.AuthResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 

@@ -9,26 +9,12 @@ export interface ServiceResponse {
     serviceLogoUrl: string;
     serviceName: string;
     status: ServiceStatus;
-    address: BusinessAddress;
-    businessName: string;
-    timezone: string;
 }
 
 export interface Time {
     value: string;
     label: string;
 }
-
-export interface ServiceDetails {
-    serviceName: string;
-    business: Business;
-    capacity: number;
-    description: string;
-    duration: string;
-    price: number;
-    serviceLogoUrl: string;
-    staffs: Staff[]
-};
 
 export interface Business {
     address: BusinessAddress;
@@ -45,14 +31,12 @@ export interface Business {
 }
 
 export interface Staff {
-    staffId: string;
+    id: string;
     fullName: string;
     title: string;
     avatarUrl: string;
     active: boolean;
     createdAt: string;
-    services: ServiceResponse[];
-    unavailable: Unavailable[];
 }
 
 export interface Unavailable {

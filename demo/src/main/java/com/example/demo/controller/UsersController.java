@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.dto.AddServiceRequestDto;
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.CreateBusinessRequestDto;
-import com.example.demo.dto.SearchAddressDto;
-import com.example.demo.dto.UserCredentialsSignUp;
-import com.example.demo.dto.UserDto;
+import com.example.demo.dto.request.AddServiceRequestDto;
+import com.example.demo.dto.request.CreateBusinessRequestDto;
+import com.example.demo.dto.request.SearchAddressDto;
+import com.example.demo.dto.request.UserCredentialsSignUp;
+import com.example.demo.dto.response.AuthResponse;
+import com.example.demo.dto.response.UserDto;
 import com.example.demo.entity.Users;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.service.JwtService;

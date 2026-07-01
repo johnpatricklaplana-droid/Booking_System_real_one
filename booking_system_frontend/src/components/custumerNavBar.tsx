@@ -11,7 +11,7 @@ export function CustomerNavBar () {
             <div className="text-[1.25rem] font-bold tracking-tight bg-[linear-gradient(135deg,_#e8c98a,_#c9a96e)] bg-clip-text text-transparent">Daddy's home</div>
             <div className="flex gap-2 items-center">
                 <Link to="home" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Home</Link>
-                <a className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</a>
+                <Link to="explore" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</Link>
                 <Link to="jobs" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Jobs</Link>
             </div>
             <div className="flex items-center gap-2.5">

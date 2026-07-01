@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.dto.AddressDto;
-import com.example.demo.dto.NominatimRawResponse;
-import com.example.demo.dto.SearchAddressDto;
-import com.example.demo.dto.UserDto;
+import com.example.demo.dto.request.SearchAddressDto;
+import com.example.demo.dto.response.AddressDto;
+import com.example.demo.dto.response.NominatimRawResponse;
+import com.example.demo.dto.response.UserDto;
 import com.example.demo.entity.Users;
 
 @Component

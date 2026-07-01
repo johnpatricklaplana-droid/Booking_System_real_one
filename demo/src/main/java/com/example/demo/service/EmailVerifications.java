@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.demo.dto.MailSniperResponseDto;
+import com.example.demo.dto.request.MailSniperResponseDto;
 
 @Service
 public class EmailVerifications {

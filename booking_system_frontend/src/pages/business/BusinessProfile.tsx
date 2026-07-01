@@ -10,6 +10,7 @@ import duration from 'dayjs/plugin/duration';
 import { get } from '../../api/api';
 import type { ServiceResponse, ServiceStatus } from '../../interfaces/Types';
 import { getServices } from '../../hooks/service';
+import { formatDuration } from '../../helper/convertSome';
 
 // ----------------------------------------------------------------------------
 // Types
@@ -48,13 +49,6 @@ const SERVICE_STATUS_CONFIG: Record<ServiceStatus, { label: string; text: string
     DRAFT: { label: 'Draft', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
     PAUSED: { label: 'Paused', text: 'text-[#e0c46b]', bg: 'bg-[#d4af37]/10', border: 'border-[#d4af37]/30' },
 };
-
-function formatDuration(minutes: number) {
-    if (minutes < 60) return `${minutes} min`;
-    const hrs = Math.floor(minutes / 60);
-    const rem = minutes % 60;
-    return rem === 0 ? `${hrs} hr` : `${hrs} hr ${rem} min`;
-}
 
 function formatPrice(price: number) {
     return price.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
@@ -372,7 +366,7 @@ export default function BusinessProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-[#6b6b72] leading-none">Owner</p>
-                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{activeBusiness.ownerName}</p>
+                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{user.user?.firstName} {user.user?.lastName}</p>
                                 </div>
                             </div>
                             <div className="w-px h-7 bg-[rgba(255,255,255,0.08)]" />
@@ -400,7 +394,7 @@ export default function BusinessProfilePage() {
                         {activeBusiness.facebookUrl && (
                             <DetailRow icon={Book} label="Facebook page" value={activeBusiness.facebookUrl.replace('https://', '')} />
                         )}
-                        <DetailRow icon={MapPin} label="Address" value={activeBusiness.address.city} />
+                        <DetailRow icon={MapPin} label="Address" value={activeBusiness.address.displayName} />
                         <DetailRow icon={Clock} label="Timezone" value={activeBusiness.timezone} />
                     </div>
                 </div>

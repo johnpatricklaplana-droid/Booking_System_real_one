@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.dto.AddStaffDto;
-import com.example.demo.dto.StaffResponseDto;
+import com.example.demo.dto.request.AddStaffDto;
+import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.Staff;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.repositories.StaffRepository;

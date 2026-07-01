@@ -1,20 +1,19 @@
-package com.example.demo.dto;
+package com.example.demo.dto.response;
 
-import java.time.Duration;
 import java.util.UUID;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
-public class AddServiceRequestDto {
-
-    private UUID businessId;
+@Getter
+public class ServicesDetailsDto {
+    private UUID id;
     private String serviceName;
+    private String serviceLogoUrl;
+    private String status;
     private String description;
-    private Duration duration;
+    private String duration;
     private double price;
     private int capacity;
-
 }

@@ -17,6 +17,13 @@ export function toISODuration (value: number, unit: 'min' | 'hr') {
 
 }
 
+export function formatDuration(minutes: number) {
+    if (minutes < 60) return `${minutes} min`;
+    const hrs = Math.floor(minutes / 60);
+    const rem = minutes % 60;
+    return rem === 0 ? `${hrs} hr` : `${hrs} hr ${rem} min`;
+}
+
 export function TimezoneLabel(timezone: string): string {
     const now = new Date();
     const city = timezone.split("/").pop();

@@ -9,7 +9,6 @@ export function StaffCard({
     staff: Staff;
     onEdit: () => void;
 }) {
-    const assignedServices: ServiceResponse[] = staff.services;
 
     const businessId = useUser().activeBusiness?.businessId;
 
@@ -57,23 +56,10 @@ export function StaffCard({
 
             <p className="text-(--text-2) px-6 text-[12px] mt-4 font-semibold">Services</p>
 
-            <div className="mt-2 px-6">
-                {assignedServices.length > 0 ? (
-                    <div className="hide-scrollbar gap-2 flex overflow-x-auto pb-1">
-                        {assignedServices.map((service) => (
-                            <span
-                                key={service.id}
-                                className="shrink-0 flex items-center gap-2 whitespace-nowrap text-xs bg-(--teal)/15 rounded-full px-4 py-1 font-medium text-(--teal)"
-                            >
-                                <img className="w-4 h-4 rounded-[50%]" src={service.serviceLogoUrl} alt="" /> {service.serviceName}
-                            </span>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-center text-xs text-white/30">
-                        No services assigned
-                    </p>
-                )}
+            <div className="mt-2 px-6"> 
+                <p className="text-center text-xs text-white/30">
+                    No services assigned
+                </p>
             </div>
 
             <div className="mt-4 flex items-center justify-between border-t border-white/10 px-6 py-4">

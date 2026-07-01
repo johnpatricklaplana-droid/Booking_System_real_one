@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
-import type { ServiceDetails, Time } from "../interfaces/Types";
+import type { Business, ServiceResponse, Staff, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
 
-function BookingResultModal ({ serviceDetails, selectedStaff, selectedTime, selectedDate }: { serviceDetails: ServiceDetails | null, selectedStaff: string, selectedTime: Time | null, selectedDate: Date }) {
+function BookingResultModal ({ 
+    serviceDetails, 
+    selectedStaff, 
+    selectedTime, 
+    selectedDate 
+}: 
+    { 
+        serviceDetails: ServiceResponse | null, 
+        selectedStaff: string, 
+        selectedTime: Time | null, 
+        selectedDate: Date 
+    }) {
     return (
         <div className="bg-(--surface) w-[90%] top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] z-50 lg:w-[500px] fixed border border-(--teal)/30 rounded-xl p-8 text-center">
             <div className="w-12 h-12 rounded-full bg-(--teal-dim) flex items-center justify-center mx-auto mb-4">
@@ -29,7 +40,9 @@ function BookingResultModal ({ serviceDetails, selectedStaff, selectedTime, sele
 
 export function ServiceDetails() {
 
-    const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(null);
+    const [serviceDetails, setServiceDetails] = useState<ServiceResponse | null>(null);
+    const [business, setBusiness] = useState<Business | null>(null);
+    const [staff, setStaff] = useState<Staff[] | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date>((new Date()));
     const [selectedTime, setSelectedTime] = useState<Time | null>(null);
     const [selectedStaff, setSelectedStaff] = useState<string>("");
@@ -60,9 +73,11 @@ export function ServiceDetails() {
         const getIt = async () => {
             const url = `http://localhost:8080/api/services/${serviceId}`;
 
-            const result: ServiceDetails = await get(url);
+            const result: any = await get(url);
 
-            setServiceDetails(result);
+            setBusiness(result.business);
+            setStaff(result.staff);
+            setServiceDetails(result.services);
         };
         
         getIt();
@@ -86,7 +101,7 @@ export function ServiceDetails() {
         // TODO
         if(!selectedDate) return;
 
-        const datetimeWithTimeZone = buildBookingPayloadTime(selectedDate, selectedTime?.value, serviceDetails?.business.timezone ?? "");
+        const datetimeWithTimeZone = buildBookingPayloadTime(selectedDate, selectedTime?.value, business?.timezone ?? "");
 
         const body = {
             startsAt: datetimeWithTimeZone,
@@ -116,7 +131,7 @@ export function ServiceDetails() {
     return (
         <div className="min-h-screen">
             <div className="h-85 flex items-center justify-center text-[6rem] relative overflow-hidden border-b border-(--border) bg-[linear-gradient(135deg,#140e20,#1e1530,#0f1e1c)]">
-                <img className="rounded-[50%] w-40 h-40" src={serviceDetails?.business.businessLogoUrl} alt="" />
+                <img className="rounded-[50%] w-40 h-40" src={business?.businessLogoUrl} alt="" />
             </div>  
 
             {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff} />}
@@ -146,7 +161,7 @@ export function ServiceDetails() {
                                     <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0Z" />
                                     <circle cx="12" cy="10" r="3" />
                                 </svg>
-                                {serviceDetails?.business.address.displayName}
+                                todo: some address
                             </span>
                         </div>
                         <p className="text-[1rem] text-(--text-2) leading-[1.7] mb-10 max-w-140">
@@ -184,13 +199,13 @@ export function ServiceDetails() {
                             Please select a staff to continue
                         </p>}
                         <div className="mb-8 grid grid-cols-3 gap-4">
-                            {serviceDetails?.staffs.map(s => 
+                            {staff?.map(s => 
                                 <button
-                                    key={s.staffId}
+                                    key={s.id}
                                     ref={staffFieldRef}
-                                    className={`flex gap-2 ${missingFields === "staff" ? 'ring-1 ring-red-600 ring-offset-2 ring-offset-(--bg)' : ""} ${selectedStaff === s.staffId ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
+                                    className={`flex gap-2 ${missingFields === "staff" ? 'ring-1 ring-red-600 ring-offset-2 ring-offset-(--bg)' : ""} ${selectedStaff === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
                                     onClick={() => {
-                                        setSelectedStaff(s.staffId);
+                                        setSelectedStaff(s.id);
                                         setMissingFields(null);
                                     }}
                                 >
@@ -264,7 +279,7 @@ export function ServiceDetails() {
                                     <span className="text-(--text-1)">{selectedDate?.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} </span>
                                     · 
                                     <span className="text-(--gold)"> {selectedTime?.label}</span>
-                                    <span className="text-[0.75rem] ml-1.5 font-normal">{serviceDetails?.business.timezone ? TimezoneLabel(serviceDetails?.business.timezone) : "enter some"}</span>
+                                    <span className="text-[0.75rem] ml-1.5 font-normal">{business?.timezone ? TimezoneLabel(business.timezone) : "enter some"}</span>
                                 </div>
                             </div>
                             <div className="flex justify-between items-center py-4 px-0 border-t border-t-(--border) mb-5">

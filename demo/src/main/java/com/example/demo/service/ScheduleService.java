@@ -12,7 +12,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.SaveScheduleDto;
+import com.example.demo.dto.request.SaveScheduleDto;
+import com.example.demo.dto.response.BookingsDto;
+import com.example.demo.dto.response.ScheduleDto;
+import com.example.demo.dto.response.ServicesDetailsDto;
+import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.Staff;
@@ -20,6 +24,7 @@ import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
 import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.exceptions.InvalidInputsException;
+import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.StaffRepository;
@@ -46,6 +51,9 @@ public class ScheduleService {
 
     @Autowired
     StaffUnavailableRepository staffUnavailableRepo;
+
+    @Autowired
+    private BusinessMapper businessMapper;
 
     @Transactional
     public void addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
@@ -86,6 +94,23 @@ public class ScheduleService {
         staffUnavailableRepo.save(unavailable);
         
         scheduleRepo.save(schedule);
+
+    }
+
+    public List<BookingsDto> getBookings(UUID businessId) {
+        
+        List<UUID> serviceIds = businessServiceRepo.findByBusiness_Id(businessId).stream().map(service -> service.getId()).toList();
+
+        List<Schedule> schedules = scheduleRepo.getBookings(serviceIds);
+
+        return schedules.stream()
+            .map(sched -> {
+                ServicesDetailsDto services = businessMapper.toBusinessServices(sched.getService());
+                StaffResponseDto staff = businessMapper.toStaffResponseDto(sched.getStaff());
+                ScheduleDto schedule = businessMapper.toScheduleDto(sched);
+                return new BookingsDto(services, staff, schedule);
+            })
+            .toList();
 
     }
 

@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import { get } from "../api/api";
 import type { ServiceResponse } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
-import { TimezoneLabel } from "../helper/convertSome";
 
 export async function getServices(businessId: string) {
     const url = `http://localhost:8080/api/business/services/${businessId}`;
@@ -23,9 +22,6 @@ export async function getServices(businessId: string) {
             status: s.status,
             serviceLogoUrl: s.serviceLogoUrl,
             capacity: s.capacity,
-            address: s.address,
-            businessName: s.businessName,
-            timezone: TimezoneLabel(s.timezone)
         }
     })
 
@@ -50,9 +46,6 @@ export async function getAllServices() {
             status: s.status,
             serviceLogoUrl: s.serviceLogoUrl,
             capacity: s.capacity,
-            address: s.address,
-            businessName: s.businessName,
-            timezone: TimezoneLabel(s.timezone) ?? ""
         }
     })
 

@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.dto.AddStaffDto;
+import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.service.StaffService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

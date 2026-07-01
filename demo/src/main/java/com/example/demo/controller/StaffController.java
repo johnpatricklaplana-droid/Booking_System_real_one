@@ -3,9 +3,9 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.dto.AddStaffDto;
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.StaffResponseDto;
+import com.example.demo.dto.request.AddStaffDto;
+import com.example.demo.dto.response.AuthResponse;
+import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.service.StaffService;
 
 import reactor.core.publisher.Flux;
@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,8 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 public class StaffController {

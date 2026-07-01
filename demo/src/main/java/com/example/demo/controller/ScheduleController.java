@@ -2,18 +2,24 @@ package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.SaveScheduleDto;
+import com.example.demo.dto.request.SaveScheduleDto;
+import com.example.demo.dto.response.AuthResponse;
+import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.service.ScheduleService;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
@@ -32,6 +38,17 @@ public class ScheduleController {
             .status(HttpStatus.CREATED)
             .body(new AuthResponse(201, "created one"));
     }
-    
+
+    @GetMapping("/api/schedule/business/{businessId}")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
+    public ResponseEntity<List<BookingsDto>> getBookings(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID id
+    ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(scheduleService.getBookings(businessId));
+    }
+ 
 
 }

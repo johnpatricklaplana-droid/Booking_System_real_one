@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,12 +16,11 @@ public class BusinessDetailsDto {
     private String businessName;
     private String description;
     private String type;
-    private String ownerName;
     private LocalDateTime startedAt;
     private String businessEmail;
     private String facebookPage;
-    private AddressDto address;
     private String timezone;
+    private AddressDto address;
     private String businessLogoUrl;
 
 }

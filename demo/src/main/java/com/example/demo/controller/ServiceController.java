@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.ServiceDetailsDto;
-import com.example.demo.dto.ServicesDetailsDto;
+import com.example.demo.dto.response.ServiceDetailsDto;
+import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.service.BusinessService;
 
 import java.util.List;
@@ -41,9 +41,7 @@ public class ServiceController {
     public ResponseEntity<ServiceDetailsDto> getMethodName(@PathVariable UUID serviceId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(businessService.getServiceDetails(serviceId));
-
-            
+            .body(businessService.getServiceDetails(serviceId));  
 
     }
     
