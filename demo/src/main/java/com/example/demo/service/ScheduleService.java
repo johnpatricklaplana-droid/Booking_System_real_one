@@ -143,4 +143,31 @@ public class ScheduleService {
 
     }
 
+    public void updateBookingStatus(UUID scheduleId, ScheduleStatus status) {
+        
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
+
+        if(schedule == null) {
+            throw new InvalidInputsException("super bad request");
+        }
+
+        if(status.toString().equals(schedule.getStatus())) {
+            throw new InvalidInputsException("it's already" + status.toString() + "buddy");
+        }
+
+        if((status.equals(ScheduleStatus.COMPLETED) || status.equals(ScheduleStatus.MISSED)) && !isItTime(schedule.getStartsAt())) {
+                throw new InvalidInputsException("Appointment cannot be marked as completed before its scheduled start time.");
+            }
+        
+
+        schedule.setStatus(status.toString());
+
+        scheduleRepo.save(schedule);
+
+    }
+
+    private boolean isItTime(ZonedDateTime sched) {
+        return ZonedDateTime.now(sched.getZone()).isAfter(sched);
+    }
+
 }

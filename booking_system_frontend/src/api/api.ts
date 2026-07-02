@@ -85,11 +85,12 @@ export async function update(url: string, body: any) {
         });
 
         if(!result.ok) {
-            throw new Error("super bad one");
+            const error = await result.json();
+            console.log(error);
+            throw new Error(error.message);
         }
 
         const response = await result.json();
-        console.log(response);
         return response;
     } catch (error) {
         console.error(error);

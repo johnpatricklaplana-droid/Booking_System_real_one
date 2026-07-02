@@ -1,8 +1,8 @@
-import { Search, Filter, Download, Plus, Clock, CheckCircle, XCircle, AlertCircle, Diamond } from 'lucide-react';
+import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
-import { get } from '../../api/api';
-import type { Appointment, ServiceResponse, Staff, UserPublic } from '../../interfaces/Types';
+import { get, update } from '../../api/api';
+import type { Appointment } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -12,6 +12,7 @@ const statusIcons = {
     PENDING: AlertCircle,
     "0": CheckCircle,
     CANCELLED: XCircle,
+    COMPLETED: CheckCircle,
 };
 
 const statusColors = {
@@ -26,6 +27,7 @@ export function Appointments() {
     const business = useUser().activeBusiness;
 
     const [appointments, setAppointments] = useState<Appointment[] | null>(null);
+    const [updating, setUpdating] = useState<{ schedId: string, status: boolean } | null>(null);
 
     dayjs.extend(duration);
 
@@ -49,6 +51,52 @@ export function Appointments() {
         getIt();
 
     }, [business?.businessId]);
+
+    const confirmAppointment = async (scheduleId: string) => {
+
+        setUpdating({ schedId: scheduleId, status: true });
+        
+        const url = `http://localhost:8080/api/schedule/${scheduleId}/CONFIRMED`;
+
+        const result = await update(url, null);
+
+        if(result.status === 200) {
+            const sched: Appointment[] = appointments?.map(apt => {
+                if(apt.schedule.id === scheduleId) {
+                    apt.schedule.status = "CONFIRMED";
+                }
+                return apt;
+            })!;
+            setAppointments(sched);
+            setUpdating(null);
+        }
+
+    }
+
+    const completeAppointment = async (scheduleId: string) => {
+        const url = `http://localhost:8080/api/schedule/${scheduleId}/COMPLETED`;
+
+        setUpdating({ schedId: scheduleId, status: true });
+
+        try {
+            const result = await update(url, null);
+
+            if (result.status === 200) {
+                const sched: Appointment[] = appointments?.map(apt => {
+                    if (apt.schedule.id === scheduleId) {
+                        apt.schedule.status = "COMPLETED";
+                    }
+                    return apt;
+                })!;
+                setAppointments(sched);
+                setUpdating(null);
+            }
+        } catch (error) {
+            console.log(`TODO: ERROR message ${error}`);
+            setUpdating(null);
+        }
+
+    };
 
     return (
         <div className="space-y-6">
@@ -189,8 +237,41 @@ export function Appointments() {
                             </div>
 
                             <div className='flex flex-col gap-2'>
-                                <button className='btn-primary rounded-xs py-2 font-bold tracking-tight'>Confirm booking</button>
+                                {apt.schedule.status === "CONFIRMED" && 
+                                    <>
+                                    <button className='bg-[#51d0de]/80 py-2 rounded-xs border hover:border-[#5ddbe9] flex justify-center items-center gap-2 text-(--text-1) font-semibold'><Mail /> send email to {apt.user.firstName}</button>
+                                    <button
+                                        className='py-2 text-(--text-1) font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border'
+                                        onClick={() => completeAppointment(apt.schedule.id)}
+                                    >
+                                        {updating?.schedId === apt.schedule.id && updating?.status ?
+                                            <div
+                                                className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
+                                            >
+
+                                            </div>
+                                            : <span>Mark as complete</span>}
+                                    </button>
+                                    </>
+                                }
+                                {apt.schedule.status === "PENDING" && 
+                                <>
+                                <button
+                                    className={`btn-primary rounded-xs py-2 font-bold tracking-tight`}
+                                    onClick={() => confirmAppointment(apt.schedule.id)}
+                                    disabled={updating?.schedId === apt.schedule.id && updating.status}
+                                >
+                                    {updating?.schedId === apt.schedule.id && updating?.status ? 
+                                        <div
+                                            className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
+                                        >
+
+                                        </div>
+                                        : <span>Confirm booking</span>}
+                                </button>
                                 <button className='btn-secondary rounded-xs py-2'>Reject</button>
+                                </>
+                                }
                             </div>
 
                         </div>
