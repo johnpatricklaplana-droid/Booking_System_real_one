@@ -103,6 +103,8 @@ export function Appointments() {
 
     };
 
+    console.log("render");
+
     return (
         <div className="space-y-6">
 

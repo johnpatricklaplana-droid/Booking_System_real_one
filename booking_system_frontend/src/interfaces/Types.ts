@@ -72,7 +72,7 @@ export interface Schedule {
     createdAt: string;
     id: string;
     startsAt: string;
-    status: string;
+    status: 'COMPLETED' | 'CANCELLED' | 'CONFIRMED' | 'PENDING';
 }
 
 export interface Appointment {
