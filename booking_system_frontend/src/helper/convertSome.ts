@@ -1,5 +1,4 @@
 import { formatInTimeZone } from "date-fns-tz";
-import type { Time } from "../interfaces/Types";
 
 export function toISODuration (value: number, unit: 'min' | 'hr') {
     const totalMinutes = unit === 'hr' ? value * 60 : value;

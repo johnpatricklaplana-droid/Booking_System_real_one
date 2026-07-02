@@ -1,4 +1,4 @@
-import { Search, Filter, Download, Plus, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Search, Filter, Download, Plus, Clock, CheckCircle, XCircle, AlertCircle, Diamond } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
@@ -126,60 +126,76 @@ export function Appointments() {
                 </div>
             </div>
 
-            <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
-                    <div className="divide-y divide-[rgba(255,255,255,0.06)]">
-                        {appointments?.map((apt) => {
-                            const StatusIcon = statusIcons[apt.schedule.status as keyof typeof statusIcons] ?? AlertCircle;
-                            const statusColor = statusColors[apt.schedule.status as keyof typeof statusColors] ?? statusColors["0"];
-                            const accentColor = {
-                                CONFIRMED: '#34d399',
-                                PENDING: '#fbbf24',
-                                "0": '#60a5fa',
-                                CANCELLED: '#f87171',
-                            }[apt.schedule.status] ?? '#60a5fa';
-
-                            return (
-                                <div
-                                    key={apt.schedule.id}
-                                    className="flex items-center gap-5 p-4 pl-0 hover:bg-[#1a1a1e]/50 transition-all cursor-pointer group"
-                                >
-                                    {/* status accent bar */}
-                                    <div className="w-1 self-stretch rounded-r-full" style={{ backgroundColor: accentColor }} />
-
-                                    {/* time — dominant */}
-                                    <div className="w-[90px] shrink-0">
-                                        <p className="text-[16px] font-semibold text-[#e8e8ea] leading-tight">
-                                            {new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </p>
-                                        <p className="text-[11px] text-[#9a9aa3] mt-0.5">
-                                            {new Date(apt.schedule.startsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[14px] font-medium text-[#e8e8ea] truncate">{apt.user.firstName} {apt.user.lastName}</p>
-                                        <p className="text-[12px] text-[#9a9aa3] truncate">
-                                            {apt.service.serviceName} · {apt.staff.fullName} · {formatDuration(Number(apt.service.duration))}
-                                        </p>
-                                    </div>
-
-                                    {/* price — secondary but clear */}
-                                    <p className="text-[14px] font-medium text-[#e8e8ea] shrink-0 w-16 text-right">
-                                        ₱{apt.service.price}
-                                    </p>
-
-                                    {/* status — the "outcome", visually distinct */}
-                                    <div className={`shrink-0 px-2.5 py-1 rounded-md border text-[11px] font-medium flex items-center gap-1.5 ${statusColor}`}>
-                                        <StatusIcon size={12} />
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                {appointments?.map((apt) => {
+                    const StatusIcon = statusIcons[apt.schedule.status as keyof typeof statusIcons] ?? AlertCircle;
+                    const statusColor = statusColors[apt.schedule.status as keyof typeof statusColors] ?? statusColors["0"];
+    
+                    return (
+                        <div
+                            key={apt.schedule.id}
+                            className="flex flex-col gap-5 rounded-xs bg-[#151518] border-(--border) border p-4 hover:bg-[#1a1a1e]/50 transition-all cursor-pointer group"
+                        >
+                                    
+                            <div className='flex justify-between w-full'>
+                                <p className="text-[14px] font-medium text-(--teal) shrink-0 text-right">
+                                    ₱{apt.service.price}
+                                </p>
+                                <div className={`shrink-0 px-2.5 py-1 rounded-md border text-[11px] font-medium flex items-center gap-1.5 ${statusColor}`}>
+                                    <StatusIcon size={12} />
                                         {apt.schedule.status}
-                                    </div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>
+                            </div>
+
+                            <div className='flex items-center gap-2'>
+                                <img className='rounded-[50%] border border-(--gold) w-11 h-11' src={apt.user.avatarUrl} alt="" />
+                                <div>
+                                    <h2 className='text-(--text-2) uppercase font-semibold text-xs'>Reserved for</h2>
+                                    <h1 className='text-(--text-1) font-semibold text-[18px] tracking-tight'>{apt.user.firstName} {apt.user.lastName}</h1>
+                                </div>
+                            </div>
+
+                            <div className='text-(--text-3) gap-2 flex items-center'>
+                                <hr className='w-full' />
+                                    <Diamond size={8} className='shrink-0' />
+                                <hr className='w-full' />
+                            </div>
+
+                            <div>
+                                <p className='text-xs uppercase font-semibold text-(--text-2)'>service</p>
+                                <h1 className='text-base text-(--text-1)'>{apt.service.serviceName}</h1>
+                                <p className='text-xs text-(--text-2)'>with {apt.staff.fullName}</p>
+                            </div>
+
+                            <div className='text-(--text-3) gap-2 flex items-center'>
+                                <hr className='w-full' />
+                                <Diamond size={8} className='shrink-0' />
+                                <hr className='w-full' />
+                            </div>
+
+                            <div className='flex justify-between'>
+                                <div>
+                                    <p className='text-(--text-2) text-xs font-medium'>DATE</p>
+                                    <p className='text-(--text-1) text-sm'>{new Date(apt.schedule.startsAt).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                                </div>
+                                <div>
+                                    <p className='text-(--text-2) text-xs font-medium'>TIME</p>
+                                    <p className='text-(--text-1) text-sm'>{new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                </div>
+                                <div>
+                                    <p className='text-(--text-2) text-xs font-medium'>DURATION</p>
+                                    <p className='text-(--text-1) text-sm'>{formatDuration(Number(apt.service.duration))}</p>
+                                </div>
+                            </div>
+
+                            <div className='flex flex-col gap-2'>
+                                <button className='btn-primary rounded-xs py-2 font-bold tracking-tight'>Confirm booking</button>
+                                <button className='btn-secondary rounded-xs py-2'>Reject</button>
+                            </div>
+
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
