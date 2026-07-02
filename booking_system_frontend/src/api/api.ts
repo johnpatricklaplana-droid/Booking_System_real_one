@@ -92,8 +92,7 @@ export async function update(url: string, body: any) {
 
         const response = await result.json();
         return response;
-    } catch (error) {
-        console.error(error);
-        throw new Error("bad one");
+    } catch (error: any) {
+        throw new Error(error);
     }
 }
