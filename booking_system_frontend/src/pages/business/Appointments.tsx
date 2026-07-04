@@ -1,11 +1,10 @@
-import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, Mail } from 'lucide-react';
+import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, Mail, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
+import { durationAsMinutes, isToday } from '../../hooks/service';
 
 const statusIcons = {
     CONFIRMED: CheckCircle,
@@ -30,8 +29,6 @@ export function Appointments() {
     const [updating, setUpdating] = useState<{ schedId: string, status: boolean } | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    dayjs.extend(duration);
-
     useEffect(() => {
         if(!business) return;
 
@@ -41,8 +38,7 @@ export function Appointments() {
             const result: Appointment[] = await get(url);
 
             result.forEach(r => {
-                const dur = dayjs.duration(r.service.duration);
-                r.service.duration = dur.asMinutes().toString();
+                r.service.duration = durationAsMinutes(r.service.duration);
             });
 
             console.log(result);
@@ -249,7 +245,7 @@ export function Appointments() {
                             <div className='flex flex-col gap-2'>
                                 {apt.schedule.status === "CONFIRMED" && 
                                     <>
-                                    <button className='bg-[#51d0de]/80 py-2 rounded-xs border hover:border-[#5ddbe9] flex justify-center items-center gap-2 text-(--text-1) font-semibold'><Mail /> send email to {apt.user.firstName}</button>
+                                    <button className='bg-[#c70000]/80 py-2 rounded-xs border hover:border-[#c70000] flex justify-center items-center gap-2 text-(--text-1) font-semibold'>missed appointment</button>
                                     <button
                                         className='py-2 text-(--text-1) font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border'
                                         onClick={() => completeAppointment(apt.schedule.id)}
@@ -273,7 +269,7 @@ export function Appointments() {
                                 >
                                     {updating?.schedId === apt.schedule.id && updating?.status ? 
                                         <div
-                                            className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
+                                            className='rounded-[50%] mx-auto w-6 h-6 b border-2 border-b-(--teal) animate-spin'
                                         >
 
                                         </div>

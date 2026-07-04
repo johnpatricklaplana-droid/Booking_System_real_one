@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { get } from "../api/api";
 import type { CustomerAppointments } from "../interfaces/Types";
+import { hasAppointmentPassed, isToday } from "../hooks/service";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -178,6 +179,7 @@ function TodayBookingCard({ booking }: { booking: CustomerAppointments }) {
                         </h3>
 
                         <div className="mt-1.5 flex items-center gap-2 text-sm">
+                            {booking.schedule.startsAt}
                             <span className="text-(--gold) font-medium">{new Date(booking.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             <span className="text-neutral-600">·</span>
                             <span className="text-neutral-400">Starts TODO: countdown</span>
@@ -468,10 +470,7 @@ export default function MyBookingsPage() {
     const todayBooking = useMemo(() => {
         if(!appointments) return [];
 
-        return appointments.filter(apt => {
-            const differenceFromNowToAppointmentDate = new Date(apt.schedule.startsAt).getTime() - Date.now();
-            return differenceFromNowToAppointmentDate <= 24 * 60 * 60 * 1000 && apt.schedule.status !== "COMPLETED";
-        })
+        return appointments.filter(apt => isToday(new Date(apt.schedule.startsAt), apt.business.timezone));
         
     }, [appointments]);
 
@@ -516,7 +515,7 @@ export default function MyBookingsPage() {
                     <SkeletonBookingCard />
                     <SkeletonBookingCard />
                 </div>
-            ) : !hasAnyBookings ? (
+            ) : hasAnyBookings ? (
                 <div className="mt-10">
                     <EmptyState />
                 </div>

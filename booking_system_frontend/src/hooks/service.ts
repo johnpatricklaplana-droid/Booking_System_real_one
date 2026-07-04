@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { get } from "../api/api";
 import type { ServiceResponse } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
+import { toZonedTime } from "date-fns-tz";
 
 export async function getServices(businessId: string) {
     const url = `http://localhost:8080/api/business/services/${businessId}`;
@@ -51,3 +52,27 @@ export async function getAllServices() {
 
 }
 
+export function isToday(date: Date, timezone: string): boolean {
+
+    const appointmentDate = toZonedTime(date, timezone);
+    const now = toZonedTime(new Date(), timezone);
+
+    return appointmentDate.getMonth() === now.getMonth()
+        && appointmentDate.getDate() === now.getDate()
+        && appointmentDate.getFullYear() === now.getFullYear();
+
+}
+
+export function hasAppointmentPassed(date: Date): boolean {
+
+    return date.getTime() < new Date().getTime();
+}
+
+export function durationAsMinutes(serviceDuration: string) {
+
+    dayjs.extend(duration);
+
+    const dur = dayjs.duration(serviceDuration);
+    return dur.asMinutes().toString();
+
+}

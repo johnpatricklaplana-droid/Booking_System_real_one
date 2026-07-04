@@ -155,6 +155,10 @@ public class ScheduleService {
             throw new InvalidInputsException("it's already" + status.toString() + "buddy");
         }
 
+        if(status.equals(ScheduleStatus.CONFIRMED) && isItTime(schedule.getStartsAt())) {
+            throw new InvalidInputsException("too late now buddy");
+        }
+
         if((status.equals(ScheduleStatus.COMPLETED) || status.equals(ScheduleStatus.MISSED)) && !isItTime(schedule.getStartsAt())) {
                 throw new InvalidInputsException("Appointment cannot be marked as completed before its scheduled start time.");
             }
