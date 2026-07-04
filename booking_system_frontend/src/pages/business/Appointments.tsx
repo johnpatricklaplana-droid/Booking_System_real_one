@@ -4,7 +4,7 @@ import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
-import { durationAsMinutes, isToday } from '../../hooks/service';
+import { durationAsMinutes, hasAppointmentPassed, isToday } from '../../hooks/service';
 
 const statusIcons = {
     CONFIRMED: CheckCircle,
@@ -26,7 +26,7 @@ export function Appointments() {
     const business = useUser().activeBusiness;
 
     const [appointments, setAppointments] = useState<Appointment[] | null>(null);
-    const [updating, setUpdating] = useState<{ schedId: string, status: boolean } | null>(null);
+    const [updating, setUpdating] = useState<{ schedId: string,  buttonId: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'PENDING' | 'COMPLETED' | 'REJECT', status: boolean } | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
@@ -49,22 +49,26 @@ export function Appointments() {
 
     }, [business?.businessId]);
 
-    const confirmAppointment = async (scheduleId: string) => {
+    const confirmAppointment = async (scheduleId: string, status: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'PENDING') => {
 
-        setUpdating({ schedId: scheduleId, status: true });
+        setUpdating({ schedId: scheduleId, buttonId: status, status: true });
         
-        const url = `http://localhost:8080/api/schedule/${scheduleId}/CONFIRMED`;
+        const url = `http://localhost:8080/api/schedule/${scheduleId}/${status}`;
 
-        const result = await update(url, null);
+        try {
+            const result = await update(url, null);
 
-        if(result.status === 200) {
-            const sched: Appointment[] = appointments?.map(apt => {
-                if(apt.schedule.id === scheduleId) {
-                    apt.schedule.status = "CONFIRMED";
-                }
-                return apt;
-            })!;
-            setAppointments(sched);
+            if (result.status === 200) {
+                const sched: Appointment[] = appointments?.map(apt => {
+                    if (apt.schedule.id === scheduleId) {
+                        apt.schedule.status = status;
+                    }
+                    return apt;
+                })!;
+                setAppointments(sched);
+                setUpdating(null);
+            }
+        } catch (error) {
             setUpdating(null);
         }
 
@@ -73,7 +77,7 @@ export function Appointments() {
     const completeAppointment = async (scheduleId: string) => {
         const url = `http://localhost:8080/api/schedule/${scheduleId}/COMPLETED`;
 
-        setUpdating({ schedId: scheduleId, status: true });
+        setUpdating({ schedId: scheduleId, buttonId: 'COMPLETED', status: true });
 
         try {
             const result = await update(url, null);
@@ -245,12 +249,25 @@ export function Appointments() {
                             <div className='flex flex-col gap-2'>
                                 {apt.schedule.status === "CONFIRMED" && 
                                     <>
-                                    <button className='bg-[#c70000]/80 py-2 rounded-xs border hover:border-[#c70000] flex justify-center items-center gap-2 text-(--text-1) font-semibold'>missed appointment</button>
-                                    <button
-                                        className='py-2 text-(--text-1) font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border'
-                                        onClick={() => completeAppointment(apt.schedule.id)}
+                                    <button 
+                                        className={`bg-[#c70000]/80 py-2 rounded-xs border ${!hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-not-allowed' : 'cursor-pointer'} hover:border-[#c70000] flex justify-center items-center gap-2 text-(--text-1) font-semibold`}
+                                        onClick={() => confirmAppointment(apt.schedule.id, "MISSED")}
+                                        disabled={updating?.schedId === apt.schedule.id || !hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!)}
                                     >
-                                        {updating?.schedId === apt.schedule.id && updating?.status ?
+                                        {updating?.schedId === apt.schedule.id && updating?.buttonId === 'MISSED' && updating?.status ?
+                                            <div
+                                                className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
+                                            >
+
+                                            </div>
+                                            : <span>missed appointment</span>}
+                                    </button>
+                                    <button
+                                        className={`py-2 text-(--text-1) ${!hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-not-allowed' : 'cursor-pointer'} font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border`}
+                                        onClick={() => completeAppointment(apt.schedule.id)}
+                                        disabled={updating?.schedId === apt.schedule.id || !hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!)}
+                                    >
+                                        {updating?.schedId === apt.schedule.id && updating?.buttonId === 'COMPLETED' && updating?.status ?
                                             <div
                                                 className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
                                             >
@@ -264,10 +281,10 @@ export function Appointments() {
                                 <>
                                 <button
                                     className={`btn-primary rounded-xs py-2 font-bold tracking-tight`}
-                                    onClick={() => confirmAppointment(apt.schedule.id)}
-                                    disabled={updating?.schedId === apt.schedule.id && updating.status}
+                                    onClick={() => confirmAppointment(apt.schedule.id, "CONFIRMED")}
+                                    disabled={(updating?.schedId === apt.schedule.id && updating?.buttonId === 'CONFIRMED' && updating.status)}
                                 >
-                                    {updating?.schedId === apt.schedule.id && updating?.status ? 
+                                    {updating?.schedId === apt.schedule.id && updating?.buttonId === 'CONFIRMED' && updating?.status ? 
                                         <div
                                             className='rounded-[50%] mx-auto w-6 h-6 b border-2 border-b-(--teal) animate-spin'
                                         >

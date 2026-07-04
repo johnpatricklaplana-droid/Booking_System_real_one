@@ -160,9 +160,8 @@ public class ScheduleService {
         }
 
         if((status.equals(ScheduleStatus.COMPLETED) || status.equals(ScheduleStatus.MISSED)) && !isItTime(schedule.getStartsAt())) {
-                throw new InvalidInputsException("Appointment cannot be marked as completed before its scheduled start time.");
-            }
-        
+            throw new InvalidInputsException("Appointment cannot be marked as completed or missed before its scheduled start time.");
+        }
 
         schedule.setStatus(status.toString());
 

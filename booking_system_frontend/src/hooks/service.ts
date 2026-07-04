@@ -63,9 +63,12 @@ export function isToday(date: Date, timezone: string): boolean {
 
 }
 
-export function hasAppointmentPassed(date: Date): boolean {
+export function hasAppointmentPassed(date: Date, timezone: string): boolean {
 
-    return date.getTime() < new Date().getTime();
+    const appointmentDate = toZonedTime(date, timezone);
+    const now = toZonedTime(new Date(), timezone);
+
+    return appointmentDate.getTime() < now.getTime();
 }
 
 export function durationAsMinutes(serviceDuration: string) {

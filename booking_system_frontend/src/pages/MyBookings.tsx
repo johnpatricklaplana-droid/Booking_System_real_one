@@ -25,7 +25,7 @@ import { hasAppointmentPassed, isToday } from "../hooks/service";
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED";
+type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "MISSED";
 
 
 /* ------------------------------------------------------------------ */
@@ -59,6 +59,11 @@ const STATUS_META: Record<
     },
     CANCELLED: {
         label: "Cancelled",
+        icon: XCircle,
+        className: "bg-red-500/10 text-red-400/90 border-red-500/20",
+    }, 
+    MISSED: {
+        label: "Missed",
         icon: XCircle,
         className: "bg-red-500/10 text-red-400/90 border-red-500/20",
     }
@@ -229,6 +234,7 @@ const CARD_ACCENT: Record<BookingStatus, string> = {
     PENDING: "border-white/10 hover:border-white/20",
     COMPLETED: "border-emerald-500/15 hover:border-emerald-500/30",
     CANCELLED: "border-red-500/10 hover:border-red-500/25",
+    MISSED: "border-red-500/10 hover:border-red-500/25"
 };
 
 /** Secondary action differs by status; primary "View Booking" is always present. */
@@ -515,7 +521,7 @@ export default function MyBookingsPage() {
                     <SkeletonBookingCard />
                     <SkeletonBookingCard />
                 </div>
-            ) : hasAnyBookings ? (
+            ) : !hasAnyBookings ? (
                 <div className="mt-10">
                     <EmptyState />
                 </div>
