@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
+import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
+import com.example.demo.entity.ServiceReviews;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
+import com.example.demo.mapper.ServiceReviewMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
@@ -25,18 +28,21 @@ public class BusinessService {
     private final BusinessMapper businessMapper;
     private final BusinessServiceRepository businessServiceRepo;
     private final ScheduleRepository scheduleRepo;
+    private final ServiceReviewMapper serviceReviewMapper;
 
     public BusinessService(
         BusinessRepository businessRepository,
         BusinessMapper businessMapper,
         BusinessServiceRepository businessServiceRepo,
-        ScheduleRepository scheduleRepo
+        ScheduleRepository scheduleRepo,
+        ServiceReviewMapper serviceReviewMapper
     ) 
     {
         this.businessRepo = businessRepository;
         this.businessMapper = businessMapper;
         this.businessServiceRepo = businessServiceRepo;
         this.scheduleRepo = scheduleRepo;
+        this.serviceReviewMapper = serviceReviewMapper;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {

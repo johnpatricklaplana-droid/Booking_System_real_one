@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
-import type { Business, ServiceResponse, Staff, Time } from "../interfaces/Types";
+import type { Business, Review, ReviewWithUser, ServiceResponse, Staff, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
+import { getAverageRating } from "../hooks/service";
 
 function BookingResultModal ({ 
     serviceDetails, 
@@ -43,6 +44,7 @@ export function ServiceDetails() {
     const [serviceDetails, setServiceDetails] = useState<ServiceResponse | null>(null);
     const [business, setBusiness] = useState<Business | null>(null);
     const [staff, setStaff] = useState<Staff[] | null>(null);
+    const [rating, setRating] = useState<ReviewWithUser[] | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date>((new Date()));
     const [selectedTime, setSelectedTime] = useState<Time | null>(null);
     const [selectedStaff, setSelectedStaff] = useState<string>("");
@@ -80,6 +82,23 @@ export function ServiceDetails() {
             setServiceDetails(result.services);
         };
         
+        getIt();
+
+    }, [serviceId]);
+
+    useEffect(() => {
+        
+        if(!serviceId) return;
+
+        const url = `http://localhost:8080/api/review/services/${serviceId}`;
+
+        const getIt = async () => {
+            const result: ReviewWithUser[] = await get(url);
+
+            setRating(result);
+
+        };
+
         getIt();
 
     }, [serviceId]);
@@ -151,17 +170,17 @@ export function ServiceDetails() {
                             <div className="flex items-center gap-1.25">
                                 <div className="flex gap-0.5"><span className="star">★</span><span className="star">★</span><span
                                     className="star">★</span><span className="star">★</span><span className="star">★</span></div>
-                                <span className="text-[0.8125rem] font-semibold">4.9</span>
-                                <span className="text-[0.75rem] text-(--text-3)">(218 reviews)</span>
+                                <span className="text-[0.8125rem] text-(--text-2) font-semibold">{rating ? getAverageRating(rating?.map(r => r.review.rating)) : 'no rating'}</span>
+                                <span className="text-[0.75rem] text-(--text-3)">({rating?.length})</span>
                             </div>
                             <span className="inline-flex items-center gap-1 text-[0.75rem] font-bold py-0.75 px-2.25 rounded-[100px] tracking-widest bg-(--teal-dim) text-(--teal)">Open now</span>
                             <span className="text-[0.8125rem] text-(--text-3)">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" className="inline mr-1">
+                                    strokeWidth="2" className="inline mr-1">
                                     <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0Z" />
                                     <circle cx="12" cy="10" r="3" />
                                 </svg>
-                                todo: some address
+                                {business?.address.displayName}
                             </span>
                         </div>
                         <p className="text-[1rem] text-(--text-2) leading-[1.7] mb-10 max-w-140">
@@ -219,51 +238,24 @@ export function ServiceDetails() {
                         </div>
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">What clients say</p>
                         <div className="flex flex-col mb-8 gap-5">
-                            <div className="pb-5 border-b border-b-(--border)">
-                                <div className="gap-2.5 mb-2.5 flex items-center">
-                                    <img className="w-9 h-9 rounded-[50%] border border-(--border)" src="https://picsum.photos/200/300?random=2" alt="" />
-                                    <div>
-                                        <div className="text-[0.9rem] font-semibold">Aika C.</div>
-                                        <div className="text-[0.75rem] mt-0.5 text-(--text-3)">May 2026</div>
+                            {rating?.map((r) => 
+                                <div 
+                                    className="pb-5 border-b border-b-(--border)"
+                                    key={r.review.comment}
+                                >
+                                    <div className="gap-2.5 mb-2.5 flex items-center">
+                                        <img className="w-9 h-9 rounded-[50%] border border-(--border)" src={r.user.avatarUrl} alt="" />
+                                        <div>
+                                            <div className="text-[0.9rem] text-(--text-1) font-semibold">{r.user.firstName} {r.user.lastName}</div>
+                                            <div className="text-[0.75rem] mt-0.5 text-(--text-3)">{r.review.createdAt}</div>
+                                        </div>
+                                        <div className="flex gap-0.5 ml-auto"><span className="star">★</span><span
+                                            className="star">★</span><span className="star">★</span><span className="star">★</span><span
+                                                className="star">★</span></div>
                                     </div>
-                                    <div className="flex gap-0.5 ml-auto"><span className="star">★</span><span
-                                        className="star">★</span><span className="star">★</span><span className="star">★</span><span
-                                            className="star">★</span></div>
+                                    <p className="text-[0.875rem] text-(--text-2) tracking-wide">{r.review.comment}</p>
                                 </div>
-                                <p className="text-[0.875rem] text-(--text-2) tracking-wide">The nail art was absolutely stunning. The technician listened to
-                                    exactly what I wanted and delivered something even better. Clean studio, great vibes.
-                                </p>
-                            </div>
-                            <div className="pb-5 border-b border-b-(--border)">
-                                <div className="gap-2.5 mb-2.5 flex items-center">
-                                    <img className="w-9 h-9 rounded-[50%] border border-(--border)" src="https://picsum.photos/200/300?random=1" alt="" />
-                                    <div>
-                                        <div className="text-[0.9rem] font-semibold">Aika C.</div>
-                                        <div className="text-[0.75rem] mt-0.5 text-(--text-3)">May 2026</div>
-                                    </div>
-                                    <div className="flex gap-0.5 ml-auto"><span className="star">★</span><span
-                                        className="star">★</span><span className="star">★</span><span className="star">★</span><span
-                                            className="star">★</span></div>
-                                </div>
-                                <p className="text-[0.875rem] text-(--text-2) tracking-wide">The nail art was absolutely stunning. The technician listened to
-                                    exactly what I wanted and delivered something even better. Clean studio, great vibes.
-                                </p>
-                            </div>
-                            <div className="pb-5 border-b border-b-(--border)">
-                                <div className="gap-2.5 mb-2.5 flex items-center">
-                                    <img className="w-9 h-9 rounded-[50%] border border-(--border)" src="https://picsum.photos/200/300?random=4" alt="" />
-                                    <div>
-                                        <div className="text-[0.9rem] font-semibold">Aika C.</div>
-                                        <div className="text-[0.75rem] mt-0.5 text-(--text-3)">May 2026</div>
-                                    </div>
-                                    <div className="flex gap-0.5 ml-auto"><span className="star">★</span><span
-                                        className="star">★</span><span className="star">★</span><span className="star">★</span><span
-                                            className="star">★</span></div>
-                                </div>
-                                <p className="text-[0.875rem] text-(--text-2) tracking-wide">The nail art was absolutely stunning. The technician listened to
-                                    exactly what I wanted and delivered something even better. Clean studio, great vibes.
-                                </p>
-                            </div>
+                            )}
                         </div>
                     </div>
                     <div className="sticky top-[25%]">

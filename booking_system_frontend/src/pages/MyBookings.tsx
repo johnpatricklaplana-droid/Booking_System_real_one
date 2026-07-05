@@ -18,7 +18,7 @@ import {
     CalendarX,
 } from "lucide-react";
 import { get } from "../api/api";
-import type { CustomerAppointments } from "../interfaces/Types";
+import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types";
 import { durationAsMinutes, isToday } from "../hooks/service";
 import { formatDuration } from "../helper/convertSome";
 import ReviewModal from "../components/ReviewModal";
@@ -238,7 +238,21 @@ const CARD_ACCENT: Record<BookingStatus, string> = {
     MISSED: "border-red-500/10 hover:border-red-500/25"
 };
 
-function BookingCard({ booking, setOpenReview }: { booking: CustomerAppointments, setOpenReview: React.MouseEventHandler<HTMLButtonElement> }) {
+function BookingCard({ 
+    booking, 
+    setOpenReview, 
+    setServiceToReview, 
+    service,
+    schedId,
+    setSchedId,
+}: { 
+    booking: CustomerAppointments, 
+    setOpenReview: any,
+    setServiceToReview: any,
+    service: ServiceResponse | null,
+    schedId: string;
+    setSchedId: any;
+}) {
     return (
         <article
             className={`group flex flex-col overflow-hidden rounded-2xl border bg-(--surface) transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-16px_rgba(0,0,0,0.6)] sm:flex-row sm:items-stretch ${CARD_ACCENT[booking.schedule.status]}`}
@@ -288,7 +302,12 @@ function BookingCard({ booking, setOpenReview }: { booking: CustomerAppointments
                         </OutlinedButton>
                         <OutlinedButton
                             className="flex-1 px-3! text-xs"
-                            onClick={setOpenReview}
+                            onClick={() => {
+                                    setOpenReview(true)
+                                    setServiceToReview(service)
+                                    setSchedId(schedId)
+                                }
+                            }
                         >
                             <MessageSquarePlus className="h-3.5 w-3.5" />
                             Review
@@ -437,6 +456,8 @@ export default function MyBookingsPage() {
     const [isLoading] = useState(false);
     const [appointments, setAppointments] = useState<CustomerAppointments[] | null>(null);
     const [openReview, setOpenReview] = useState<boolean>(false);
+    const [serviceToReview, setServiceToReview] = useState<ServiceResponse | null>(null);
+    const [schedIdToReview, setSchedIdToReview] = useState<string>("");
 
     useEffect(() => {
         
@@ -452,8 +473,6 @@ export default function MyBookingsPage() {
         getIt();
 
     }, []);
-
-    console.log(appointments);
 
     const upcomingBooking = useMemo(() => {
 
@@ -480,6 +499,7 @@ export default function MyBookingsPage() {
     const hasAnyBookings =
         todayBooking.length > 0 || upcomingBooking.length > 0 || filteredHistory.length > 0;
 
+    console.log(serviceToReview);
 
     const showToday: boolean = (activeTab === "all" || activeTab === "today") && todayBooking.length > 0;
 
@@ -489,7 +509,7 @@ export default function MyBookingsPage() {
         @keyframes shimmer { 100% { transform: translateX(100%); } }
       `}</style>
 
-            {openReview && <ReviewModal onClose={() => setOpenReview(false)} />}
+            {openReview && <ReviewModal schedId={schedIdToReview}  service={serviceToReview} onClose={() => setOpenReview(false)} />}
 
             {/* Header */}
             <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
@@ -541,7 +561,7 @@ export default function MyBookingsPage() {
                             <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
                             <div className="mt-5 space-y-4">
                                 {upcomingBooking.map((ub) => (
-                                    <BookingCard key={ub.schedule.id} setOpenReview={() => setOpenReview(true)} booking={ub} />
+                                    <BookingCard schedId="" setSchedId={null} service={null} setServiceToReview={null} key={ub.schedule.id} setOpenReview={() => setOpenReview(true)} booking={ub} />
                                 ))}
                             </div>
                         </div>
@@ -553,7 +573,7 @@ export default function MyBookingsPage() {
                             <h2 className="text-xl font-semibold text-white">Booking History</h2>
                             <div className="mt-5 space-y-4">
                                 {filteredHistory.map((b) => (
-                                    <BookingCard setOpenReview={() => setOpenReview(true)} key={b.schedule.id} booking={b} />
+                                    <BookingCard schedId={b.schedule.id} setSchedId={() => setSchedIdToReview(b.schedule.id)} service={b.service} setServiceToReview={() => setServiceToReview(b.service)} setOpenReview={() => setOpenReview(true)} key={b.schedule.id} booking={b} />
                                 ))}
                             </div>
                         </div>

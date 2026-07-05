@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Star, X } from "lucide-react";
+import type { ServiceResponse } from "../interfaces/Types";
+import { post } from "../api/api";
 
 interface ReviewModalProps {
     open: boolean;
@@ -8,10 +10,38 @@ interface ReviewModalProps {
     serviceName: string;
 }
 
-export default function ReviewModal({ onClose }: { onClose: React.MouseEventHandler<HTMLButtonElement> }) {
+export default function ReviewModal({ 
+    onClose, 
+    service,
+    schedId
+}: 
+    { 
+        onClose: React.MouseEventHandler<HTMLButtonElement>, 
+        service: ServiceResponse | null,
+        schedId: string,
+}) {
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState("");
+
+    const addReview = async () => {
+        const url = "http://localhost:8080/api/review";
+
+        const body = {
+            rating: rating,
+            comment: comment,
+            scheduleId: schedId,
+        };
+
+        const result = await post(url, body);
+
+        if(result.status === 201) {
+            console.log("good one");
+        } else {
+            console.log("bad one");
+        }
+
+    };
 
     if (!open) return null;
 
@@ -33,7 +63,7 @@ export default function ReviewModal({ onClose }: { onClose: React.MouseEventHand
                 </button>
 
                 <h3 className="text-lg font-semibold text-white">Leave a Review</h3>
-                <p className="mt-1 text-sm text-neutral-400">Service name</p>
+                <p className="mt-1 text-sm text-neutral-400">{service?.serviceName}</p>
 
                 {/* Stars */}
                 <div className="mt-6 flex items-center justify-center gap-2">
@@ -84,6 +114,7 @@ export default function ReviewModal({ onClose }: { onClose: React.MouseEventHand
                     </button>
                     <button
                         disabled={rating === 0}
+                        onClick={addReview}
                         className="flex-1 rounded-xl bg-(--gold) px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
                     >
                         Submit Review

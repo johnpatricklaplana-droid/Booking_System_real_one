@@ -11,6 +11,17 @@ export interface ServiceResponse {
     status: ServiceStatus;
 }
 
+export interface Review {
+    comment: string;
+    createdAt: string;
+    rating: number;
+}
+
+export interface ReviewWithUser {
+    review: Review;
+    user: UserPublic;
+}
+
 export interface Time {
     value: string;
     label: string;

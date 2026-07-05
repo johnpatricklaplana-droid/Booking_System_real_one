@@ -79,3 +79,12 @@ export function durationAsMinutes(serviceDuration: string) {
     return dur.asMinutes().toString();
 
 }
+
+export function getAverageRating(rating: number[]): number {
+
+    const totalRating = rating.reduce((prev, cur) => {
+        return prev + cur;
+    }, 0);
+
+    return totalRating / rating.length;
+}

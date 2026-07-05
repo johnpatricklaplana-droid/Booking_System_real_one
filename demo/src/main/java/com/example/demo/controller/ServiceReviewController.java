@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.request.AddServicesReviewDto;
 import com.example.demo.dto.response.AuthResponse;
+import com.example.demo.dto.response.ServiceReviewWithUser;
 import com.example.demo.service.ServiceReviewService;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 public class ServiceReviewController {
@@ -33,6 +39,12 @@ public class ServiceReviewController {
             .status(HttpStatus.CREATED)
             .body(new AuthResponse(201, "created one"));
     }
-    
 
+    @GetMapping("/api/review/services/{serviceId}")
+    public ResponseEntity<List<ServiceReviewWithUser>> getServiceReviews(@PathVariable UUID serviceId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(reviewService.getServiceReviews(serviceId));
+    }
+    
 }

@@ -49,10 +49,6 @@ import lombok.Setter;
         @NamedSubgraph(
             name = "business-address", 
             attributeNodes = @NamedAttributeNode("address")
-        ),
-        @NamedSubgraph(
-            name = "staff-unavailable",
-            attributeNodes = @NamedAttributeNode("unavailable")
         )
     }
 )
@@ -100,5 +96,8 @@ public class BusinessServices {
 
     @OneToMany(mappedBy = "service")
     private List<Schedule> schedules;
+
+    @OneToMany(mappedBy = "services")
+    private List<ServiceReviews> reviews;
 
 }

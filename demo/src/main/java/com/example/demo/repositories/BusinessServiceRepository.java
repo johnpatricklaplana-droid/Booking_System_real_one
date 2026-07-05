@@ -20,6 +20,7 @@ public interface BusinessServiceRepository extends JpaRepository<BusinessService
     @Query("SELECT bs FROM BusinessServices bs")
     List<BusinessServices> findAllWithBusinessAndAddress();
 
+    @EntityGraph("ServiceDetails")
     @Query("SELECT s FROM BusinessServices s WHERE s.id = :serviceId")
     BusinessServices getServiceDetails(@Param("serviceId") UUID serviceId);
     

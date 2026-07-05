@@ -10,7 +10,7 @@ const statusIcons = {
     CONFIRMED: CheckCircle,
     PENDING: AlertCircle,
     "0": CheckCircle,
-    CANCELLED: XCircle,
+    MISSED: XCircle,
     COMPLETED: CheckCircle,
 };
 
@@ -18,7 +18,7 @@ const statusColors = {
     CONFIRMED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     PENDING: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
     "0": 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    CANCELLED: 'bg-red-500/10 text-red-400 border-red-500/20',
+    MISSED: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
 export function Appointments() {

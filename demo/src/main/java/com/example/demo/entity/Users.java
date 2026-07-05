@@ -61,4 +61,7 @@ public class Users {
     @OneToMany(mappedBy = "user")
     private List<Schedule> schedules;
 
+    @OneToMany(mappedBy = "user")
+    private List<ServiceReviews> reviews;
+
 }
