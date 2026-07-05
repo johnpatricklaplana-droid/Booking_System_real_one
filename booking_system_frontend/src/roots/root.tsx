@@ -15,7 +15,6 @@ import { Settings } from "../pages/business/Settings";
 import { HomePage } from "../pages/CustomerHomePage";
 import { CustomerGuard } from "./CustomerGuard";
 import ServiceForm from "../pages/business/AddServices";
-import JobsPage from "../pages/FindJobs";
 import { ProfilePage } from "../pages/Profile";
 import BusinessProfilePage from "../pages/business/BusinessProfile";
 import StaffManagementPage from "../pages/business/Staff";
@@ -27,6 +26,7 @@ export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
     { path: '/login', Component: Login },
     { path: '/signup', Component: Signup },
+    { path: 'create-business', Component: BusinessOnboardingWizard },
 
     {
         path: '/customer',
@@ -34,8 +34,6 @@ export const router = createBrowserRouter([
         children: [
             { path: 'home', Component: HomePage },
             { path: 'profile', Component: ProfilePage },
-            { path: 'create-business', Component: BusinessOnboardingWizard },
-            { path: 'jobs', Component: JobsPage },
             { path: 'explore', Component: ExploreServices },
             { path: 'service/:serviceId', Component: ServiceDetails },
             { path: 'bookings', Component: MyBookingsPage }

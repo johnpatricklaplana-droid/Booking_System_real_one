@@ -11,7 +11,6 @@ const navItems = [
     { icon: Briefcase, label: 'Services', path: 'services' },
     { icon: TrendingUp, label: 'Analytics', path: 'analytics' },
     { icon: BarChart3, label: 'Reports', path: 'reports' },
-    { icon: BarChart3, label: 'job-postings', path: 'job-postings' },
     { icon: BarChart3, label: 'staff', path: 'staff' },
     { icon: Settings, label: 'Settings', path: 'settings' },
     { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
@@ -20,8 +19,6 @@ const navItems = [
 export function Sidebar() {
 
     const { setUser } = useUser();
-
-    const navigate = useNavigate();
 
     const location = useLocation();
 

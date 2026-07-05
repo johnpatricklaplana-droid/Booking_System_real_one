@@ -19,7 +19,9 @@ import {
 } from "lucide-react";
 import { get } from "../api/api";
 import type { CustomerAppointments } from "../interfaces/Types";
-import { hasAppointmentPassed, isToday } from "../hooks/service";
+import { durationAsMinutes, isToday } from "../hooks/service";
+import { formatDuration } from "../helper/convertSome";
+import ReviewModal from "../components/ReviewModal";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -45,7 +47,7 @@ const STATUS_META: Record<
     CONFIRMED: {
         label: "Upcoming",
         icon: Clock,
-        className: "bg-[var(--teal)]/10 text-[var(--teal)] border-[var(--teal)]/30",
+        className: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
     },
     PENDING: {
         label: "Today",
@@ -55,7 +57,7 @@ const STATUS_META: Record<
     COMPLETED: {
         label: "Completed",
         icon: CheckCircle,
-        className: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
+        className: "bg-blue-500/10 text-blue-400 border-blue-500/20",
     },
     CANCELLED: {
         label: "Cancelled",
@@ -184,7 +186,6 @@ function TodayBookingCard({ booking }: { booking: CustomerAppointments }) {
                         </h3>
 
                         <div className="mt-1.5 flex items-center gap-2 text-sm">
-                            {booking.schedule.startsAt}
                             <span className="text-(--gold) font-medium">{new Date(booking.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             <span className="text-neutral-600">·</span>
                             <span className="text-neutral-400">Starts TODO: countdown</span>
@@ -199,7 +200,7 @@ function TodayBookingCard({ booking }: { booking: CustomerAppointments }) {
                         <div className="grid grid-cols-2 gap-x-4 gap-y-3.5">
                             <IconRow icon={MapPin}>{booking.business.address.displayName}</IconRow>
                             <IconRow icon={User}>{booking.staff.fullName}</IconRow>
-                            <IconRow icon={Clock}>{booking.service.duration}</IconRow>
+                            <IconRow icon={Clock}>{formatDuration(Number(durationAsMinutes(booking.service.duration)))}</IconRow>
                             <IconRow icon={QrCode}>IDK: confirmationCode</IconRow>
                         </div>
                     </div>
@@ -237,40 +238,7 @@ const CARD_ACCENT: Record<BookingStatus, string> = {
     MISSED: "border-red-500/10 hover:border-red-500/25"
 };
 
-/** Secondary action differs by status; primary "View Booking" is always present. */
-function SecondaryAction({ status }: { status: BookingStatus }) {
-    if (status === "CONFIRMED") {
-        return (
-            <div className="flex gap-2">
-                <OutlinedButton className="flex-1 px-3! text-xs">Reschedule</OutlinedButton>
-                <GhostDangerButton className="flex-1 !px-3 text-xs">Cancel</GhostDangerButton>
-            </div>
-        );
-    }
-    if (status === "COMPLETED") {
-        return (
-            <div className="flex gap-2">
-                <OutlinedButton className="flex-1 px-3! text-xs">
-                    <RotateCcw className="h-3.5 w-3.5" />
-                    Book Again
-                </OutlinedButton>
-                <OutlinedButton className="flex-1 px-3! text-xs">
-                    <MessageSquarePlus className="h-3.5 w-3.5" />
-                    Review
-                </OutlinedButton>
-            </div>
-        );
-    }
-    // cancelled / no-show
-    return (
-        <OutlinedButton className="w-full px-3! text-xs">
-            <RotateCcw className="h-3.5 w-3.5" />
-            Book Again
-        </OutlinedButton>
-    );
-}
-
-function BookingCard({ booking }: { booking: CustomerAppointments }) {
+function BookingCard({ booking, setOpenReview }: { booking: CustomerAppointments, setOpenReview: React.MouseEventHandler<HTMLButtonElement> }) {
     return (
         <article
             className={`group flex flex-col overflow-hidden rounded-2xl border bg-(--surface) transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-16px_rgba(0,0,0,0.6)] sm:flex-row sm:items-stretch ${CARD_ACCENT[booking.schedule.status]}`}
@@ -300,13 +268,39 @@ function BookingCard({ booking }: { booking: CustomerAppointments }) {
             <div className="flex shrink-0 flex-col justify-center gap-3 border-t border-white/10 p-4 sm:w-52 sm:border-l sm:border-t-0 sm:p-5">
                 <div className="flex items-center justify-between sm:flex-col sm:items-end sm:gap-2">
                     <StatusBadge status={booking.schedule.status} />
-                    <span className="text-lg font-semibold text-white">{booking.service.price}</span>
+                    <span className="text-lg font-semibold text-white">₱{booking.service.price}</span>
                 </div>
                 <OutlinedButton className="w-full">
                     View Booking
                     <ChevronRight className="h-4 w-4" />
                 </OutlinedButton>
-                <SecondaryAction status={booking.schedule.status} />
+                {booking.schedule.status === "CONFIRMED" && 
+                    <div className="flex gap-2">
+                        <OutlinedButton className="flex-1 px-3! text-xs">Reschedule</OutlinedButton>
+                        <GhostDangerButton className="flex-1 px-3! text-xs">Cancel</GhostDangerButton>
+                    </div>
+                }
+                {booking.schedule.status === "COMPLETED" && 
+                    <div className="flex gap-2">
+                        <OutlinedButton className="flex-1 px-3! text-xs">
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            Book Again
+                        </OutlinedButton>
+                        <OutlinedButton
+                            className="flex-1 px-3! text-xs"
+                            onClick={setOpenReview}
+                        >
+                            <MessageSquarePlus className="h-3.5 w-3.5" />
+                            Review
+                        </OutlinedButton>
+                    </div>
+                }
+                {booking.schedule.status === "CANCELLED" && 
+                    <OutlinedButton className="w-full px-3! text-xs">
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Book Again
+                    </OutlinedButton>
+                }
             </div>
         </article>
     );
@@ -316,19 +310,19 @@ function BookingCard({ booking }: { booking: CustomerAppointments }) {
 /*  Skeleton loaders                                                    */
 /* ------------------------------------------------------------------ */
 
-function Shimmer({ className = "" }: { className?: string }) {
+function Shimmer({ className = "" }: Readonly<{ className?: string }>) {
     return (
         <div
-            className={`relative overflow-hidden rounded-lg bg-white/[0.05] ${className}`}
+            className={`relative overflow-hidden rounded-lg bg-white/5 ${className}`}
         >
-            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/6 to-transparent" />
         </div>
     );
 }
 
 function SkeletonBookingCard() {
     return (
-        <div className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] sm:flex-row">
+        <div className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-(--surface) sm:flex-row">
             <Shimmer className="h-40 w-full rounded-none sm:h-auto sm:w-36" />
             <div className="flex-1 space-y-3 p-5">
                 <Shimmer className="h-5 w-2/3" />
@@ -352,7 +346,7 @@ function EmptyState() {
     return (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-[var(--surface)] px-6 py-20 text-center">
             <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-[var(--gold)]/25 bg-[var(--gold)]/[0.06]">
-                <CalendarX className="h-9 w-9 text-[var(--gold)]" strokeWidth={1.5} />
+                <CalendarX className="h-9 w-9 text-(--gold)" strokeWidth={1.5} />
             </div>
             <h3 className="text-xl font-semibold text-white">No bookings yet</h3>
             <p className="mt-2 max-w-sm text-sm text-neutral-400">
@@ -390,8 +384,8 @@ function StatusTabs({
                         key={tab.key}
                         onClick={() => onChange(tab.key)}
                         className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${isActive
-                                ? "border-[var(--gold)]/60 bg-[var(--gold)]/[0.12] text-white shadow-[0_0_16px_-6px_var(--gold)]"
-                                : "border-white/10 bg-[var(--surface)] text-neutral-400 hover:border-white/25 hover:text-neutral-200"
+                                ? "border-(--gold)/60 bg-(--gold)/12 text-white shadow-[0_0_16px_-6px_var(--gold)]"
+                                : "border-white/10 bg-(--surface) text-neutral-400 hover:border-white/25 hover:text-neutral-200"
                             }`}
                     >
                         {tab.label}
@@ -410,24 +404,26 @@ function SearchAndFilters() {
                 <input
                     type="text"
                     placeholder="Search bookings..."
-                    className="w-full rounded-xl border border-white/10 bg-[var(--surface)] py-2.5 pl-10 pr-4 text-sm text-neutral-200 placeholder:text-neutral-500 transition-all duration-200 focus:border-[var(--gold)]/50 focus:outline-none focus:ring-1 focus:ring-[var(--gold)]/30"
+                    className="w-full rounded-xl border border-white/10 bg-(--surface) py-2.5 pl-10 pr-4 text-sm text-neutral-200 placeholder:text-neutral-500 transition-all duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-[var(--gold)]/30"
                 />
             </div>
 
-            <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[var(--surface)] px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-44">
-                <Calendar className="h-4 w-4 text-neutral-500" />
-                Date
-            </button>
+            <div className="flex gap-3">
+                <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-(--surface) px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-44">
+                    <Calendar className="h-4 w-4 text-neutral-500" />
+                    Date
+                </button>
 
-            <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[var(--surface)] px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-44">
-                <Filter className="h-4 w-4 text-neutral-500" />
-                Category
-            </button>
+                <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-(--surface) px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-44">
+                    <Filter className="h-4 w-4 text-neutral-500" />
+                    Category
+                </button>
 
-            <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[var(--surface)] px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-52">
-                <ArrowUpDown className="h-4 w-4 text-neutral-500" />
-                Newest first
-            </button>
+                <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[var(--surface)] px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-52">
+                    <ArrowUpDown className="h-4 w-4 text-neutral-500" />
+                    Newest first
+                </button>
+            </div>
         </div>
     );
 }
@@ -440,6 +436,7 @@ export default function MyBookingsPage() {
     const [activeTab, setActiveTab] = useState<string>("all");
     const [isLoading] = useState(false);
     const [appointments, setAppointments] = useState<CustomerAppointments[] | null>(null);
+    const [openReview, setOpenReview] = useState<boolean>(false);
 
     useEffect(() => {
         
@@ -492,6 +489,8 @@ export default function MyBookingsPage() {
         @keyframes shimmer { 100% { transform: translateX(100%); } }
       `}</style>
 
+            {openReview && <ReviewModal onClose={() => setOpenReview(false)} />}
+
             {/* Header */}
             <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
                 <div>
@@ -542,7 +541,7 @@ export default function MyBookingsPage() {
                             <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
                             <div className="mt-5 space-y-4">
                                 {upcomingBooking.map((ub) => (
-                                    <BookingCard key={ub.schedule.id} booking={ub} />
+                                    <BookingCard key={ub.schedule.id} setOpenReview={() => setOpenReview(true)} booking={ub} />
                                 ))}
                             </div>
                         </div>
@@ -554,7 +553,7 @@ export default function MyBookingsPage() {
                             <h2 className="text-xl font-semibold text-white">Booking History</h2>
                             <div className="mt-5 space-y-4">
                                 {filteredHistory.map((b) => (
-                                    <BookingCard key={b.schedule.id} booking={b} />
+                                    <BookingCard setOpenReview={() => setOpenReview(true)} key={b.schedule.id} booking={b} />
                                 ))}
                             </div>
                         </div>

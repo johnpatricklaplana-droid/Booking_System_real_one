@@ -1,4 +1,4 @@
-import { Search, Filter, Download, Plus, Mail, Phone, Calendar, DollarSign } from 'lucide-react';
+import { Search, Filter, Download, Plus, Mail, Phone } from 'lucide-react';
 
 const customers = [
     {
@@ -94,7 +94,7 @@ export function Customers() {
                         <Download size={16} />
                         Export
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
                         <Plus size={16} strokeWidth={2} />
                         Add Customer
                     </button>
@@ -114,40 +114,6 @@ export function Customers() {
                     <Filter size={16} />
                     Filter
                 </button>
-            </div>
-
-            <div className="grid grid-cols-4 gap-6">
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                    <div className="w-10 h-10 rounded-lg bg-[#c9a87c]/10 flex items-center justify-center mb-4">
-                        <DollarSign size={20} className="text-[#c9a87c]" strokeWidth={1.5} />
-                    </div>
-                    <p className="text-[13px] text-[#9a9aa3] mb-1">Total Revenue</p>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">$10,560</p>
-                </div>
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                    <div className="w-10 h-10 rounded-lg bg-[#9d8fb5]/10 flex items-center justify-center mb-4">
-                        <Calendar size={20} className="text-[#9d8fb5]" strokeWidth={1.5} />
-                    </div>
-                    <p className="text-[13px] text-[#9a9aa3] mb-1">Total Visits</p>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">98</p>
-                </div>
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                    <div className="w-10 h-10 rounded-lg bg-[#6b9fa3]/10 flex items-center justify-center mb-4">
-                        <span className="text-[#6b9fa3] text-[14px] font-medium">VIP</span>
-                    </div>
-                    <p className="text-[13px] text-[#9a9aa3] mb-1">VIP Customers</p>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">12</p>
-                </div>
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                    <div className="w-10 h-10 rounded-lg bg-[#b89c7e]/10 flex items-center justify-center mb-4">
-                        <span className="text-[#b89c7e] text-[14px] font-medium">Avg</span>
-                    </div>
-                    <p className="text-[13px] text-[#9a9aa3] mb-1">Avg. Spending</p>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">$1,760</p>
-                </div>
             </div>
 
             <div className="grid grid-cols-3 gap-6">
@@ -170,7 +136,7 @@ export function Customers() {
                                 </div>
                             </div>
                             {customer.status === 'vip' && (
-                                <div className="px-2 py-0.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-full text-[10px] font-medium text-[#0a0a0c]">
+                                <div className="px-2 py-0.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-full text-[10px] font-medium text-[#0a0a0c]">
                                     VIP
                                 </div>
                             )}

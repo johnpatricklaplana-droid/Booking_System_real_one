@@ -11,6 +11,7 @@ import { get } from '../../api/api';
 import type { ServiceResponse, ServiceStatus } from '../../interfaces/Types';
 import { getServices } from '../../hooks/service';
 import { formatDuration } from '../../helper/convertSome';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------------
 // Types
@@ -78,6 +79,8 @@ function BusinessSwitcher({
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         function handleClick(e: MouseEvent) {
             if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -126,13 +129,14 @@ function BusinessSwitcher({
                                             <p className="text-[11px] text-[#9a9aa3]">{b.status}</p>
                                         </div>
                                     </div>
-                                    {true && <Check size={15} className="text-[#d4af37] shrink-0" />}
+                                    <Check size={15} className="text-[#d4af37] shrink-0" />
                                 </button>
                             );
                         })}
                     </div>
                     <div className="border-t border-[rgba(255,255,255,0.06)] p-1.5">
                         <button
+                            onClick={() => navigate('/create-business')}
                             className="w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-[13px] text-[#9a9aa3] hover:text-[#e8e8ea] hover:bg-[#1a1a1d] transition-colors"
                         >
                             <Plus size={15} />

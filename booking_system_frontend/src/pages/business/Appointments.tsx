@@ -1,10 +1,10 @@
-import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, Mail, Trash2 } from 'lucide-react';
+import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
-import { durationAsMinutes, hasAppointmentPassed, isToday } from '../../hooks/service';
+import { durationAsMinutes, hasAppointmentPassed } from '../../hooks/service';
 
 const statusIcons = {
     CONFIRMED: CheckCircle,
@@ -70,6 +70,7 @@ export function Appointments() {
             }
         } catch (error) {
             setUpdating(null);
+            console.log(error);
         }
 
     }
@@ -120,7 +121,7 @@ export function Appointments() {
                         <Download size={16} />
                         Export
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
                         <Plus size={16} strokeWidth={2} />
                         New Appointment
                     </button>
@@ -250,7 +251,7 @@ export function Appointments() {
                                 {apt.schedule.status === "CONFIRMED" && 
                                     <>
                                     <button 
-                                        className={`bg-[#c70000]/80 py-2 rounded-xs border ${!hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-not-allowed' : 'cursor-pointer'} hover:border-[#c70000] flex justify-center items-center gap-2 text-(--text-1) font-semibold`}
+                                        className={`bg-[#c70000]/80 py-2 rounded-xs border ${hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-pointer' : 'cursor-not-allowed'} hover:border-[#c70000] flex justify-center items-center gap-2 text-(--text-1) font-semibold`}
                                         onClick={() => confirmAppointment(apt.schedule.id, "MISSED")}
                                         disabled={updating?.schedId === apt.schedule.id || !hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!)}
                                     >
@@ -263,7 +264,7 @@ export function Appointments() {
                                             : <span>missed appointment</span>}
                                     </button>
                                     <button
-                                        className={`py-2 text-(--text-1) ${!hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-not-allowed' : 'cursor-pointer'} font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border`}
+                                        className={`py-2 text-(--text-1) ${hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-pointer' : 'cursor-not-allowed'} font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border`}
                                         onClick={() => completeAppointment(apt.schedule.id)}
                                         disabled={updating?.schedId === apt.schedule.id || !hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!)}
                                     >
@@ -306,14 +307,14 @@ export function Appointments() {
 
 }
 
-function ErrorMessage ({ error }: { error: string }) {
+function ErrorMessage ({ error }: Readonly<{ error: string }>) {
     return (
         <div className="w-95 rounded-2xl border bg-[#221214] border-[#6b1f28] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.6)] p-5 flex gap-4 items-start fixed z-50 bottom-4 right-4 overflow-hidden opacity-0 translate-y-2 animate-[fade-in_0.4s_ease-out_forwards] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.75)] hover:-translate-y-0.5">
-            <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#e0453f]/80 via-[#c93a35] to-[#e0453f]/40" />
+            <div className="absolute left-0 top-0 bottom-0 w-0.75 bg-linear-to-b from-[#e0453f]/80 via-[#c93a35] to-[#e0453f]/40" />
 
-            <div className="absolute inset-0 rounded-2xl pointer-events-none ring-1 ring-inset ring-[#d4af37]/[0.08]" />
+            <div className="absolute inset-0 rounded-2xl pointer-events-none ring-1 ring-inset ring-[#d4af37]/8" />
 
-            <div className="flex-shrink-0 mt-0.5">
+            <div className="shrink-0 mt-0.5">
                 <div className="w-9 h-9 rounded-full bg-[#c93a35]/10 border border-[#c93a35]/20 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e0645f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" />
@@ -330,10 +331,10 @@ function ErrorMessage ({ error }: { error: string }) {
                 <p className="mt-1.5 text-[13px] leading-relaxed text-[#a8a5a0] font-normal">
                     {error}
                 </p>
-                <div className="mt-3 h-px w-full bg-gradient-to-r from-[#d4af37]/20 via-[#d4af37]/5 to-transparent" />
+                <div className="mt-3 h-px w-full bg-linear-to-r from-[#d4af37]/20 via-[#d4af37]/5 to-transparent" />
             </div>
 
-            <button className="flex-shrink-0 mt-0.5 w-6 h-6 rounded-md flex items-center justify-center text-[#6b6864] hover:text-[#d4af37] hover:bg-white/[0.04] transition-colors duration-200">
+            <button className="shrink-0 mt-0.5 w-6 h-6 rounded-md flex items-center justify-center text-[#6b6864] hover:text-[#d4af37] hover:bg-white/4 transition-colors duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
