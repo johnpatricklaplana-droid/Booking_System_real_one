@@ -12,6 +12,7 @@ import com.example.demo.entity.BusinessServices;
 
 public interface BusinessServiceRepository extends JpaRepository<BusinessServices, UUID> {
 
+    @EntityGraph("serviceWithRating")
     List<BusinessServices> findByBusiness_Id(UUID businessId);
 
     long countByBusiness_IdAndIdIn(UUID businessId, List<UUID> serviceId);

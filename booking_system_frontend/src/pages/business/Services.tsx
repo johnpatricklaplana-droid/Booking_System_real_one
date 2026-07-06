@@ -2,7 +2,7 @@ import { Search, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
 import { useEffect, useState } from 'react';
-import type { ServiceResponse } from '../../interfaces/Types';
+import type { ServiceWithRatings } from '../../interfaces/Types';
 import { useUser } from '../../provider/UserContext';
 import { getServices } from '../../hooks/service';
 
@@ -12,7 +12,7 @@ export function Services() {
 
     const business = useUser().activeBusiness;
 
-    const [services, setServices] = useState<ServiceResponse[] | null>(null);
+    const [services, setServices] = useState<ServiceWithRatings[] | null>(null);
 
     useEffect(() => {
 
@@ -25,8 +25,6 @@ export function Services() {
         getIt();
 
     }, [business?.businessId]);
-
-    console.log(services);
 
     const navigate = useNavigate();
 
@@ -77,7 +75,7 @@ export function Services() {
 
             <div className="grid grid-cols-3 gap-6">
                 {services?.map((service) => (
-                    <ServiceBox services={service}  />
+                    <ServiceBox servicesWithRatings={service}  />
                 ))}
             </div>
         </div>

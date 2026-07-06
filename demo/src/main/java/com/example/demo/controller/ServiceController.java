@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
+import com.example.demo.dto.response.ServiceWithRatings;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.service.BusinessService;
 
@@ -25,7 +26,7 @@ public class ServiceController {
     BusinessService businessService;
     
     @GetMapping("/api/business/services/{businessId}")
-    public ResponseEntity<List<ServicesDetailsDto>> getBusinessServices(@PathVariable UUID businessId) {
+    public ResponseEntity<List<ServiceWithRatings>> getBusinessServices(@PathVariable UUID businessId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(businessService.getServices(businessId));

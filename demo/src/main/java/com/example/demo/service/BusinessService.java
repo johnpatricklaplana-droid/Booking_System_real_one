@@ -11,6 +11,7 @@ import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
+import com.example.demo.dto.response.ServiceWithRatings;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.BusinessServices;
@@ -55,12 +56,18 @@ public class BusinessService {
         
     }
 
-    public List<ServicesDetailsDto> getServices(UUID businessId) {
+    public List<ServiceWithRatings> getServices(UUID businessId) {
         
         List<BusinessServices> services = businessServiceRepo.findByBusiness_Id(businessId);
 
         return services.stream()
-            .map(s -> businessMapper.toBusinessServices(s))
+            .map(s -> {
+                ServicesDetailsDto service = businessMapper.toBusinessServices(s);
+                List<ServiceReviewDto> review = s.getReviews().stream()
+                    .map(rev -> serviceReviewMapper.toServiceReviewDto(rev))
+                    .toList();
+                return new ServiceWithRatings(review, service);
+            })
             .toList();
 
     }

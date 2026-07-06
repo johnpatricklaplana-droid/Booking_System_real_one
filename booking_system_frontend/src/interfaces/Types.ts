@@ -11,6 +11,11 @@ export interface ServiceResponse {
     status: ServiceStatus;
 }
 
+export interface ServiceWithRatings {
+    services: ServiceResponse;
+    review: Review[];
+}
+
 export interface ServiceWithBusiness {
     services: ServiceResponse;
     business: Business;

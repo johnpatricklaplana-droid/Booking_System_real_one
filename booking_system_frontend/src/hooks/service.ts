@@ -1,28 +1,31 @@
 import dayjs from "dayjs";
 import { get } from "../api/api";
-import type { ServiceResponse, ServiceWithBusiness } from "../interfaces/Types";
+import type { ServiceWithBusiness, ServiceWithRatings } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
 
-export async function getServices(businessId: string) {
+export async function getServices(businessId: string): Promise<ServiceWithRatings[]> {
     const url = `http://localhost:8080/api/business/services/${businessId}`;
     
-    const services: ServiceResponse[] = await get(url);
+    const servicesWithRatings: ServiceWithRatings[] = await get(url);
     
     dayjs.extend(duration);
     
-    return services.map((s: ServiceResponse) => {
-        const dur = dayjs.duration(s.duration);
+    return servicesWithRatings.map((swr: ServiceWithRatings) => {
+        const dur = dayjs.duration(swr.services.duration);
 
         return {
-            id: s.id,
-            serviceName: s.serviceName,
-            description: s.description ?? "",
-            duration: dur.asMinutes().toString(),
-            price: s.price,
-            status: s.status,
-            serviceLogoUrl: s.serviceLogoUrl,
-            capacity: s.capacity,
+            services: {
+                id: swr.services.id,
+                serviceName: swr.services.serviceName,
+                description: swr.services.description ?? "",
+                duration: dur.asMinutes().toString(),
+                price: swr.services.price,
+                status: swr.services.status,
+                serviceLogoUrl: swr.services.serviceLogoUrl,
+                capacity: swr.services.capacity,
+            },
+            review: swr.review.map(rev => ({ comment: rev.comment, createdAt: rev.createdAt, rating: rev.rating }))
         }
     })
 
