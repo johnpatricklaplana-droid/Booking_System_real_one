@@ -27,13 +27,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
 
     @Query("""
         SELECT new com.example.demo.dto.response.CustomerSummary(
-        u.firstName, u.lastName, u.email, COUNT(sch.id), MAX(sch.startsAt),
+        u.firstName, u.lastName, u.email, u.avatarUrl, COUNT(sch.id), MAX(sch.startsAt),
         SUM(CASE WHEN sch.status = 'COMPLETED' THEN s.price ELSE 0 END)
         )
         FROM Schedule sch
         JOIN sch.user u
         JOIN sch.service s
         WHERE sch.service.business.id = :businessId
+        AND sch.status = 'COMPLETED'
         GROUP BY u.id
         ORDER BY MAX(sch.startsAt) DESC
     """)

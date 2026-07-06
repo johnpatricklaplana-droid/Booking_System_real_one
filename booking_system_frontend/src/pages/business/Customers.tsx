@@ -1,4 +1,9 @@
 import { Search, Filter, Download, Plus, Mail, Phone } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useUser } from '../../provider/UserContext';
+import { get } from '../../api/api';
+import type { Customer } from '../../interfaces/Types';
+import { formatDistanceToNow } from 'date-fns';
 
 const customers = [
     {
@@ -82,6 +87,29 @@ const customers = [
 ];
 
 export function Customers() {
+
+    const business = useUser().activeBusiness;
+
+    const [customer, setCustomer] = useState<Customer[]>([]);
+
+    useEffect(() => {
+
+        if(!business?.businessId) return;
+
+        const getIt = async () => {
+            const url = `http://localhost:8080/api/business/customer/${business.businessId}`;
+
+            const result: Customer[] = await get(url);
+
+            console.log(result);
+            setCustomer(result);
+
+        };
+
+        getIt();
+
+    }, [business?.businessId]);
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -117,34 +145,28 @@ export function Customers() {
             </div>
 
             <div className="grid grid-cols-3 gap-6">
-                {customers.map((customer) => (
+                {customer.map((customer) => (
                     <div
-                        key={customer.id}
+                        key={customer.email}
                         className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 hover:border-[rgba(255,255,255,0.12)] transition-all group cursor-pointer"
                     >
                         <div className="flex items-start justify-between mb-5">
                             <div className="flex items-center gap-3">
-                                <div
+                                <img
+                                    src={customer.avatarUrl}
+                                    alt='todo'
                                     className="w-12 h-12 rounded-full flex items-center justify-center text-[14px] font-medium text-[#0a0a0c]"
-                                    style={{ background: `linear-gradient(135deg, ${customer.accent}, ${customer.accent}dd)` }}
-                                >
-                                    {customer.initials}
-                                </div>
+                                />
                                 <div>
-                                    <h3 className="text-[14px] font-medium text-[#e8e8ea] mb-0.5">{customer.name}</h3>
-                                    <p className="text-[11px] text-[#9a9aa3]">Joined {customer.joined}</p>
+                                    <h3 className="text-[14px] font-medium text-[#e8e8ea] mb-0.5">{customer.firstName} {customer.lastName}</h3>
+                                    <p className="text-[11px] text-[#9a9aa3]">Joined Feb 3, 2025</p>
                                 </div>
                             </div>
-                            {customer.status === 'vip' && (
-                                <div className="px-2 py-0.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-full text-[10px] font-medium text-[#0a0a0c]">
-                                    VIP
-                                </div>
-                            )}
-                            {customer.status === 'inactive' && (
+                            {/* {customer.status === 'inactive' && (
                                 <div className="px-2 py-0.5 bg-[#9a9aa3]/20 rounded-full text-[10px] font-medium text-[#9a9aa3]">
                                     Inactive
                                 </div>
-                            )}
+                            )} */}
                         </div>
 
                         <div className="space-y-3 mb-5">
@@ -154,22 +176,22 @@ export function Customers() {
                             </div>
                             <div className="flex items-center gap-2 text-[#9a9aa3] group-hover:text-[#e8e8ea] transition-colors">
                                 <Phone size={14} />
-                                <span className="text-[12px]">{customer.phone}</span>
+                                <span className="text-[12px]">+1 (555) 567-8901</span>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-3 pt-5 border-t border-[rgba(255,255,255,0.06)]">
                             <div>
                                 <p className="text-[11px] text-[#9a9aa3] mb-1">Visits</p>
-                                <p className="text-[15px] font-medium text-[#e8e8ea]">{customer.appointments}</p>
+                                <p className="text-[15px] font-medium text-[#e8e8ea]">{customer.visitCount}</p>
                             </div>
                             <div>
                                 <p className="text-[11px] text-[#9a9aa3] mb-1">Spent</p>
-                                <p className="text-[15px] font-medium text-[#e8e8ea]">{customer.spent}</p>
+                                <p className="text-[15px] font-medium text-(--gold-light)">₱{customer.totalSpent.toLocaleString()}</p>
                             </div>
                             <div>
                                 <p className="text-[11px] text-[#9a9aa3] mb-1">Last Visit</p>
-                                <p className="text-[11px] font-medium text-[#e8e8ea]">{customer.lastVisit}</p>
+                                <p className="text-[11px] font-medium text-[#e8e8ea]">{formatDistanceToNow(new Date(customer.lastVisit), { addSuffix: true })}</p>
                             </div>
                         </div>
                     </div>

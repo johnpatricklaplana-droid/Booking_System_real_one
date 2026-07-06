@@ -6,6 +6,7 @@ public record CustomerSummary(
     String firstName,
     String lastName,
     String email,
+    String avatarUrl,
     Long visitCount,
     ZonedDateTime lastVisit,
     double totalSpent

@@ -77,6 +77,16 @@ export interface BusinessAddress {
     countryCode: string;
 }
 
+export interface Customer {
+    email: string;
+    firstName: string;
+    lastName: string;
+    lastVisit: string;
+    totalSpent: number;
+    visitCount: number;
+    avatarUrl: string;
+}
+
 export interface CustomerAppointments {
     schedule: Schedule;
     service: ServiceResponse;
