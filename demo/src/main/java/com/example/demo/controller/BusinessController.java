@@ -53,5 +53,4 @@ public class BusinessController {
             .body(businessService.getBusinessAnalysis(businessId));
     }
     
-
 }

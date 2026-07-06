@@ -498,8 +498,7 @@ export default function MyBookingsPage() {
 
     const todayBooking = useMemo(() => {
         if(!appointments) return [];
-
-        return appointments.filter(apt => isToday(new Date(apt.schedule.startsAt), apt.business.timezone));
+        return appointments.filter(apt => isToday(new Date(apt.schedule.startsAt), apt.business.timezone) && apt.schedule.status === "CONFIRMED");
         
     }, [appointments]);
 

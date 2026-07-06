@@ -276,7 +276,7 @@ export function ServiceDetails() {
                             </div>
                             <div className="flex justify-between items-center py-4 px-0 border-t border-t-(--border) mb-5">
                                 <div className="text-[0.875rem] text-(--text-2)">Total</div>
-                                <div className="text-[1.375rem] text-(--teal) font-bold">₱{serviceDetails?.price}</div>
+                                <div className="text-[1.375rem] text-(--teal) font-bold">₱{serviceDetails?.price.toLocaleString()}</div>
                             </div>
                             <button 
                                 className="btn btn-primary btn-lg w-full"

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
 import { fillMonths } from '../../hooks/service';
-import type { MonthlyStats } from '../../interfaces/Types';
+import type { BusinessTotals, MonthlyStats } from '../../interfaces/Types';
 
 const serviceData = [
     { name: 'Personal Training', value: 35, color: '#c9a87c' },
@@ -27,6 +27,7 @@ export function Analytics() {
     const business = useUser().activeBusiness;
 
     const [monthlyStats, setMonthlyStats] = useState<MonthlyStats[]>();
+    const [totals, setTotals] = useState<BusinessTotals | null>(null);
 
     useEffect(() => {
 
@@ -38,13 +39,14 @@ export function Analytics() {
             const result = await get(url);
             console.log(result);
             setMonthlyStats(fillMonths(result.monthlyStats));
+            setTotals(result.businessTotals);
         };
 
         getIt();
 
     }, [business?.businessId]);
 
-    console.log(monthlyStats);
+    console.log(totals);
 
     return (
         <div className="space-y-6">
@@ -66,8 +68,8 @@ export function Analytics() {
                                 +15.3%
                             </div>
                         </div>
-                        <p className="text-[13px] text-[#9a9aa3] mb-1">Monthly Revenue</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">$71,340</p>
+                        <p className="text-[13px] text-[#9a9aa3] mb-1">All time Revenue</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">₱{totals?.totalRevenue.toLocaleString()}</p>
                     </div>
                 </div>
 
@@ -84,7 +86,7 @@ export function Analytics() {
                             </div>
                         </div>
                         <p className="text-[13px] text-[#9a9aa3] mb-1">Total Bookings</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">590</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{totals?.totalBookings}</p>
                     </div>
                 </div>
 
@@ -100,8 +102,8 @@ export function Analytics() {
                                 +8.2%
                             </div>
                         </div>
-                        <p className="text-[13px] text-[#9a9aa3] mb-1">New Customers</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">342</p>
+                        <p className="text-[13px] text-[#9a9aa3] mb-1">Total Customers</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{totals?.totalCustomer.toLocaleString()}</p>
                     </div>
                 </div>
 

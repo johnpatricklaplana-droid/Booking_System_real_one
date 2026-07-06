@@ -1,7 +1,9 @@
 package com.example.demo.dto.response;
 
+import java.math.BigDecimal;
+
 public record BusinessTotalsDto(
-    double totalRevenue,
+    BigDecimal totalRevenue,
     Long totalBookings,
     Long totalCustomer
 ) {}

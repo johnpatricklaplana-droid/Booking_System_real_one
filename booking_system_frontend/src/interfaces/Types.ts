@@ -28,6 +28,12 @@ export interface MonthlyStats {
     revenueOfTheMonth: number;
 }
 
+export interface BusinessTotals {
+    totalBookings: number;
+    totalCustomer: number;
+    totalRevenue: number;
+}
+
 export interface Review {
     comment: string;
     createdAt: string;

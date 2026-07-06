@@ -1,5 +1,6 @@
 package com.example.demo.dto.response;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 public record CustomerSummary(
@@ -9,5 +10,5 @@ public record CustomerSummary(
     String avatarUrl,
     Long visitCount,
     ZonedDateTime lastVisit,
-    double totalSpent
+    BigDecimal totalSpent
 ) {}

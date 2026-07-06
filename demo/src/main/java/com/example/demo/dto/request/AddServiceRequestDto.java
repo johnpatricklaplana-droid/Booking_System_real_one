@@ -1,5 +1,6 @@
 package com.example.demo.dto.request;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public class AddServiceRequestDto {
     private String serviceName;
     private String description;
     private Duration duration;
-    private double price;
+    private BigDecimal price;
     private int capacity;
 
 }

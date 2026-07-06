@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,7 +78,7 @@ public class BusinessServices {
     private Duration duration;
 
     @Column(name = "price")
-    private double price;
+    private BigDecimal price;
 
     @Column(name = "status")
     private String status;
