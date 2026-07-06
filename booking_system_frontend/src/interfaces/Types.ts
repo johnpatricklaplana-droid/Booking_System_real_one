@@ -19,6 +19,7 @@ export interface ServiceWithRatings {
 export interface ServiceWithBusiness {
     services: ServiceResponse;
     business: Business;
+    review: Review[];
 }
 
 export interface Review {

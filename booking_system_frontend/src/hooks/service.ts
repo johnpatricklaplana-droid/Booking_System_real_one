@@ -64,7 +64,8 @@ export async function getAllServices(): Promise<ServiceWithBusiness[]> {
                 startedAt: s.business.startedAt,
                 timezone: s.business.timezone,
                 type: s.business.type
-            }
+            },
+            review: s.review.map(r => ({ comment: r.comment, createdAt: r.createdAt, rating: r.rating }))
         }
     })
 

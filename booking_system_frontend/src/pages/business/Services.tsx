@@ -36,7 +36,7 @@ export function Services() {
                     <p className="text-[13px] text-[#9a9aa3]">Manage your service offerings</p>
                 </div>
                 <button 
-                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all"
                     onClick={() => navigate('/business/add-services')}
                 >
                     <Plus size={16} strokeWidth={2} />

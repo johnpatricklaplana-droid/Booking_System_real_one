@@ -83,15 +83,6 @@ interface LogoData {
 type StepIndex = 0 | 1 | 2 | 3;
 type Direction = "forward" | "backward";
 
-interface AddressSuggestion {
-    address: string;
-    postalCode: string;
-    city: string;
-    province: string;
-    country: string;
-    timezone: string;
-}
-
 const BUSINESS_TYPES: BusinessTypeOption[] = [
     { value: "retail", label: "Retail & Shop", description: "Storefronts, boutiques, and product sellers", icon: ShoppingBag },
     { value: "salon_spa", label: "Salon & Spa", description: "Hair, beauty, and grooming services", icon: Scissors },
@@ -127,7 +118,6 @@ const STEPS: { id: StepIndex; label: string; description: string }[] = [
 
 const DESCRIPTION_LIMIT = 500;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[+]?[\d\s().-]{7,20}$/;
 
 /* ------------------------------------------------------------------ */
 /* Validation                                                           */
@@ -148,7 +138,6 @@ function validateContactInfo(data: ContactInfoData) {
     if (!data.businessEmail.trim()) errors.businessEmail = "Email is required.";
     else if (!EMAIL_REGEX.test(data.businessEmail.trim())) errors.businessEmail = "Enter a valid email address.";
     if (!data.businessEmail.trim()) errors.businessEmail = "Phone number is required.";
-    else if (!PHONE_REGEX.test(data.facebookPage.trim())) errors.facebookPage = "Enter a valid one.";
     return errors;
 }
 
@@ -211,7 +200,7 @@ function IconInput({ icon: Icon, error, valid, className = "", ...props }: IconI
           ${error
                         ? "border-rose-500/60 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
                         : valid
-                            ? "border-(--teal)/50 focus:border-[var(--teal)] focus:ring-2 focus:ring-[var(--teal)]/20"
+                            ? "border-(--teal)/50 focus:border-(--teal) focus:ring-2 focus:ring-(--teal)/20"
                             : "border-(--border) focus:border-(--gold) focus:ring-2 focus:ring-(--gold)/20"
                     } ${className}`}
             />

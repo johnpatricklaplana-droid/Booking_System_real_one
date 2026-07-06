@@ -78,7 +78,10 @@ public class BusinessService {
             .map(service -> {
                 ServicesDetailsDto services = businessMapper.toBusinessServices(service);
                 BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(service.getBusiness());
-                return new ServiceWithBusinessDto(services, business);
+                List<ServiceReviewDto> review = service.getReviews().stream()
+                    .map(serviceReviewMapper::toServiceReviewDto)
+                    .toList();
+                return new ServiceWithBusinessDto(services, business, review);
             })
             .toList();
 
