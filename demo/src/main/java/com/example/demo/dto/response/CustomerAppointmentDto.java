@@ -4,5 +4,7 @@ public record CustomerAppointmentDto(
     ServicesDetailsDto service,
     StaffResponseDto staff,
     ScheduleDto schedule,
-    BusinessDetailsDto business
+    BusinessDetailsDto business,
+    boolean isAlreadyRatedByYou,
+    ServiceReviewDto review
 ) {}

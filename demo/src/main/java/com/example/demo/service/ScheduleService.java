@@ -17,6 +17,7 @@ import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.CustomerAppointmentDto;
 import com.example.demo.dto.response.ScheduleDto;
+import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.dto.response.UserDtoPublic;
@@ -28,6 +29,7 @@ import com.example.demo.entity.Users;
 import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
+import com.example.demo.mapper.ServiceReviewMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
@@ -61,6 +63,9 @@ public class ScheduleService {
 
     @Autowired 
     UserMapper userMapper;
+
+    @Autowired
+    ServiceReviewMapper serviceReviewMapper;
 
     @Transactional
     public void addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
@@ -132,11 +137,15 @@ public class ScheduleService {
                 StaffResponseDto staff = businessMapper.toStaffResponseDto(sched.getStaff());
                 ScheduleDto schedule = businessMapper.toScheduleDto(sched);
                 BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(sched.getService().getBusiness());
+                ServiceReviewDto review = serviceReviewMapper.toServiceReviewDto(sched.getReviews());
+                boolean isAlreadyRatedByYou = sched.getReviews() != null;
                 return new CustomerAppointmentDto(
                     service, 
                     staff, 
                     schedule, 
-                    business
+                    business,
+                    isAlreadyRatedByYou,
+                    review
                 );
             })
             .toList();

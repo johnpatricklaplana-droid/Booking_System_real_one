@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceReviewDto;
+import com.example.demo.dto.response.ServiceWithBusinessDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.BusinessServices;
@@ -63,10 +64,14 @@ public class BusinessService {
 
     }
 
-    public List<ServicesDetailsDto> getServices() {
+    public List<ServiceWithBusinessDto> getServices() {
         
         return businessServiceRepo.findAllWithBusinessAndAddress().stream()
-            .map(service -> businessMapper.toBusinessServices(service))
+            .map(service -> {
+                ServicesDetailsDto services = businessMapper.toBusinessServices(service);
+                BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(service.getBusiness());
+                return new ServiceWithBusinessDto(services, business);
+            })
             .toList();
 
     }

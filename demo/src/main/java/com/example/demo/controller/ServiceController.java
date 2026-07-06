@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.response.ServiceDetailsDto;
+import com.example.demo.dto.response.ServiceWithBusinessDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.service.BusinessService;
 
@@ -31,7 +32,7 @@ public class ServiceController {
     }
 
     @GetMapping("/api/services")
-    public ResponseEntity<List<ServicesDetailsDto>> getServices() {
+    public ResponseEntity<List<ServiceWithBusinessDto>> getServices() {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(businessService.getServices());

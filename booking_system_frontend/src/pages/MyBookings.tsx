@@ -22,6 +22,9 @@ import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types"
 import { durationAsMinutes, isToday } from "../hooks/service";
 import { formatDuration } from "../helper/convertSome";
 import ReviewModal from "../components/ReviewModal";
+import { ErrorMessage } from "../components/BottomErrorMessage";
+import StarRating from "../components/Star";
+import { useNavigate } from "react-router-dom";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -242,17 +245,16 @@ function BookingCard({
     booking, 
     setOpenReview, 
     setServiceToReview, 
-    service,
-    schedId,
     setSchedId,
 }: { 
     booking: CustomerAppointments, 
     setOpenReview: any,
     setServiceToReview: any,
-    service: ServiceResponse | null,
-    schedId: string;
     setSchedId: any;
 }) {
+
+    const navigate = useNavigate();
+
     return (
         <article
             className={`group flex flex-col overflow-hidden rounded-2xl border bg-(--surface) transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-16px_rgba(0,0,0,0.6)] sm:flex-row sm:items-stretch ${CARD_ACCENT[booking.schedule.status]}`}
@@ -279,7 +281,7 @@ function BookingCard({
             </div>
 
             {/* Status, price & actions */}
-            <div className="flex shrink-0 flex-col justify-center gap-3 border-t border-white/10 p-4 sm:w-52 sm:border-l sm:border-t-0 sm:p-5">
+            <div className="flex shrink-0 flex-col justify-center gap-3 border-t border-white/10 p-4 sm:w-75 sm:border-l sm:border-t-0 sm:p-5">
                 <div className="flex items-center justify-between sm:flex-col sm:items-end sm:gap-2">
                     <StatusBadge status={booking.schedule.status} />
                     <span className="text-lg font-semibold text-white">₱{booking.service.price}</span>
@@ -296,22 +298,27 @@ function BookingCard({
                 }
                 {booking.schedule.status === "COMPLETED" && 
                     <div className="flex gap-2">
-                        <OutlinedButton className="flex-1 px-3! text-xs">
+                        <OutlinedButton 
+                            className="flex-1 px-3! text-xs"
+                            onClick={() => navigate(`/customer/service/${booking.service.id}`)}
+                        >
                             <RotateCcw className="h-3.5 w-3.5" />
                             Book Again
                         </OutlinedButton>
-                        <OutlinedButton
-                            className="flex-1 px-3! text-xs"
-                            onClick={() => {
+                        {booking.isAlreadyRatedByYou
+                        ? <StarRating rating={booking.review.rating} />
+                        :   <OutlinedButton
+                                className="flex-1 px-3! text-xs"
+                                onClick={() => {
                                     setOpenReview(true)
-                                    setServiceToReview(service)
-                                    setSchedId(schedId)
+                                    setServiceToReview(booking.service)
+                                    setSchedId(booking.schedule.id)
                                 }
-                            }
-                        >
-                            <MessageSquarePlus className="h-3.5 w-3.5" />
-                            Review
-                        </OutlinedButton>
+                                }
+                            >
+                                <MessageSquarePlus className="h-3.5 w-3.5" />
+                                Review
+                            </OutlinedButton>}
                     </div>
                 }
                 {booking.schedule.status === "CANCELLED" && 
@@ -509,9 +516,8 @@ export default function MyBookingsPage() {
         @keyframes shimmer { 100% { transform: translateX(100%); } }
       `}</style>
 
-            {openReview && <ReviewModal schedId={schedIdToReview}  service={serviceToReview} onClose={() => setOpenReview(false)} />}
+            {openReview && <ReviewModal setBooking={setAppointments} schedId={schedIdToReview}  service={serviceToReview} onClose={() => setOpenReview(false)} />}
 
-            {/* Header */}
             <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
                 <div>
                     <h1 className="text-3xl font-semibold text-white sm:text-4xl">My Bookings</h1>
@@ -525,12 +531,10 @@ export default function MyBookingsPage() {
                 </OutlinedButton>
             </div>
 
-            {/* Tabs */}
             <div className="mt-8">
                 <StatusTabs active={activeTab} onChange={setActiveTab} />
             </div>
 
-            {/* Search & filters */}
             <div className="mt-5">
                 <SearchAndFilters />
             </div>
@@ -546,7 +550,6 @@ export default function MyBookingsPage() {
                 </div>
             ) : (
                 <>
-                    {/* Today's booking */}
                     {showToday && (
                         <div className="mt-10 space-y-4">
                             {todayBooking.map(tod => 
@@ -555,33 +558,30 @@ export default function MyBookingsPage() {
                         </div>
                     )}
 
-                    {/* Upcoming */}
                     {upcomingBooking.length > 0 && (
                         <div className="mt-12">
                             <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
                             <div className="mt-5 space-y-4">
                                 {upcomingBooking.map((ub) => (
-                                    <BookingCard schedId="" setSchedId={null} service={null} setServiceToReview={null} key={ub.schedule.id} setOpenReview={() => setOpenReview(true)} booking={ub} />
+                                    <BookingCard setSchedId={null} setServiceToReview={null} key={ub.schedule.id} setOpenReview={() => setOpenReview(true)} booking={ub} />
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {/* History */}
                     {filteredHistory.length > 0 && (
                         <div className="mt-12">
                             <h2 className="text-xl font-semibold text-white">Booking History</h2>
                             <div className="mt-5 space-y-4">
                                 {filteredHistory.map((b) => (
-                                    <BookingCard schedId={b.schedule.id} setSchedId={() => setSchedIdToReview(b.schedule.id)} service={b.service} setServiceToReview={() => setServiceToReview(b.service)} setOpenReview={() => setOpenReview(true)} key={b.schedule.id} booking={b} />
+                                    <BookingCard setSchedId={() => setSchedIdToReview(b.schedule.id)} setServiceToReview={() => setServiceToReview(b.service)} setOpenReview={() => setOpenReview(true)} key={b.schedule.id} booking={b} />
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {/* Nothing matches current tab */}
                     {!showToday && upcomingBooking.length === 0 && filteredHistory.length === 0 && (
-                        <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-[var(--surface)] px-6 py-16 text-center">
+                        <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-(--surface) px-6 py-16 text-center">
                             <AlertCircle className="mb-4 h-8 w-8 text-neutral-600" />
                             <p className="text-neutral-400">No bookings match this filter.</p>
                         </div>

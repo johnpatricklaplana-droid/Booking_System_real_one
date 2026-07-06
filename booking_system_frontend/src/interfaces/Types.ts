@@ -11,6 +11,11 @@ export interface ServiceResponse {
     status: ServiceStatus;
 }
 
+export interface ServiceWithBusiness {
+    services: ServiceResponse;
+    business: Business;
+}
+
 export interface Review {
     comment: string;
     createdAt: string;
@@ -77,6 +82,8 @@ export interface CustomerAppointments {
     service: ServiceResponse;
     staff: Staff;
     business: Business;
+    isAlreadyRatedByYou: boolean;
+    review: Review;
 }
 
 export interface Schedule {

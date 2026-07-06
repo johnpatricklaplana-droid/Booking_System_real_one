@@ -1,30 +1,28 @@
 import React, { useState } from "react";
 import { Star, X } from "lucide-react";
-import type { ServiceResponse } from "../interfaces/Types";
+import type { Appointment, CustomerAppointments, ServiceResponse } from "../interfaces/Types";
 import { post } from "../api/api";
-
-interface ReviewModalProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (rating: number, comment: string) => void;
-    serviceName: string;
-}
+import { ErrorMessage } from "./BottomErrorMessage";
 
 export default function ReviewModal({ 
     onClose, 
     service,
-    schedId
+    schedId,
+    setBooking
 }: 
     { 
-        onClose: React.MouseEventHandler<HTMLButtonElement>, 
+        onClose: any, 
         service: ServiceResponse | null,
         schedId: string,
+        setBooking: any,
 }) {
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState("");
+    const [ratingSuccess, setRatingSuccess] = useState<boolean>(false);
 
     const addReview = async () => {
+
         const url = "http://localhost:8080/api/review";
 
         const body = {
@@ -37,6 +35,25 @@ export default function ReviewModal({
 
         if(result.status === 201) {
             console.log("good one");
+            setRatingSuccess(true);
+
+            setBooking((prev: CustomerAppointments[]) => prev.map(p => {
+                if(p.schedule.id !== body.scheduleId) return p;
+                return {
+                    ...p,
+                    isAlreadyRatedByYou: true,
+                    review: {
+                        rating: rating,
+                        comment: comment,
+                        createdAt: String(Date.now())
+                    }
+                }
+            }));
+
+            setTimeout(() => {
+                setRatingSuccess(false);
+                onClose(false);
+            }, 4000);
         } else {
             console.log("bad one");
         }
@@ -121,6 +138,7 @@ export default function ReviewModal({
                     </button>
                 </div>
             </div>
+            {ratingSuccess && <ErrorMessage success={true} message={"rated K"} head="successful one" />}
         </div>
     );
 }

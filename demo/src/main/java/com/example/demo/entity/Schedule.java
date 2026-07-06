@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedSubgraph;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,8 @@ import lombok.Setter;
 @NamedEntityGraph(name = "customer.appointments",
     attributeNodes = {
         @NamedAttributeNode("staff"),
-        @NamedAttributeNode(value = "service", subgraph = "service-business")
+        @NamedAttributeNode(value = "service", subgraph = "service-business"),
+        @NamedAttributeNode("reviews")
     },
     subgraphs = @NamedSubgraph(
         name = "service-business",
@@ -82,5 +84,8 @@ public class Schedule {
     @Column(name = "time_range", columnDefinition = "tstzrange")
     @Type(PostgreSQLRangeType.class)
     private Range<ZonedDateTime> timeRange;
+
+    @OneToOne(mappedBy = "schedule")
+    private ServiceReviews reviews;
 
 }

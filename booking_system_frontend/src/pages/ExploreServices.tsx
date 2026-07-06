@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ServiceResponse } from "../interfaces/Types";
+import type { ServiceResponse, ServiceWithBusiness } from "../interfaces/Types";
 import { getAllServices } from "../hooks/service";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../provider/UserContext";
@@ -7,7 +7,7 @@ import { TimezoneLabel } from "../helper/convertSome";
 
 export function ExploreServices() {
 
-    const [services, setServices] = useState<ServiceResponse[]>([]);
+    const [services, setServices] = useState<ServiceWithBusiness[]>([]);
 
     const activeBusiness = useUser().activeBusiness;
 
@@ -117,21 +117,24 @@ export function ExploreServices() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 pb-20">
 
-                    {services.map(service => 
+                    {services.map(swb => 
                         <div 
                             className="service-card group relative bg-(--surface) border border-(--border) rounded-2xl overflow-hidden transition-transform duration-200 cursor-pointer hover:-translate-y-1.5"
-                            key={service.id}
-                            onClick={() => navigate(`/customer/service/${service.id}`)}
+                            key={swb.services.id}
+                            onClick={() => navigate(`/customer/service/${swb.services.id}`)}
                         >
-                            <img src={service.serviceLogoUrl} className="h-40 w-full object-contain" />
+                            <img src={swb.services.serviceLogoUrl} className="h-40 w-full object-contain" />
                             <div className="pt-4 px-4.5 pb-4.5">
-                                <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{activeBusiness?.businessName}</div>
-                                <div className="text-[0.9375rem] text-(--text-1)">{service.serviceName}</div>
+                                <div className="flex gap-2 items-center">
+                                    <img className="w-5.5 h-5.5 mb-2 rounded-[50%]" src={swb.business.businessLogoUrl} alt={swb.business.businessName} />
+                                    <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{swb.business.businessName}</div>
+                                </div>
+                                <div className="text-[0.9375rem] text-(--text-1)">{swb.services.serviceName}</div>
                                 <p className="flex items-center gap-2.5 text-[0.8125rem] text-(--text-2) mt-2">
-                                    todo: some address
+                                    {swb.business.address.displayName}
                                 </p>
                                 <div className="flex mt-2 items-center justify-between">
-                                    <div className="font-semibold text-(--text-1) text-[1rem]">₱{service.price}</div>
+                                    <div className="font-semibold text-(--gold-light) text-[1rem]">₱{swb.services.price}</div>
                                     <div className="text-[0.75rem] text-(--teal) font-medium">{activeBusiness ? TimezoneLabel(activeBusiness?.timezone) : ""}</div>
                                 </div>
                             </div>

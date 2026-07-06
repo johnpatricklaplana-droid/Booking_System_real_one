@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { get } from "../api/api";
-import type { ServiceResponse } from "../interfaces/Types";
+import type { ServiceResponse, ServiceWithBusiness } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
 
@@ -28,25 +28,40 @@ export async function getServices(businessId: string) {
 
 }
 
-export async function getAllServices() {
+dayjs.extend(duration);
+
+export async function getAllServices(): Promise<ServiceWithBusiness[]> {
     const url = `http://localhost:8080/api/services`;
     
-    const services: ServiceResponse[] = await get(url);
+    const services: ServiceWithBusiness[] = await get(url);
     
-    dayjs.extend(duration);
-    
-    return services.map((s: ServiceResponse) => {
-        const dur = dayjs.duration(s.duration);
+    return services.map((s: ServiceWithBusiness) => {
+        const dur = dayjs.duration(s.services.duration);
 
         return {
-            id: s.id,
-            serviceName: s.serviceName,
-            description: s.description ?? "",
-            duration: dur.asMinutes().toString(),
-            price: s.price,
-            status: s.status,
-            serviceLogoUrl: s.serviceLogoUrl,
-            capacity: s.capacity,
+            services: {
+                id: s.services.id,
+                serviceName: s.services.serviceName,
+                description: s.services.description ?? "",
+                duration: dur.asMinutes().toString(),
+                price: s.services.price,
+                status: s.services.status,
+                serviceLogoUrl: s.services.serviceLogoUrl,
+                capacity: s.services.capacity,
+            },
+            business: {
+                address: s.business.address,
+                businessEmail: s.business.businessEmail,
+                businessId: s.business.businessId,
+                businessLogoUrl: s.business.businessLogoUrl,
+                businessName: s.business.businessName,
+                description: s.business.description,
+                facebookPage: s.business.facebookPage,
+                ownerName: s.business.ownerName,
+                startedAt: s.business.startedAt,
+                timezone: s.business.timezone,
+                type: s.business.type
+            }
         }
     })
 
