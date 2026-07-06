@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
@@ -91,6 +92,12 @@ public class BusinessService {
             .toList();
 
         return new ServiceDetailsDto(business, services, staff);
+
+    }
+
+    public List<CustomerSummary> getCustomer(UUID businessId) {
+
+        return scheduleRepo.findCustomersByBusinessId(businessId);
 
     }
 
