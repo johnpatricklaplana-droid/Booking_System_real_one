@@ -8,10 +8,11 @@ import { useUser } from '../../provider/UserContext';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { get } from '../../api/api';
-import type { ServiceResponse, ServiceStatus } from '../../interfaces/Types';
+import type { ServiceResponse, ServiceStatus, ServiceWithRatings } from '../../interfaces/Types';
 import { getServices } from '../../hooks/service';
 import { formatDuration } from '../../helper/convertSome';
 import { useNavigate } from 'react-router-dom';
+import { ServiceBox } from '../../components/ServiceBox';
 
 // ----------------------------------------------------------------------------
 // Types
@@ -186,45 +187,6 @@ function DetailRow({
     );
 }
 
-
-function ServiceCard({ service }: { service: ServiceResponse }) {
-    const cfg = SERVICE_STATUS_CONFIG[service.status];
-    console.log(service);
-    return (
-        <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#101012] overflow-hidden">
-            {/* Image block, like a post's media */}
-            <div className="h-36 bg-[#141416] relative flex items-center justify-center">
-                {service.serviceLogoUrl ? (
-                    <img src={service.serviceLogoUrl} alt={service.serviceName} className="w-full h-full object-cover" />
-                ) : (
-                    <ImageIcon size={22} className="text-[#3a3a3e]" />
-                )}
-                <span className={`absolute top-3 right-3 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${cfg.border} ${cfg.bg}`}>
-                    <CircleDot size={8} className={cfg.text} />
-                    <span className={`text-[10px] font-medium ${cfg.text}`}>{cfg.label}</span>
-                </span>
-            </div>
-
-            <div className="px-4 py-3.5">
-                <h3 className="text-[14px] font-medium text-[#e8e8ea] leading-tight">{service.serviceName}</h3>
-                <p className="text-[12.5px] text-[#9a9aa3] leading-relaxed mt-1.5">{service.description}</p>
-
-                <div className="flex items-center gap-4 mt-3.5 pt-3 border-t border-[rgba(255,255,255,0.06)]">
-                    <div className="flex items-center gap-1.5">
-                        <Clock size={12} className="text-[#6b6b72]" />
-                        <span className="text-[12px] text-[#e8e8ea]">{formatDuration(Number(service.duration))}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        <DollarSign size={12} className="text-[#6b6b72]" />
-                        <span className="text-[12px] text-[#e8e8ea]">{formatPrice(service.price)}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-
 export default function BusinessProfilePage() {
     const [businesses, setBusinesses] = useState<Business[]>([]);
     const [activeBusiness, setActiveBusiness] = useState<Business>({
@@ -241,7 +203,7 @@ export default function BusinessProfilePage() {
         ownerName: "",
         logoUrl: ""
     });
-    const [services, setServices] = useState<ServiceResponse[]>([]);
+    const [services, setServices] = useState<ServiceWithRatings[]>([]);
 
     const user = useUser();
 
@@ -424,7 +386,7 @@ export default function BusinessProfilePage() {
                     ) : (
                         <div className="grid grid-cols-3 gap-4">
                             {services.map((s) => (
-                                <ServiceCard key={s.id} service={s} />
+                                <ServiceBox key={s.services.id} servicesWithRatings={s} />
                             ))}
                         </div>
                     )}

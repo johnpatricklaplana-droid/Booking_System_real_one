@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.CustomerSummary;
+import com.example.demo.dto.response.FullAnalyticsResponse;
 import com.example.demo.service.BusinessService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -41,5 +41,17 @@ public class BusinessController {
             .status(HttpStatus.OK)
             .body(businessService.getCustomer(businessId));
     }
+
+    @GetMapping("/api/business/{businessId}")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
+    public ResponseEntity<FullAnalyticsResponse> getBusinessStats(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID id
+    ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(businessService.getBusinessAnalysis(businessId));
+    }
+    
 
 }

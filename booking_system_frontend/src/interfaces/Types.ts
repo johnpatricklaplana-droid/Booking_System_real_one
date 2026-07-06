@@ -22,6 +22,12 @@ export interface ServiceWithBusiness {
     review: Review[];
 }
 
+export interface MonthlyStats {
+    bookingsOfTheMonth: number;
+    month: string;
+    revenueOfTheMonth: number;
+}
+
 export interface Review {
     comment: string;
     createdAt: string;

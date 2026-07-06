@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { get } from "../api/api";
-import type { ServiceWithBusiness, ServiceWithRatings } from "../interfaces/Types";
+import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
 
@@ -106,4 +106,25 @@ export function getAverageRating(rating: number[]): number {
     }, 0);
 
     return totalRating / rating.length;
+}
+
+export function fillMonths(data: MonthlyStats[]): MonthlyStats[] {
+    const year = new Date().getFullYear();
+
+    const byMonth = new Map(
+        data.map((d: MonthlyStats) => [d.month.slice(0, 7), d])
+    );
+
+    const filled = [];
+    for (let i = 0; i < 12; i++) {
+        const key = `${year}-${String(i + 1).padStart(2, '0')}`;
+        const existing = byMonth.get(key);
+
+        filled.push({
+            month: new Date(year, i, 1).toLocaleString('default', { month: 'short' }),
+            revenueOfTheMonth: existing ? Number(existing.revenueOfTheMonth.toFixed(2)) : 0,
+            bookingsOfTheMonth: existing ? existing.bookingsOfTheMonth : 0,
+        });
+    }
+    return filled;
 }

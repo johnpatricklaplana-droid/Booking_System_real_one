@@ -7,7 +7,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.BusinessTotalsDto;
 import com.example.demo.dto.response.CustomerSummary;
+import com.example.demo.dto.response.FullAnalyticsResponse;
+import com.example.demo.dto.response.MonthlyStatsDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
@@ -108,6 +111,15 @@ public class BusinessService {
     public List<CustomerSummary> getCustomer(UUID businessId) {
 
         return scheduleRepo.findCustomersByBusinessId(businessId);
+
+    }
+
+    public FullAnalyticsResponse getBusinessAnalysis(UUID businessId) {
+        
+        BusinessTotalsDto businessTotals = businessRepo.getBussinessAnalytics(businessId);
+        List<MonthlyStatsDto> monthlyStats = businessRepo.getMonthlyBreakdown(businessId);
+
+        return new FullAnalyticsResponse(businessTotals, monthlyStats);
 
     }
 

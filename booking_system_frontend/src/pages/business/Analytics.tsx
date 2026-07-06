@@ -1,14 +1,10 @@
-import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Users, Calendar, Star } from 'lucide-react';
-
-const revenueData = [
-    { month: 'Jan', revenue: 42000, bookings: 320, customers: 180 },
-    { month: 'Feb', revenue: 48000, bookings: 380, customers: 210 },
-    { month: 'Mar', revenue: 51000, bookings: 420, customers: 245 },
-    { month: 'Apr', revenue: 58000, bookings: 480, customers: 280 },
-    { month: 'May', revenue: 62000, bookings: 510, customers: 310 },
-    { month: 'Jun', revenue: 71000, bookings: 590, customers: 342 },
-];
+import { useEffect, useState } from 'react';
+import { useUser } from '../../provider/UserContext';
+import { get } from '../../api/api';
+import { fillMonths } from '../../hooks/service';
+import type { MonthlyStats } from '../../interfaces/Types';
 
 const serviceData = [
     { name: 'Personal Training', value: 35, color: '#c9a87c' },
@@ -27,6 +23,29 @@ const hourlyData = [
 ];
 
 export function Analytics() {
+
+    const business = useUser().activeBusiness;
+
+    const [monthlyStats, setMonthlyStats] = useState<MonthlyStats[]>();
+
+    useEffect(() => {
+
+        if(!business?.businessId) return;
+
+        const url = `http://localhost:8080/api/business/${business.businessId}`;
+
+        const getIt = async () => {
+            const result = await get(url);
+            console.log(result);
+            setMonthlyStats(fillMonths(result.monthlyStats));
+        };
+
+        getIt();
+
+    }, [business?.businessId]);
+
+    console.log(monthlyStats);
+
     return (
         <div className="space-y-6">
             <div>
@@ -36,7 +55,7 @@ export function Analytics() {
 
             <div className="grid grid-cols-4 gap-6">
                 <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#c9a87c] to-transparent opacity-5 blur-3xl" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-[#c9a87c] to-transparent opacity-5 blur-3xl" />
                     <div className="relative">
                         <div className="flex items-center justify-between mb-4">
                             <div className="w-10 h-10 rounded-lg bg-[#c9a87c]/10 flex items-center justify-center">
@@ -53,7 +72,7 @@ export function Analytics() {
                 </div>
 
                 <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#9d8fb5] to-transparent opacity-5 blur-3xl" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-[#9d8fb5] to-transparent opacity-5 blur-3xl" />
                     <div className="relative">
                         <div className="flex items-center justify-between mb-4">
                             <div className="w-10 h-10 rounded-lg bg-[#9d8fb5]/10 flex items-center justify-center">
@@ -70,7 +89,7 @@ export function Analytics() {
                 </div>
 
                 <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6b9fa3] to-transparent opacity-5 blur-3xl" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-[#6b9fa3] to-transparent opacity-5 blur-3xl" />
                     <div className="relative">
                         <div className="flex items-center justify-between mb-4">
                             <div className="w-10 h-10 rounded-lg bg-[#6b9fa3]/10 flex items-center justify-center">
@@ -87,7 +106,7 @@ export function Analytics() {
                 </div>
 
                 <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#b89c7e] to-transparent opacity-5 blur-3xl" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-[#b89c7e] to-transparent opacity-5 blur-3xl" />
                     <div className="relative">
                         <div className="flex items-center justify-between mb-4">
                             <div className="w-10 h-10 rounded-lg bg-[#b89c7e]/10 flex items-center justify-center">
@@ -111,7 +130,7 @@ export function Analytics() {
                         <p className="text-[13px] text-[#9a9aa3]">6-month trend analysis</p>
                     </div>
                     <ResponsiveContainer width="100%" height={280}>
-                        <AreaChart data={revenueData}>
+                        <AreaChart data={monthlyStats}>
                             <defs>
                                 <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#c9a87c" stopOpacity={0.3} />
@@ -133,8 +152,8 @@ export function Analytics() {
                                     fontSize: '12px'
                                 }}
                             />
-                            <Area type="monotone" dataKey="revenue" stroke="#c9a87c" strokeWidth={2} fill="url(#revenueGrad)" />
-                            <Area type="monotone" dataKey="bookings" stroke="#9d8fb5" strokeWidth={2} fill="url(#bookingsGrad)" />
+                            <Area type="monotone" dataKey="revenueOfTheMonth" stroke="#c9a87c" strokeWidth={2} fill="url(#revenueGrad)" />
+                            <Area type="monotone" dataKey="bookingsOfTheMonth" stroke="#9d8fb5" strokeWidth={2} fill="url(#bookingsGrad)" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
