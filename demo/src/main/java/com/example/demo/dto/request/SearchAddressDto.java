@@ -1,7 +1,5 @@
 package com.example.demo.dto.request;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +16,6 @@ public class SearchAddressDto {
     private Double lat;
     private Double lon;
     private String displayName;
-
-    private String houseNumber;
     private String road;
     private String city;
     private String province;

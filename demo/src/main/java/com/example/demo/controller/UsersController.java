@@ -150,7 +150,9 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/search-test/{query}")  
-    public ResponseEntity<Mono<List<SearchAddressDto>>> searchAddress(@PathVariable String query) {
+    public ResponseEntity<Mono<List<SearchAddressDto>>> searchAddress(
+        @PathVariable String query
+    ) {
 
         String url = "https://nominatim.openstreetmap.org/search?q=" + query + "&format=jsonv2&addressdetails=1";
 

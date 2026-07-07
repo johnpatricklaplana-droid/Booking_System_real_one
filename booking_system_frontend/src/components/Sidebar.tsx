@@ -1,16 +1,14 @@
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Calendar, BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
 
 const navItems = [
-    { icon: Grid3x3, label: 'Overview', path: '/business' },
+    { icon: Grid3x3, label: 'Analytics', path: '/business' },
     { icon: Calendar, label: 'Calendar', path: 'calendar' },
     { icon: Clock, label: 'Appointments', path: 'appointments' },
     { icon: Users, label: 'Customers', path: 'customers' },
     { icon: Briefcase, label: 'Services', path: 'services' },
-    { icon: TrendingUp, label: 'Analytics', path: 'analytics' },
-    { icon: BarChart3, label: 'Reports', path: 'reports' },
     { icon: BarChart3, label: 'staff', path: 'staff' },
     { icon: Settings, label: 'Settings', path: 'settings' },
     { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
@@ -18,7 +16,7 @@ const navItems = [
 
 export function Sidebar() {
 
-    const { setUser } = useUser();
+    const { setUser, user } = useUser();
 
     const location = useLocation();
 
@@ -75,11 +73,9 @@ export function Sidebar() {
                 </button>
                 <div className="bg-[#1a1a1e] rounded-lg p-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] flex items-center justify-center text-[13px] text-[#0a0a0c] font-medium">
-                            JD
-                        </div>
+                        <img src={user?.profilePic} alt={user?.firstName} className="w-9 h-9 rounded-full" />
                         <div>
-                            <p className="text-[13px] font-medium text-[#e8e8ea]">John Doe</p>
+                            <p className="text-[13px] font-medium text-[#e8e8ea]">{user?.firstName} {user?.lastName}</p>
                             <p className="text-[11px] text-[#9a9aa3]">Admin</p>
                         </div>
                     </div>

@@ -15,7 +15,7 @@ public class AddressDto {
     private String road;
     private String displayName;
 
-    private String village;
+    private String town;
     private String city;
     private String state;
     private String region;

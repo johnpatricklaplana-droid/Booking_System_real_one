@@ -48,20 +48,21 @@ public class UserHelper {
 
     }
 
-    public SearchAddressDto toSearchAddressDto (NominatimRawResponse raw, String timezone) {
+    public SearchAddressDto toSearchAddressDto (NominatimRawResponse raw) {
         AddressDto address = raw.getAddress();
+
+        if(address == null) return new SearchAddressDto();
+
         return SearchAddressDto.builder()
             .lon(raw.getLon())
             .lat(raw.getLat())
             .displayName(raw.getDisplayName())
-            .houseNumber(address != null ? address.getHouseNumber() : null)
-            .road(address !=  null ? address.getRoad() : null)
-            .city(address != null ? address.getCity() : null)
-            .province(address != null ? address.getState() : null)
-            .postalCode(address != null ? address.getPostalCode() : null)
-            .country(address != null ? address.getCountry() : null)
-            .countryCode(address != null ? address.getCountryCode() : null)
-            .timezone(timezone)
+            .road(address.getRoad())
+            .city(address.getCity() != null ? address.getCity() : address.getTown())
+            .province(address.getState())
+            .postalCode(address.getPostalCode())
+            .country(address.getCountry())
+            .countryCode(address.getCountryCode())
             .build();
     }
 

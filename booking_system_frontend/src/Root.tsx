@@ -3,13 +3,10 @@ import { Sidebar } from './components/Sidebar';
 import { Search, Bell, Plus } from 'lucide-react';
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
-    '/': { title: 'Overview', subtitle: 'Welcome back, John' },
     '/calendar': { title: 'Calendar', subtitle: 'Weekly schedule view' },
     '/appointments': { title: 'Appointments', subtitle: 'Manage all bookings' },
     '/customers': { title: 'Customers', subtitle: 'Customer database' },
     '/services': { title: 'Services', subtitle: 'Service offerings' },
-    '/analytics': { title: 'Analytics', subtitle: 'Performance insights' },
-    '/reports': { title: 'Reports', subtitle: 'Business reports' },
     '/settings': { title: 'Settings', subtitle: 'Account preferences' },
 };
 

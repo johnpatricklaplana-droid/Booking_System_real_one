@@ -78,7 +78,6 @@ public interface BusinessMapper {
 
     @Mapping(source = "province", target = "state")
     @Mapping(target = "houseNumber", ignore = true)
-    @Mapping(target = "village", ignore = true)
     @Mapping(target = "region", ignore = true)
     @Mapping(source = "countryCode", target = "countryCode")
     AddressDto toAddressDto(Address address);

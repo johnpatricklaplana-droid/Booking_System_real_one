@@ -144,7 +144,7 @@ public class UserService {
 
         boolean isEmailValid = emailVerifications.isEmailValid(businessDto.getBusinessEmail());
 
-        if(isEmailValid == false) {
+        if(!isEmailValid) {
             throw new InvalidInputsException("Invalid email address");
         }
 
@@ -226,7 +226,7 @@ public class UserService {
             .bodyToFlux(NominatimRawResponse.class)
             .collectList()
             .flatMapMany(Flux::fromIterable)
-            .map(raw -> userHelper.toSearchAddressDto(raw, "flkjdlakfja"))
+            .map(raw -> userHelper.toSearchAddressDto(raw))
             .collectList();
     }
 

@@ -44,11 +44,10 @@ export const router = createBrowserRouter([
         path: '/business',
         Component: BusinessGuard,
         children: [
-            { index: true, Component: Overview },
+            { index: true, Component: Analytics },
             { path: 'services', Component: Services },
             { path: 'add-services', Component: ServiceForm },
             { path: 'customers', Component: Customers },
-            { path: 'analytics', Component: Analytics },
             { path: 'appointments', Component: Appointments },
             { path: 'calendar', Component: CalendarPage },
             { path: 'reports', Component: Reports },
