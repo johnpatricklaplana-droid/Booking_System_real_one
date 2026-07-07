@@ -1,14 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Login } from "../pages/Login";
 import { Signup } from "../pages/Signup";
-import { Overview } from "../pages/business/BussinessOverview";
 import { Services } from "../pages/business/Services";
 import { Customers } from "../pages/business/Customers";
 import { Analytics } from "../pages/business/Analytics";
 import { Appointments } from "../pages/business/Appointments";
 import { CalendarPage } from "../pages/business/CalendarPage";
 import { Landing } from "../pages/business/Landing";
-import { Reports } from "../pages/business/Reports";
 import { BusinessOnboardingWizard } from "../pages/BusinessRegistrationPage";
 import { BusinessGuard } from "./BusinessGuad";
 import { Settings } from "../pages/business/Settings";
@@ -50,7 +48,6 @@ export const router = createBrowserRouter([
             { path: 'customers', Component: Customers },
             { path: 'appointments', Component: Appointments },
             { path: 'calendar', Component: CalendarPage },
-            { path: 'reports', Component: Reports },
             { path: 'settings', Component: Settings },
             { path: 'profile', Component: BusinessProfilePage },
             { path: 'staff', Component: StaffManagementPage },

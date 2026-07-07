@@ -12,15 +12,6 @@ interface ServiceData  {
     color: string;
 };
 
-// const hourlyData = [
-//     { hour: '8 AM', bookings: 12 },
-//     { hour: '10 AM', bookings: 28 },
-//     { hour: '12 PM', bookings: 42 },
-//     { hour: '2 PM', bookings: 38 },
-//     { hour: '4 PM', bookings: 32 },
-//     { hour: '6 PM', bookings: 18 },
-// ];
-
 interface HourlyData {
     hour: string;
     bookings: number;
@@ -95,7 +86,7 @@ export function Analytics() {
                             </div>
                         </div>
                         <p className="text-[13px] text-[#9a9aa3] mb-1">All time Revenue</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">₱{totals?.totalRevenue.toLocaleString()}</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">₱{totals?.totalRevenue ? totals?.totalRevenue.toLocaleString() : '0'}</p>
                     </div>
                 </div>
 
@@ -129,7 +120,7 @@ export function Analytics() {
                             </div>
                         </div>
                         <p className="text-[13px] text-[#9a9aa3] mb-1">Total Customers</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{totals?.totalCustomer.toLocaleString()}</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{totals?.totalCustomer ? totals?.totalCustomer.toLocaleString() : '0'}</p>
                     </div>
                 </div>
 
@@ -146,7 +137,7 @@ export function Analytics() {
                             </div>
                         </div>
                         <p className="text-[13px] text-[#9a9aa3] mb-1">Avg. Rating</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{averageRating}</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{averageRating ?? '0'}</p>
                     </div>
                 </div>
             </div>

@@ -2,15 +2,11 @@ import { useState, useRef, useEffect, act } from 'react';
 import {
     Building2, Mail, Book, MapPin, Clock, Calendar, User,
     ChevronDown, Check, Plus, Camera, Pencil, ExternalLink,
-    CircleDot, Tag, Image as ImageIcon, DollarSign, Sparkles,
+    CircleDot, Tag, Sparkles,
 } from 'lucide-react';
 import { useUser } from '../../provider/UserContext';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import { get } from '../../api/api';
-import type { ServiceResponse, ServiceStatus, ServiceWithRatings } from '../../interfaces/Types';
+import type { Business, ServiceStatus, ServiceWithRatings } from '../../interfaces/Types';
 import { getServices } from '../../hooks/service';
-import { formatDuration } from '../../helper/convertSome';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
 
@@ -18,52 +14,21 @@ import { ServiceBox } from '../../components/ServiceBox';
 // Types
 // ----------------------------------------------------------------------------
 
-type BusinessStatus = 'active' | 'pending' | 'suspended' | 'inactive';
+type BusinessStatus = 'ACTIVE' | 'SUSPENDED' | 'INACTIVE';
 
-interface Business {
-    id: string;
-    name: string;
-    category: string;
-    description: string;
-    email: string;
-    facebookUrl?: string;
-    address: string;
-    timezone: string;
-    status: BusinessStatus;
-    createdAt: string; // ISO date
-    ownerName: string;
-    logoUrl: string;
-}
 
 const STATUS_CONFIG: Record<BusinessStatus, { label: string; dot: string; text: string; bg: string; border: string }> = {
-    active: { label: 'Active', dot: 'bg-[#1d9e75]', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
-    pending: { label: 'Pending review', dot: 'bg-[#d4af37]', text: 'text-[#e0c46b]', bg: 'bg-[#d4af37]/10', border: 'border-[#d4af37]/30' },
-    suspended: { label: 'Suspended', dot: 'bg-[#e24b4a]', text: 'text-[#f09595]', bg: 'bg-[#e24b4a]/10', border: 'border-[#e24b4a]/30' },
-    inactive: { label: 'Inactive', dot: 'bg-[#6b6b72]', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
+    ACTIVE: { label: 'Active', dot: 'bg-[#1d9e75]', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
+    SUSPENDED: { label: 'Suspended', dot: 'bg-[#e24b4a]', text: 'text-[#f09595]', bg: 'bg-[#e24b4a]/10', border: 'border-[#e24b4a]/30' },
+    INACTIVE: { label: 'Inactive', dot: 'bg-[#6b6b72]', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
 };
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-const SERVICE_STATUS_CONFIG: Record<ServiceStatus, { label: string; text: string; bg: string; border: string }> = {
-    ACTIVE: { label: 'Active', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
-    DRAFT: { label: 'Draft', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
-    PAUSED: { label: 'Paused', text: 'text-[#e0c46b]', bg: 'bg-[#d4af37]/10', border: 'border-[#d4af37]/30' },
-};
-
 function formatPrice(price: number) {
     return price.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-}
-
-function initials(name: string) {
-    return name
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join('')
-        .toUpperCase();
 }
 
 // ----------------------------------------------------------------------------
@@ -72,13 +37,15 @@ function initials(name: string) {
 
 function BusinessSwitcher({
     business,
-    businesses
+    businesses,
 }: {
     businesses: Business[];
-    business: Business;
+    business: Business | null;
 }) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
+
+    const { setActiveBusiness } = useUser();
 
     const navigate = useNavigate();
 
@@ -90,19 +57,21 @@ function BusinessSwitcher({
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
+    const switchBusiness = (business: Business) => {
+        setActiveBusiness(business);
+    };
+
     return (
         <div ref={ref} className="relative">
             <button
                 onClick={() => setOpen((v) => !v)}
                 className="flex items-center gap-3 pl-2 pr-3 py-2 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141416] hover:border-[rgba(255,255,255,0.16)] transition-colors"
             >
-                <div className="w-7 h-7 py-2 px-4 rounded-md bg-[#1a1a1d] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[10px] font-medium text-[#d4af37] shrink-0">
-                    {business.name}
-                </div>
+                <img src={business?.businessLogoUrl} alt={business?.businessId} className="w-7 h-7 rounded-md border border-[rgba(255,255,255,0.08)] shrink-0" />
                 <div className="text-left">
                     <p className="text-[12px] text-[#6b6b72] leading-none">Viewing</p>
-                    <p className="text-[13px] font-medium text-[#e8e8ea] leading-tight mt-0.5 max-w-[160px] truncate">
-                        {business.name}
+                    <p className="text-[13px] font-medium text-[#e8e8ea] leading-tight mt-0.5 max-w-40 truncate">
+                        {business?.businessName}
                     </p>
                 </div>
                 <ChevronDown size={14} className={`text-[#9a9aa3] transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -115,22 +84,22 @@ function BusinessSwitcher({
                     </div>
                     <div className="max-h-72 overflow-y-auto">
                         {businesses?.map((b) => {
+                            const currentOne = b.businessId === business?.businessId;
                             return (
                                 <button
-                                    key={b.id}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${b.status === "active" ? 'bg-[#1a1a1d]' : 'hover:bg-[#1a1a1d]'}`}
+                                    key={b.businessId}
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${b.status === "ACTIVE" ? 'bg-[#1a1a1d]' : 'hover:bg-[#1a1a1d]'}`}
+                                    onClick={() => switchBusiness(b)}
                                 >
-                                    <div className="w-8 h-8 rounded-md bg-[#101012] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[11px] font-medium text-[#d4af37] shrink-0">
-                                        {initials(b.name)}
-                                    </div>
+                                    <img src={b.businessLogoUrl} className="w-8 h-8 rounded-md bg-[#101012] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[11px] font-medium text-[#d4af37] shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[13px] font-medium text-[#e8e8ea] truncate">{b.name}</p>
+                                        <p className="text-[13px] font-medium text-[#e8e8ea] truncate">{b.businessName}</p>
                                         <div className="flex items-center gap-1.5 mt-0.5">
                                             <span className={`w-1.5 h-1.5 rounded-full`} />
                                             <p className="text-[11px] text-[#9a9aa3]">{b.status}</p>
                                         </div>
                                     </div>
-                                    <Check size={15} className="text-[#d4af37] shrink-0" />
+                                    {currentOne && <Check size={15} className="text-[#d4af37] shrink-0" />}
                                 </button>
                             );
                         })}
@@ -189,20 +158,7 @@ function DetailRow({
 
 export default function BusinessProfilePage() {
     const [businesses, setBusinesses] = useState<Business[]>([]);
-    const [activeBusiness, setActiveBusiness] = useState<Business>({
-        id: "",
-        name: "",
-        category: "",
-        description: "",
-        email: "",
-        facebookUrl: "",
-        address: "",
-        timezone: "",
-        status: "active",
-        createdAt: "",
-        ownerName: "",
-        logoUrl: ""
-    });
+    const [activeBusiness, setActiveBusiness] = useState<Business | null>(null);
     const [services, setServices] = useState<ServiceWithRatings[]>([]);
 
     const user = useUser();
@@ -212,37 +168,11 @@ export default function BusinessProfilePage() {
         if(!user) return;
         if(!user.business) return;
         
-        setBusinesses(user.business?.map(bus => ({
-            id: bus.businessId,
-            name: bus.businessName,
-            category: bus.type,
-            description: bus.description,
-            email: bus.businessEmail,
-            facebookUrl: bus.facebookPage,
-            address: bus.address,
-            timezone: bus.timezone,
-            status: "active",
-            createdAt: bus.startedAt,
-            ownerName: bus.ownerName,
-            logoUrl: bus.businessLogoUrl
-        })));
+        setBusinesses(user.business);
 
         const activeByDefault = user.activeBusiness;
 
-        setActiveBusiness({
-            id: activeByDefault?.businessId ?? "",
-            name: activeByDefault?.businessName ?? "",
-            category: activeByDefault?.type ?? "",
-            description: activeByDefault?.description ?? "",
-            email: activeByDefault?.businessEmail ?? "",
-            facebookUrl: activeByDefault?.facebookPage,
-            address: activeByDefault?.address ?? "",
-            timezone: activeByDefault?.timezone ?? "",
-            status: "active",
-            createdAt: activeByDefault?.startedAt ?? "",
-            ownerName: activeByDefault?.ownerName ?? "",
-            logoUrl: activeByDefault?.businessLogoUrl ?? ""
-        });
+        setActiveBusiness(activeByDefault);
 
     }, [user]);
 
@@ -250,12 +180,12 @@ export default function BusinessProfilePage() {
         
         if(!activeBusiness) return;
         const getIt = async () => {
-            setServices(await getServices(activeBusiness.id));
+            setServices(await getServices(activeBusiness.businessId));
         }
 
         getIt();
 
-    }, [activeBusiness.id]);
+    }, [activeBusiness?.businessId]);
 
     console.log(services);
 
@@ -291,7 +221,7 @@ export default function BusinessProfilePage() {
                         <div className="flex items-end gap-4 -mt-10">
                             <div className="relative shrink-0">
                                 <div className="w-20 h-20 rounded-xl bg-[#1a1a1d] border-2 border-[#101012] ring-1 ring-[rgba(255,255,255,0.08)] flex items-center justify-center overflow-hidden">
-                                    <img src={activeBusiness.logoUrl} alt='' className="w-full h-full object-cover" />
+                                    <img src={activeBusiness?.businessLogoUrl} alt='' className="w-full h-full object-cover" />
                                 </div>
                                 <button
                                     aria-label="Change logo"
@@ -306,22 +236,22 @@ export default function BusinessProfilePage() {
                         <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
                             <div>
                                 <div className="flex items-center gap-2.5 flex-wrap">
-                                    <h1 className="text-[20px] font-semibold text-[#e8e8ea] tracking-tight">{activeBusiness.name}</h1>
+                                    <h1 className="text-[20px] font-semibold text-[#e8e8ea] tracking-tight">{activeBusiness?.businessName}</h1>
                                     <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border`}>
                                         <CircleDot size={9}  />
-                                        <span className={`text-[11px] font-medium`}>{activeBusiness.status}</span>
+                                        <span className={`text-[11px] font-medium`}>{activeBusiness?.status}</span>
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 mt-1.5 text-[#9a9aa3]">
                                     <Tag size={12} />
-                                    <span className="text-[13px]">{activeBusiness.category}</span>
+                                    <span className="text-[13px]">{activeBusiness?.type}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Description */}
                         <p className="mt-4 text-[13px] leading-relaxed text-[#b5b5ba] max-w-xl">
-                            {activeBusiness.description}
+                            {activeBusiness?.description}
                         </p>
 
                         {/* Meta strip: owner + created */}
@@ -342,7 +272,7 @@ export default function BusinessProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-[#6b6b72] leading-none">Started</p>
-                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{formatDate(activeBusiness.createdAt)}</p>
+                                    <p className="text-[12px] text-[#e8e8ea] leading-tight mt-0.5">{activeBusiness ? formatDate(activeBusiness?.startedAt) : ''}</p>
                                 </div>
                             </div>
                         </div>
@@ -356,12 +286,12 @@ export default function BusinessProfilePage() {
                         <h2 className="text-[13px] font-medium text-[#e8e8ea]">Business details</h2>
                     </div>
                     <div className="pb-1">
-                        <DetailRow icon={Mail} label="Business email" value={activeBusiness.email} />
-                        {activeBusiness.facebookUrl && (
-                            <DetailRow icon={Book} label="Facebook page" value={activeBusiness.facebookUrl.replace('https://', '')} />
+                        <DetailRow icon={Mail} label="Business email" value={activeBusiness ? activeBusiness?.businessEmail : ''} />
+                        {activeBusiness?.facebookPage && (
+                            <DetailRow icon={Book} label="Facebook page" value={activeBusiness.facebookPage.replace('https://', '')} />
                         )}
-                        <DetailRow icon={MapPin} label="Address" value={activeBusiness.address.displayName} />
-                        <DetailRow icon={Clock} label="Timezone" value={activeBusiness.timezone} />
+                        <DetailRow icon={MapPin} label="Address" value={activeBusiness ? activeBusiness?.address.displayName : ''} />
+                        <DetailRow icon={Clock} label="Timezone" value={activeBusiness ? activeBusiness?.timezone : ''} />
                     </div>
                 </div>
 

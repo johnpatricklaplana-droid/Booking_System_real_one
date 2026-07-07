@@ -1,4 +1,4 @@
-import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond } from 'lucide-react';
+import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, CalendarX2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
@@ -185,6 +185,18 @@ export function Appointments() {
                     <p className="text-[24px] font-medium text-[#e8e8ea]">6</p>
                 </div>
             </div>
+
+            {appointments?.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+                    <div className="w-14 h-14 rounded-full bg-[#151518] border border-(--border) flex items-center justify-center">
+                        <CalendarX2 size={22} className="text-(--text-3)" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                        <p className="text-(--text-1) text-[15px] font-medium">No appointments yet</p>
+                        <p className="text-(--text-2) text-[13px] mt-1">Bookings for this business will show up here</p>
+                    </div>
+                </div>
+            )}
 
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
                 {appointments?.map((apt) => {

@@ -82,6 +82,7 @@ export interface Business {
     businessName: string;
     description: string;
     facebookPage: string;
+    status: string;
     ownerName: string;
     startedAt: string;
     timezone: string;

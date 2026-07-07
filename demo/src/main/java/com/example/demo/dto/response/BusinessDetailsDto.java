@@ -18,6 +18,7 @@ public class BusinessDetailsDto {
     private String type;
     private LocalDateTime startedAt;
     private String businessEmail;
+    private String status;
     private String facebookPage;
     private String timezone;
     private AddressDto address;

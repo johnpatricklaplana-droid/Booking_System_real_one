@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { get } from "../api/api";
+import type { Business } from "../interfaces/Types";
 
 interface User {
     firstName: string;
@@ -21,20 +22,6 @@ interface UserContextType {
     setBusiness: React.Dispatch<React.SetStateAction<Business[] | null>>;
     activeBusiness: Business | null;
     setActiveBusiness: React.Dispatch<React.SetStateAction<Business | null>>;
-}
-
-interface Business {
-    address: string;
-    businessEmail: string;
-    businessId: string;
-    businessLogoUrl: string;
-    businessName: string;
-    description: string;
-    facebookPage: string;
-    ownerName: string;
-    startedAt: string;
-    timezone: string;
-    type: string;
 }
 
 const UserContext = createContext<UserContextType | null>(null);

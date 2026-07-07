@@ -1,90 +1,9 @@
-import { Search, Filter, Download, Plus, Mail, Phone } from 'lucide-react';
+import { Search, Filter, Download, Plus, Mail, Phone, CalendarX2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
 import type { Customer } from '../../interfaces/Types';
 import { formatDistanceToNow } from 'date-fns';
-
-const customers = [
-    {
-        id: '1',
-        name: 'Emma Wilson',
-        email: 'emma.wilson@email.com',
-        phone: '+1 (555) 123-4567',
-        joined: 'Jan 15, 2025',
-        appointments: 24,
-        spent: '$2,040',
-        lastVisit: '2 days ago',
-        status: 'active',
-        initials: 'EW',
-        accent: '#c9a87c',
-    },
-    {
-        id: '2',
-        name: 'Michael Chen',
-        email: 'michael.chen@email.com',
-        phone: '+1 (555) 234-5678',
-        joined: 'Feb 3, 2025',
-        appointments: 18,
-        spent: '$2,160',
-        lastVisit: '1 week ago',
-        status: 'active',
-        initials: 'MC',
-        accent: '#9d8fb5',
-    },
-    {
-        id: '3',
-        name: 'Lisa Anderson',
-        email: 'lisa.anderson@email.com',
-        phone: '+1 (555) 345-6789',
-        joined: 'Mar 12, 2025',
-        appointments: 12,
-        spent: '$720',
-        lastVisit: '3 days ago',
-        status: 'active',
-        initials: 'LA',
-        accent: '#6b9fa3',
-    },
-    {
-        id: '4',
-        name: 'James Taylor',
-        email: 'james.taylor@email.com',
-        phone: '+1 (555) 456-7890',
-        joined: 'Apr 8, 2025',
-        appointments: 32,
-        spent: '$4,800',
-        lastVisit: 'Today',
-        status: 'vip',
-        initials: 'JT',
-        accent: '#b89c7e',
-    },
-    {
-        id: '5',
-        name: 'Sarah Johnson',
-        email: 'sarah.j@email.com',
-        phone: '+1 (555) 567-8901',
-        joined: 'May 20, 2025',
-        appointments: 8,
-        spent: '$560',
-        lastVisit: '5 days ago',
-        status: 'active',
-        initials: 'SJ',
-        accent: '#c9a87c',
-    },
-    {
-        id: '6',
-        name: 'Robert Martinez',
-        email: 'r.martinez@email.com',
-        phone: '+1 (555) 678-9012',
-        joined: 'Jan 30, 2025',
-        appointments: 4,
-        spent: '$280',
-        lastVisit: '2 months ago',
-        status: 'inactive',
-        initials: 'RM',
-        accent: '#9d8fb5',
-    },
-];
 
 export function Customers() {
 
@@ -143,6 +62,18 @@ export function Customers() {
                     Filter
                 </button>
             </div>
+
+            {customer.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+                    <div className="w-14 h-14 rounded-full bg-[#151518] border border-(--border) flex items-center justify-center">
+                        <Users size={22} className="text-(--text-3)" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                        <p className="text-(--text-1) text-[15px] font-medium">No customers yet</p>
+                        <p className="text-(--text-2) text-[13px] mt-1">Customer data will appear here once bookings come in</p>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-3 gap-6">
                 {customer.map((customer) => (

@@ -1,4 +1,4 @@
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Filter, Plus, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
 import { useEffect, useState } from 'react';
@@ -72,6 +72,18 @@ export function Services() {
                     </button>
                 ))}
             </div>
+
+            {services?.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+                    <div className="w-14 h-14 rounded-full bg-[#151518] border border-(--border) flex items-center justify-center">
+                        <Users size={22} className="text-(--text-3)" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                        <p className="text-(--text-1) text-[15px] font-medium">No customers yet</p>
+                        <p className="text-(--text-2) text-[13px] mt-1">Customer data will appear here once bookings come in</p>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-3 gap-6">
                 {services?.map((service) => (
