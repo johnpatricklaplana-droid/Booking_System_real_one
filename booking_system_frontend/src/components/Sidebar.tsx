@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router';
 import { Calendar, BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
+import { Logo } from './AppLogo';
 
 const navItems = [
     { icon: Grid3x3, label: 'Analytics', path: '/business' },
@@ -37,13 +38,7 @@ export function Sidebar() {
         <div className="fixed left-0 top-0 h-full w-64 bg-[#0f0f11] border-r border-[rgba(255,255,255,0.06)] flex flex-col">
             <div className="p-6 border-b border-[rgba(255,255,255,0.06)]">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c9a87c] to-[#9d8fb5] flex items-center justify-center">
-                        <span className="text-[#0a0a0c] font-semibold text-sm">A</span>
-                    </div>
-                    <div>
-                        <h1 className="text-[15px] font-medium text-[#e8e8ea]">Apex</h1>
-                        <p className="text-[11px] text-[#9a9aa3]">Booking Platform</p>
-                    </div>
+                    <Logo />
                 </div>
             </div>
 

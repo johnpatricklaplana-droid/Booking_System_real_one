@@ -99,7 +99,7 @@ function BusinessSwitcher({
                             return (
                                 <button
                                     key={b.businessId}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${b.status === "ACTIVE" ? 'bg-[#1a1a1d]' : 'hover:bg-[#1a1a1d]'}`}
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${currentOne ? 'bg-[#1a1a1d]' : 'hover:bg-[#1a1a1d]'}`}
                                     onClick={() => switchBusiness(b)}
                                 >
                                     <img src={b.businessLogoUrl} className="w-8 h-8 rounded-md bg-[#101012] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[11px] font-medium text-[#d4af37] shrink-0" />
