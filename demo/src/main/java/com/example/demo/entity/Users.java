@@ -58,6 +58,9 @@ public class Users {
     @Column(name = "last_active_role")
     private String lastActiveRole;
 
+    @Column(name = "last_business_id_im_viewing")
+    private UUID lastBusinessIdImViewing;
+
     @OneToMany(mappedBy = "user")
     private List<Schedule> schedules;
 

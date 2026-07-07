@@ -135,7 +135,8 @@ public class UserService {
         dto.setLastName(user.getLastName());
         dto.setRoles(user.getRoles().stream().map(r -> r.getRole()).toList());
         dto.setLastActiveRole(user.getLastActiveRole());
-
+        dto.setLastBusinessIdImViewing(user.getLastBusinessIdImViewing());
+        
         return dto;
 
     }
@@ -185,10 +186,6 @@ public class UserService {
         r.setUserId(user);
         roles.add(r);
 
-        user.setRoles(roles);
-
-        userRepo.save(user);
-
         Address addressRealDeal = new Address();
         addressRealDeal.setCity(address.getCity() == null ? businessDto.getAddress().getCity() : address.getCity());
         addressRealDeal.setCountry(address.getCountry() == null ? businessDto.getAddress().getCountry() : address.getCountry());
@@ -215,6 +212,12 @@ public class UserService {
         buss.setLogoUrl(supabaseStorageService.uploadBusinessLogo(businessLogo, "business_logo"));
 
         businessRepo.save(buss);
+
+        user.setRoles(roles);
+        user.setLastBusinessIdImViewing(buss.getId());
+
+        userRepo.save(user);
+
     }
 
     public Mono<List<SearchAddressDto>> searchAddress(String url) {
@@ -255,6 +258,19 @@ public class UserService {
             e.printStackTrace();
         }
         
+    }
+
+    public void switchBusiness(UUID businessId, UUID userId) {
+        
+        Users user = userRepo.findById(userId).orElse(null);
+        user.setLastBusinessIdImViewing(businessId);
+
+        try {
+            userRepo.save(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

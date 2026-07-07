@@ -11,6 +11,7 @@ interface User {
     phone: string | null;
     email: string;
     activeRole: string;
+    lastBusinessIdImViewing: string;
 }
 
 interface UserContextType {
@@ -37,31 +38,30 @@ export function UserProvider ({ children }: { children: ReactNode }) {
 
             const url = "http://localhost:8080/api/super-me";
 
-            const result = await get(url);
+            const userResult = await get(url);
 
-            if(result.status === 200) {
+            if (userResult.status === 200) {
                 setUser({
-                    profilePic: result.message.avatarUrl,
-                    firstName: result.message.firstName,
-                    lastName: result.message.lastName,
-                    roles: result.message.roles,
-                    email: result.message.email,
+                    profilePic: userResult.message.avatarUrl,
+                    firstName: userResult.message.firstName,
+                    lastName: userResult.message.lastName,
+                    roles: userResult.message.roles,
+                    email: userResult.message.email,
                     addres: null,
                     phone: null,
-                    activeRole: result.message.lastActiveRole
+                    activeRole: userResult.message.lastActiveRole,
+                    lastBusinessIdImViewing: userResult.message.lastBusinessIdImViewing
                 });
                 setLoading(false);
             }
 
-            if(result.message.roles.includes("BUSINESS_OWNER")) {
+            if (userResult.message.roles.includes("BUSINESS_OWNER")) {
                 const url = "http://localhost:8080/api/business";
 
-                const result = await get(url);
-
-                console.log(result);
+                const businessResult: Business[] = await get(url);
 
                 setBusiness(
-                    result.map((bus: any) => {
+                    businessResult.map((bus: Business) => {
                         return {
                             address: bus.address,
                             businessEmail: bus.businessEmail,
@@ -72,24 +72,28 @@ export function UserProvider ({ children }: { children: ReactNode }) {
                             facebookPage: bus.facebookPage,
                             ownerName: bus.ownerName,
                             startedAt: bus.startedAt,
+                            status: bus.status,
                             timezone: bus.timezone,
                             type: bus.type
                         }
                     })
-                );        
-                
+                );      
+                console.log(business);
+                const activeOne: Business = businessResult.find(buss => buss.businessId === userResult.message.lastBusinessIdImViewing)!;
+                console.log(activeOne);
                 setActiveBusiness({
-                    address: result?.[0].address,
-                    businessEmail: result?.[0].businessEmail,
-                    businessId: result?.[0].businessId,
-                    businessLogoUrl: result?.[0].businessLogoUrl,
-                    businessName: result?.[0].businessName,
-                    description: result?.[0].description,
-                    facebookPage: result?.[0].facebookPage,
-                    ownerName: result?.[0].ownerName,
-                    startedAt: result?.[0].startedAt,
-                    timezone: result?.[0].timezone,
-                    type: result?.[0].type
+                    address: activeOne.address,
+                    businessEmail: activeOne.businessEmail,
+                    businessId: activeOne.businessId,
+                    businessLogoUrl: activeOne.businessLogoUrl,
+                    businessName: activeOne.businessName,
+                    description: activeOne.description,
+                    facebookPage: activeOne.facebookPage,
+                    ownerName: activeOne.ownerName,
+                    startedAt: activeOne.startedAt,
+                    timezone: activeOne.timezone,
+                    status: activeOne.status,
+                    type: activeOne.type
                 })
             }
         };

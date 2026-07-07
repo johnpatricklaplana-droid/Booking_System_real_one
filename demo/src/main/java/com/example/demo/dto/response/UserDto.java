@@ -1,6 +1,7 @@
 package com.example.demo.dto.response;
 
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +15,5 @@ public class UserDto {
     private List<String> roles;
     private String email;
     private String lastActiveRole;
+    private UUID lastBusinessIdImViewing;
 }

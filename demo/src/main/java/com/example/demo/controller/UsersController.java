@@ -190,5 +190,16 @@ public class UsersController {
             .body(new AuthResponse(201, "created one"));
     }
     
+    @PatchMapping("/api/user/business/{businessId}")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
+    public ResponseEntity<AuthResponse> switchBusiness(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID id
+    ) {
+        userService.switchBusiness(businessId, id);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new AuthResponse(200, "successful one"));
+    }
 
 }

@@ -9,6 +9,7 @@ import type { Business, ServiceStatus, ServiceWithRatings } from '../../interfac
 import { getServices } from '../../hooks/service';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
+import { update } from '../../api/api';
 
 // ----------------------------------------------------------------------------
 // Types
@@ -57,8 +58,18 @@ function BusinessSwitcher({
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const switchBusiness = (business: Business) => {
-        setActiveBusiness(business);
+    const switchBusiness = async (buss: Business) => {
+
+        const url = `http://localhost:8080/api/user/business/${buss.businessId}`;
+
+        const result = await update(url, null);
+
+        if(result.status === 200) {
+            setActiveBusiness(buss);
+        } else {
+            console.log("TODO");
+        }
+
     };
 
     return (
