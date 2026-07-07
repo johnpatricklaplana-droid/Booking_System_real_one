@@ -112,7 +112,11 @@ export function fillMonths(data: MonthlyStats[]): MonthlyStats[] {
     const year = new Date().getFullYear();
 
     const byMonth = new Map(
-        data.map((d: MonthlyStats) => [d.month.slice(0, 7), d])
+        data.map((d: MonthlyStats) => {
+            const date = new Date(d.month); // d.month is full date it's just a bad naming TODO: change the name
+            const key = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            return [key, d];
+        })
     );
 
     const filled = [];

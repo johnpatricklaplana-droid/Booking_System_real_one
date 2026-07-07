@@ -22,6 +22,24 @@ export interface ServiceWithBusiness {
     review: Review[];
 }
 
+export interface FullAnalytics {
+    monthlyStats: MonthlyStats[];
+    businessTotals: BusinessTotals;
+    averageRating: number;
+    peakHour: PeakHour[];
+    serviceDistribution: ServiceDistribution[];
+}
+
+export interface ServiceDistribution {
+    bookingCount: number;
+    serviceName: string;
+}
+
+export interface PeakHour {
+    bookingCount: number;
+    hour: number;
+}
+
 export interface MonthlyStats {
     bookingsOfTheMonth: number;
     month: string;

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.response.BusinessDetailsDto;
@@ -46,11 +47,12 @@ public class BusinessController {
     @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
     public ResponseEntity<FullAnalyticsResponse> getBusinessStats(
         @PathVariable UUID businessId,
-        @AuthenticationPrincipal UUID id
+        @AuthenticationPrincipal UUID id,
+        @RequestParam(defaultValue = "#{T(java.time.Year).now().getValue()}") int year
     ) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(businessService.getBusinessAnalysis(businessId));
+            .body(businessService.getBusinessAnalysis(businessId, year));
     }
     
 }

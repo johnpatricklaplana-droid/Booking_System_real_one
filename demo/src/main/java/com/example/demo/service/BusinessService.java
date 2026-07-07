@@ -11,7 +11,9 @@ import com.example.demo.dto.response.BusinessTotalsDto;
 import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.FullAnalyticsResponse;
 import com.example.demo.dto.response.MonthlyStatsDto;
+import com.example.demo.dto.response.PeakHourDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
+import com.example.demo.dto.response.ServiceDistributionDto;
 import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
 import com.example.demo.dto.response.ServiceWithRatings;
@@ -114,12 +116,21 @@ public class BusinessService {
 
     }
 
-    public FullAnalyticsResponse getBusinessAnalysis(UUID businessId) {
+    public FullAnalyticsResponse getBusinessAnalysis(UUID businessId, int year) {
         
         BusinessTotalsDto businessTotals = businessRepo.getBussinessAnalytics(businessId);
-        List<MonthlyStatsDto> monthlyStats = businessRepo.getMonthlyBreakdown(businessId);
+        List<MonthlyStatsDto> monthlyStats = businessRepo.getMonthlyBreakdown(businessId, year);
+        Double averageRating = businessRepo.getAverageRating(businessId);
+        List<ServiceDistributionDto> serviceDistribution = businessRepo.getServiceDestribution(businessId);
+        List<PeakHourDto> peakHour = businessRepo.getPeakHours(businessId);
 
-        return new FullAnalyticsResponse(businessTotals, monthlyStats);
+        return new FullAnalyticsResponse(
+            businessTotals, 
+            monthlyStats, 
+            averageRating, 
+            serviceDistribution, 
+            peakHour
+        );
 
     }
 

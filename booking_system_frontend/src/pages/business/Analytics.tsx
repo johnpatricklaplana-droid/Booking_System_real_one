@@ -4,23 +4,27 @@ import { useEffect, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
 import { fillMonths } from '../../hooks/service';
-import type { BusinessTotals, MonthlyStats } from '../../interfaces/Types';
+import type { BusinessTotals, FullAnalytics, MonthlyStats } from '../../interfaces/Types';
 
-const serviceData = [
-    { name: 'Personal Training', value: 35, color: '#c9a87c' },
-    { name: 'Massage', value: 28, color: '#9d8fb5' },
-    { name: 'Hair Styling', value: 22, color: '#6b9fa3' },
-    { name: 'Consultation', value: 15, color: '#b89c7e' },
-];
+interface ServiceData  {
+    name: string;
+    value: number;
+    color: string;
+};
 
-const hourlyData = [
-    { hour: '8 AM', bookings: 12 },
-    { hour: '10 AM', bookings: 28 },
-    { hour: '12 PM', bookings: 42 },
-    { hour: '2 PM', bookings: 38 },
-    { hour: '4 PM', bookings: 32 },
-    { hour: '6 PM', bookings: 18 },
-];
+// const hourlyData = [
+//     { hour: '8 AM', bookings: 12 },
+//     { hour: '10 AM', bookings: 28 },
+//     { hour: '12 PM', bookings: 42 },
+//     { hour: '2 PM', bookings: 38 },
+//     { hour: '4 PM', bookings: 32 },
+//     { hour: '6 PM', bookings: 18 },
+// ];
+
+interface HourlyData {
+    hour: string;
+    bookings: number;
+}
 
 export function Analytics() {
 
@@ -28,25 +32,47 @@ export function Analytics() {
 
     const [monthlyStats, setMonthlyStats] = useState<MonthlyStats[]>();
     const [totals, setTotals] = useState<BusinessTotals | null>(null);
+    const [averageRating, setAverageRating] = useState<number | null>(null);
+    const [serviceData, setServiceData] = useState<ServiceData[]>([]);
+    const [hourlyData, setHourlyData] = useState<HourlyData[]>([]);
 
     useEffect(() => {
 
         if(!business?.businessId) return;
 
+        const CHART_COLORS = ['#c9a87c', '#9d8fb5', '#6b9fa3', '#b89c7e', '#a3766b', '#7c9ac9'];
+
         const url = `http://localhost:8080/api/business/${business.businessId}`;
 
         const getIt = async () => {
-            const result = await get(url);
+            const result: FullAnalytics = await get(url);
             console.log(result);
             setMonthlyStats(fillMonths(result.monthlyStats));
             setTotals(result.businessTotals);
+            setAverageRating(result.averageRating);
+            const total = result.serviceDistribution.reduce((prev, cur) => 
+                prev + cur.bookingCount , 0);
+            setServiceData(result.serviceDistribution.map((sd, i) => {
+                    return {
+                        name: sd.serviceName,
+                        value: Math.round((sd.bookingCount / total) * 100),
+                        color: CHART_COLORS[i]
+                    }
+                }
+            ));
+            setHourlyData(result.peakHour.map(ph => {
+                return {
+                    hour: new Date(2000, 0, 1, ph.hour).toLocaleString('en-US', { hour: '2-digit', hour12: true }),
+                    bookings: ph.bookingCount
+                }
+            }));
         };
 
         getIt();
 
     }, [business?.businessId]);
 
-    console.log(totals);
+    console.log(hourlyData);
 
     return (
         <div className="space-y-6">
@@ -120,7 +146,7 @@ export function Analytics() {
                             </div>
                         </div>
                         <p className="text-[13px] text-[#9a9aa3] mb-1">Avg. Rating</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">4.8</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{averageRating}</p>
                     </div>
                 </div>
             </div>
@@ -129,7 +155,7 @@ export function Analytics() {
                 <div className="col-span-2 bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
                     <div className="mb-6">
                         <h3 className="text-[15px] font-medium text-[#e8e8ea] mb-1">Revenue & Bookings</h3>
-                        <p className="text-[13px] text-[#9a9aa3]">6-month trend analysis</p>
+                        <p className="text-[13px] text-[#9a9aa3]">12-month trend analysis</p>
                     </div>
                     <ResponsiveContainer width="100%" height={280}>
                         <AreaChart data={monthlyStats}>
