@@ -6,13 +6,13 @@ import { Logo } from './AppLogo';
 
 const navItems = [
     { icon: Grid3x3, label: 'Analytics', path: '/business' },
-    { icon: Calendar, label: 'Calendar', path: 'calendar' },
-    { icon: Clock, label: 'Appointments', path: 'appointments' },
-    { icon: Users, label: 'Customers', path: 'customers' },
-    { icon: Briefcase, label: 'Services', path: 'services' },
-    { icon: BarChart3, label: 'staff', path: 'staff' },
-    { icon: Settings, label: 'Settings', path: 'settings' },
-    { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
+    { icon: Calendar, label: 'Calendar', path: 'business/calendar' },
+    { icon: Clock, label: 'Appointments', path: 'business/appointments' },
+    { icon: Users, label: 'Customers', path: 'business/customers' },
+    { icon: Briefcase, label: 'Services', path: 'business/services' },
+    { icon: BarChart3, label: 'staff', path: 'business/staff' },
+    { icon: Settings, label: 'Settings', path: 'business/settings' },
+    { icon: BriefcaseBusinessIcon, label: 'Business', path: 'business/profile' },
 ];
 
 export function Sidebar() {

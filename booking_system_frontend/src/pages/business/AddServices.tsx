@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { to24Hour, toISODuration } from '../../helper/convertSome';
 import { PostFormData } from '../../api/api';
 import { useUser } from '../../provider/UserContext';
+import DaddysHomeLoader from '../../components/MainLoadingScreen';
 
 interface Services {
     businessId: string;
@@ -131,6 +132,10 @@ export default function ServiceForm() {
         //     setIsSaving(false);
         // }
 
+        setTimeout(() => {
+            setIsSaving(false);
+        }, 3000);
+
     };
 
     const isItValid = (input: string) => {
@@ -162,6 +167,9 @@ export default function ServiceForm() {
 
     return (
         <div className='overflow-y-auto h-screen'>
+
+            {isSaving && <DaddysHomeLoader />}
+
             <div className="sticky top-0 z-10 bg-[#0a0a0c]/95 backdrop-blur-sm border-b border-[rgba(255,255,255,0.08)]">
                 <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between">
                     <div className="flex items-center gap-4">

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { get } from "../api/api";
 import type { Business } from "../interfaces/Types";
+import DaddysHomeLoader from "../components/MainLoadingScreen";
 
 interface User {
     firstName: string;
@@ -100,6 +101,10 @@ export function UserProvider ({ children }: { children: ReactNode }) {
 
         getUser();
     }, []);
+
+    if(loading) {
+        return <DaddysHomeLoader />
+    }
 
     return <UserContext.Provider value={{ 
         user, 

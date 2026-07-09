@@ -11,14 +11,14 @@ export function CustomerNavBar () {
         >
             <Logo />
             <div className="flex gap-2 items-center">
-                <Link to="home" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Home</Link>
-                <Link to="explore" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</Link>
-                <Link to="bookings" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Appointments</Link>
+                <Link to="customer/home" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Home</Link>
+                <Link to="customer/explore" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</Link>
+                <Link to="customer/bookings" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Appointments</Link>
             </div>
             <div className="flex items-center gap-2.5">
                 <button 
                     className="py-2.5 btn text-[#9b9898] hover:bg-[#1c1c21] hover:text-[#f0ede8]"
-                    onClick={() => navigate('profile')}
+                    onClick={() => navigate('customer/profile')}
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />

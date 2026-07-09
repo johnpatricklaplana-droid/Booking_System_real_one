@@ -19,6 +19,7 @@ import StaffManagementPage from "../pages/business/Staff";
 import { ExploreServices } from "../pages/ExploreServices";
 import { ServiceDetails } from "../pages/ServiceDetails";
 import MyBookingsPage from "../pages/MyBookings";
+import { AppShell } from "./AppShell";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -27,30 +28,35 @@ export const router = createBrowserRouter([
     { path: 'create-business', Component: BusinessOnboardingWizard },
 
     {
-        path: '/customer',
-        Component: CustomerGuard,
+        path: '/',
+        Component: AppShell,
         children: [
-            { path: 'home', Component: HomePage },
-            { path: 'profile', Component: ProfilePage },
-            { path: 'explore', Component: ExploreServices },
-            { path: 'service/:serviceId', Component: ServiceDetails },
-            { path: 'bookings', Component: MyBookingsPage }
-        ]
-    },
-
-    {
-        path: '/business',
-        Component: BusinessGuard,
-        children: [
-            { index: true, Component: Analytics },
-            { path: 'services', Component: Services },
-            { path: 'add-services', Component: ServiceForm },
-            { path: 'customers', Component: Customers },
-            { path: 'appointments', Component: Appointments },
-            { path: 'calendar', Component: CalendarPage },
-            { path: 'settings', Component: Settings },
-            { path: 'profile', Component: BusinessProfilePage },
-            { path: 'staff', Component: StaffManagementPage },
+            {
+                path: 'customer',
+                Component: CustomerGuard,
+                children: [
+                    { path: 'home', Component: HomePage },
+                    { path: 'profile', Component: ProfilePage },
+                    { path: 'explore', Component: ExploreServices },
+                    { path: 'service/:serviceId', Component: ServiceDetails },
+                    { path: 'bookings', Component: MyBookingsPage }
+                ]
+            },
+            {
+                path: 'business',
+                Component: BusinessGuard,
+                children: [
+                    { index: true, Component: Analytics },
+                    { path: 'services', Component: Services },
+                    { path: 'add-services', Component: ServiceForm },
+                    { path: 'customers', Component: Customers },
+                    { path: 'appointments', Component: Appointments },
+                    { path: 'calendar', Component: CalendarPage },
+                    { path: 'settings', Component: Settings },
+                    { path: 'profile', Component: BusinessProfilePage },
+                    { path: 'staff', Component: StaffManagementPage },
+                ]
+            }
         ]
     },
 ]);
