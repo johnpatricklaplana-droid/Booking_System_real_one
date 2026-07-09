@@ -20,4 +20,6 @@ public interface ServiceMapper {
     @Mapping(target = "services", ignore = true)
     ServiceAvailability toServiceAvailability(ServiceAvailabilityDto availabilityDto);
 
+    ServiceAvailabilityDto toServiceAvailabilityDto(ServiceAvailability serviceAvailability);
+
 }

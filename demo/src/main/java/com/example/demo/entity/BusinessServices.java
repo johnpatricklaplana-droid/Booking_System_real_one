@@ -45,7 +45,7 @@ import lombok.Setter;
 @NamedEntityGraph(name = "ServiceDetails",
     attributeNodes = {
         @NamedAttributeNode(value = "business", subgraph = "business-address"),
-        @NamedAttributeNode(value = "staffs", subgraph = "staff-unavailable")
+        @NamedAttributeNode("staffs"),
     },
     subgraphs = {
         @NamedSubgraph(

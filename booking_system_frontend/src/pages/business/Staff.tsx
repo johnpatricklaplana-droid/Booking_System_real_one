@@ -155,8 +155,8 @@ export default function StaffManagementPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[--bg] text-white">
-            <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="min-h-screen p-8 overflow-y-auto bg-[--bg] text-white">
+            <div className="mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>

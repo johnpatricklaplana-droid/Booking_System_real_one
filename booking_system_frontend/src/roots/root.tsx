@@ -5,7 +5,6 @@ import { Services } from "../pages/business/Services";
 import { Customers } from "../pages/business/Customers";
 import { Analytics } from "../pages/business/Analytics";
 import { Appointments } from "../pages/business/Appointments";
-import { CalendarPage } from "../pages/business/CalendarPage";
 import { Landing } from "../pages/business/Landing";
 import { BusinessOnboardingWizard } from "../pages/BusinessRegistrationPage";
 import { BusinessGuard } from "./BusinessGuad";
@@ -19,6 +18,7 @@ import StaffManagementPage from "../pages/business/Staff";
 import { ExploreServices } from "../pages/ExploreServices";
 import { ServiceDetails } from "../pages/ServiceDetails";
 import MyBookingsPage from "../pages/MyBookings";
+import { RoleGuard } from "./Guards/RoleGuard";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
 
     {
         path: '/customer',
-        Component: CustomerGuard,
+        Component: RoleGuard,
         children: [
             { path: 'home', Component: HomePage },
             { path: 'profile', Component: ProfilePage },
@@ -40,14 +40,13 @@ export const router = createBrowserRouter([
 
     {
         path: '/business',
-        Component: BusinessGuard,
+        Component: RoleGuard,
         children: [
             { index: true, Component: Analytics },
             { path: 'services', Component: Services },
             { path: 'add-services', Component: ServiceForm },
             { path: 'customers', Component: Customers },
             { path: 'appointments', Component: Appointments },
-            { path: 'calendar', Component: CalendarPage },
             { path: 'settings', Component: Settings },
             { path: 'profile', Component: BusinessProfilePage },
             { path: 'staff', Component: StaffManagementPage },

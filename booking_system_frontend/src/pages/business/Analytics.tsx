@@ -63,10 +63,8 @@ export function Analytics() {
 
     }, [business?.businessId]);
 
-    console.log(hourlyData);
-
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-8 overflow-y-auto h-screen">
             <div>
                 <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Analytics</h2>
                 <p className="text-[13px] text-[#9a9aa3]">Performance insights and metrics</p>

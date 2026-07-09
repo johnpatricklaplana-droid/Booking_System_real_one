@@ -89,6 +89,12 @@ export interface Business {
     type: string;
 }
 
+export interface ServiceAvailability {
+    day: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+    endTime: string;
+    startTime: string;
+}
+
 export interface Staff {
     id: string;
     fullName: string;

@@ -202,7 +202,7 @@ export default function BusinessProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0c] text-[#e8e8ea]">
-            <div className="max-w-5xl mx-auto px-6 py-10">
+            <div className="max-w-5xl mx-auto p-8 h-screen overflow-y-auto">
 
                 {/* Top bar: switcher + edit action */}
                 <div className="flex items-center justify-between mb-8">

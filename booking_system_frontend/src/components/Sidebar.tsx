@@ -1,12 +1,11 @@
 import { Link, useLocation, useNavigate } from 'react-router';
-import { Calendar, BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
+import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
 import { Logo } from './AppLogo';
 
 const navItems = [
     { icon: Grid3x3, label: 'Analytics', path: '/business' },
-    { icon: Calendar, label: 'Calendar', path: 'calendar' },
     { icon: Clock, label: 'Appointments', path: 'appointments' },
     { icon: Users, label: 'Customers', path: 'customers' },
     { icon: Briefcase, label: 'Services', path: 'services' },

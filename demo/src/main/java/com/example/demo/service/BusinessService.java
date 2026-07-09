@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.request.ServiceAvailabilityDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.BusinessTotalsDto;
 import com.example.demo.dto.response.CustomerSummary;
@@ -24,10 +25,12 @@ import com.example.demo.entity.Schedule;
 import com.example.demo.entity.ServiceReviews;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
+import com.example.demo.mapper.ServiceMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
+import com.example.demo.repositories.ServiceAvailabilityRepository;
 
 @Service
 public class BusinessService {
@@ -37,13 +40,17 @@ public class BusinessService {
     private final BusinessServiceRepository businessServiceRepo;
     private final ScheduleRepository scheduleRepo;
     private final ServiceReviewMapper serviceReviewMapper;
+    private final ServiceAvailabilityRepository serviceAvailabilityRepo;
+    private final ServiceMapper serviceMapper;
 
     public BusinessService(
         BusinessRepository businessRepository,
         BusinessMapper businessMapper,
         BusinessServiceRepository businessServiceRepo,
         ScheduleRepository scheduleRepo,
-        ServiceReviewMapper serviceReviewMapper
+        ServiceReviewMapper serviceReviewMapper,
+        ServiceAvailabilityRepository serviceAvailabilityRepo,
+        ServiceMapper serviceMapper
     ) 
     {
         this.businessRepo = businessRepository;
@@ -51,6 +58,8 @@ public class BusinessService {
         this.businessServiceRepo = businessServiceRepo;
         this.scheduleRepo = scheduleRepo;
         this.serviceReviewMapper = serviceReviewMapper;
+        this.serviceAvailabilityRepo = serviceAvailabilityRepo;
+        this.serviceMapper = serviceMapper;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {
@@ -103,10 +112,13 @@ public class BusinessService {
         BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(businessServices.getBusiness());
         ServicesDetailsDto services = businessMapper.toBusinessServices(businessServices);
         List<StaffResponseDto> staff = businessServices.getStaffs().stream()
-            .map(s -> businessMapper.toStaffResponseDto(s))
+            .map(businessMapper::toStaffResponseDto)
+            .toList();
+        List<ServiceAvailabilityDto> serviceAvailability = serviceAvailabilityRepo.findByServicesId(businessServices.getId()).stream()
+            .map(serviceMapper::toServiceAvailabilityDto)
             .toList();
 
-        return new ServiceDetailsDto(business, services, staff);
+        return new ServiceDetailsDto(business, services, staff, serviceAvailability);
 
     }
 

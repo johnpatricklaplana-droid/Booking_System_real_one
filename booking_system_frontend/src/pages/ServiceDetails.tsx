@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
-import type { Business, Review, ReviewWithUser, ServiceResponse, Staff, Time } from "../interfaces/Types";
+import type { Business, Review, ReviewWithUser, ServiceAvailability, ServiceResponse, Staff, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
 import { getAverageRating } from "../hooks/service";
+import DaddysHomeBanner from "../components/DaddysHomeBanner";
 
 function BookingResultModal ({ 
     serviceDetails, 
@@ -50,6 +51,7 @@ export function ServiceDetails() {
     const [selectedStaff, setSelectedStaff] = useState<string>("");
     const [missingFields, setMissingFields] = useState<"time" | "staff" | null>(null);
     const [bookingResult, setBookingResult] = useState<{ success: boolean, message: string } | null>(null);
+    const [serviceAvailability, setServiceAvailability] = useState<ServiceAvailability[]>([]);
 
     const timeFieldRef = useRef<HTMLButtonElement>(null);
     const staffFieldRef = useRef<HTMLButtonElement>(null);
@@ -80,6 +82,7 @@ export function ServiceDetails() {
             setBusiness(result.business);
             setStaff(result.staff);
             setServiceDetails(result.services);
+            setServiceAvailability(result.serviceAvailability);
         };
         
         getIt();
@@ -147,11 +150,13 @@ export function ServiceDetails() {
 
     };
 
+    console.log(selectedDate);
+
     return (
         <div className="min-h-screen">
-            <div className="h-85 flex items-center justify-center text-[6rem] relative overflow-hidden border-b border-(--border) bg-[linear-gradient(135deg,#140e20,#1e1530,#0f1e1c)]">
+            <DaddysHomeBanner>
                 <img className="rounded-[50%] w-40 h-40" src={business?.businessLogoUrl} alt="" />
-            </div>  
+            </DaddysHomeBanner>
 
             {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff} />}
 
@@ -160,7 +165,7 @@ export function ServiceDetails() {
                     <div>
                         <div className="inline-flex items-center gap-1.5 text-[0.875rem] text-(--text-3) hover:text-(--text-2) mb-7 cursor-pointer transition-colors duration-200">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                                strokeWidth="2">
                                 <path d="M19 12H5M12 5l-7 7 7 7" />
                             </svg>
                             Back to results
@@ -187,7 +192,7 @@ export function ServiceDetails() {
                             {serviceDetails?.description}
                         </p>
                         <p className="text-[0.75rem] font-semibold uppercase leading-[0.8em] text-(--text-3) mb-3.5">Pick a date</p>
-                        <BookingDatePicker selectDate={setSelectedDate} />
+                        <BookingDatePicker availableDay={serviceAvailability.map(sa => sa.day)} selectDate={setSelectedDate} />
                         <p className="text-[0.75rem] mt-8 font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5">Available times</p>
                         {missingFields === "time" && <p className="text-[0.8125rem] text-center text-red-600 mb-2 animate-bounce">
                             Please select a time to continue

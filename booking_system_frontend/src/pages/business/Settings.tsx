@@ -53,7 +53,7 @@ const settingsSections = [
 
 export function Settings() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 h-screen overflow-y-auto p-8">
             <div>
                 <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Settings</h2>
                 <p className="text-[13px] text-[#9a9aa3]">Manage your account and preferences</p>

@@ -108,7 +108,7 @@ export function Appointments() {
     console.log("render");
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 h-screen overflow-y-auto p-8">
 
             {errorMessage ? <ErrorMessage success={false} message={errorMessage} head="Couldn' t complete appointment" /> : ''}
 
