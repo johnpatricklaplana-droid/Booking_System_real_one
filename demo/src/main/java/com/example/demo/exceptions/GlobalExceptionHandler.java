@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
         }
+    
+        @ExceptionHandler(BadGateWayException.class)
+        public ResponseEntity<AuthResponse> handleBadGateWayException(BadGateWayException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(new AuthResponse(502, ex.getMessage()));
+        }
 
         @ExceptionHandler(ResourceNotFoundException.class)
         public ResponseEntity<AuthResponse> handleResourceNotFound(ResourceNotFoundException ex) {

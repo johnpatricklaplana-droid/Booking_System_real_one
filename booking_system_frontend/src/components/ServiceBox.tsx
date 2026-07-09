@@ -3,7 +3,13 @@ import type { ServiceWithRatings } from "../interfaces/Types";
 import { useUser } from "../provider/UserContext";
 import StarRating from "./Star";
 import { getAverageRating } from "../hooks/service";
+import { TimezoneLabel } from "../helper/convertSome";
 
+// NOTE: business-view only. Pulls business context from useUser().activeBusiness,
+// so this will break/show wrong data if rendered on a customer-facing screen.
+// TODO: fetch and pass in the necessary business data (name, address, timezone)
+// as props instead of relying on activeBusiness, so this component can be
+// reused for customer view too.
 export function ServiceBox({ servicesWithRatings }: { servicesWithRatings:  ServiceWithRatings }) {
 
     const business = useUser().activeBusiness;
@@ -21,11 +27,8 @@ export function ServiceBox({ servicesWithRatings }: { servicesWithRatings:  Serv
                 <span className="text-(--text-3) flex items-start gap-1 text-[0.8125rem] "><MapPin color="lightblue" />{business?.address.displayName}</span>
                 <div className="flex items-center mt-4 justify-between">
                     <div className="text-[1rem] text-(--gold) font-semibold">₱{servicesWithRatings.services.price.toLocaleString()}</div>
-                    <div className="text-[0.75rem] text-(--teal) font-medium">todo: Today 3:00 PM</div>
+                    <div className="text-[0.75rem] text-(--teal) font-medium">{TimezoneLabel(business?.timezone!)}</div>
                 </div>
-            </div>
-            <div className="absolute inset-0 flex items-end p-4.5 opacity-0 transition-opacity duration-200 bg-[linear-gradient(to_top,rgba(10,10,12,0.95)0%,transparent_60%)]">
-                <button className="btn btn-primary w-full justify-center">Book now</button>
             </div>
         </div>
     );

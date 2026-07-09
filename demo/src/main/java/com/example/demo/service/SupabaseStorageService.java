@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.demo.exceptions.BadGateWayException;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -95,8 +97,7 @@ public class SupabaseStorageService {
             return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new BadGateWayException("Failed to upload file to Supabase");
         }
         
     }

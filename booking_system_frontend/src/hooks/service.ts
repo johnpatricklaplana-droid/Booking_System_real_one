@@ -4,12 +4,12 @@ import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings } from "../i
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
 
+dayjs.extend(duration);
+
 export async function getServices(businessId: string): Promise<ServiceWithRatings[]> {
     const url = `http://localhost:8080/api/business/services/${businessId}`;
     
     const servicesWithRatings: ServiceWithRatings[] = await get(url);
-    
-    dayjs.extend(duration);
     
     return servicesWithRatings.map((swr: ServiceWithRatings) => {
         const dur = dayjs.duration(swr.services.duration);
@@ -30,8 +30,6 @@ export async function getServices(businessId: string): Promise<ServiceWithRating
     })
 
 }
-
-dayjs.extend(duration);
 
 export async function getAllServices(): Promise<ServiceWithBusiness[]> {
     const url = `http://localhost:8080/api/services`;
@@ -62,6 +60,7 @@ export async function getAllServices(): Promise<ServiceWithBusiness[]> {
                 facebookPage: s.business.facebookPage,
                 ownerName: s.business.ownerName,
                 startedAt: s.business.startedAt,
+                status: s.business.status,
                 timezone: s.business.timezone,
                 type: s.business.type
             },

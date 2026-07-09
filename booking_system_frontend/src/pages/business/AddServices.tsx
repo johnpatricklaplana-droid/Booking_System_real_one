@@ -1,58 +1,90 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import {
-    ArrowLeft, Clock, DollarSign, Tag, FileText, Users, Image as ImageIcon,
-    Plus, X, ChevronDown, Info, Sparkles, type LucideIcon
+    ArrowLeft, Clock, FileText, X, Clock1,
+    CloudDownload
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toISODuration } from '../../helper/convertSome';
+import { to24Hour, toISODuration } from '../../helper/convertSome';
 import { PostFormData } from '../../api/api';
 import { useUser } from '../../provider/UserContext';
-
-/**
- * Add / Edit Service — full page layout
- * Matches Apex design tokens: --bg, --surface, --gold, --teal
- * No state management wired up beyond local UI toggles — this is UI scaffolding only.
- * Sections are split so new fields (capacity, deposit, buffer time, etc.)
- * can slot into an existing card without restructuring the page.
- */
-
-const categories = ['Beauty', 'Wellness', 'Fitness', 'Professional'];
-
-const inputClass =
-    'w-full px-4 py-2.5 bg-[#101012] border border-[rgba(255,255,255,0.08)] rounded-lg text-[13px] text-[#e8e8ea] placeholder-[#6a6a73] focus:outline-none focus:border-[#c9a87c]/40 transition-all disabled:cursor-not-allowed';
 
 interface Services {
     businessId: string;
     serviceName: string;
     description: string;
-    duration: string | number;
-    price: number; 
-    capacity: number;
+    duration: string;
+    price: string;
+    capacity: string;
 };
 
+interface FeaturedCategory {
+    label: string;
+    value: string;
+}
+
+const categories: FeaturedCategory[] = [
+    { label: 'realme', value: 'realme' },
+    { label: 'iphone', value: 'iphone' },
+    { label: 'samsung', value: 'samsung' },
+    { label: 'kdrama', value: 'kdrama' },
+    { label: 'cdrama', value: 'cdrama' },
+    { label: 'teach you lesson', value: 'teach you lesson' },
+    { label: 'error', value: 'error' },
+    { label: 'success', value: 'success' },
+]
+
+interface Days {
+    label: string;
+    value: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+}
+
+const days: Days[] = [
+    { label: 'Mon', value: 'MONDAY' },
+    { label: 'Tue', value: 'TUESDAY' },
+    { label: 'Wed', value: 'WEDNESDAY' },
+    { label: 'Thu', value: 'THURSDAY' },
+    { label: 'Fri', value: 'FRIDAY' },
+    { label: 'Sat', value: 'SATURDAY' },
+    { label: 'Sun', value: 'SUNDAY' },
+];
+
+interface DayTime {
+    start: string;
+    end: string;
+}
+
+interface Availability {
+    day: string;
+    start: string;
+    end: string;
+}
+
 export default function ServiceForm() {
-    const [selectedCategory, setSelectedCategory] = useState<string>('Beauty');
+    const [selectedCategory, setSelectedCategory] = useState<string[]>(['realme']);
     const [service, setService] = useState<Services>({
         businessId: "",
         serviceName: "",
         description: "",
         duration: "",
-        price: 0,
-        capacity: 0
+        price: "",
+        capacity: ""
     });
-    const [serviceLogo, setServiceLogo] = useState<File | undefined>(undefined);
-    const [durationUnit, setDurationUnit] = useState<'min' | 'hr'>("min");
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [selectedDay, setSelectedDay] = useState<Days[]>([]);
+    const [unit, setUnit] = useState<'min' | 'hr'>('min');
+    const [hours, setHours] = useState<Map<'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY', DayTime> | null>(null);
+    const [serviceImage, setServiceImage] = useState<File | null>(null);
 
     const bussId = useUser().activeBusiness?.businessId;
 
     useEffect(() => {
-        if(!bussId) return;
+        if (!bussId) return;
 
-        setService(prev => ({...prev, businessId: bussId}));
+        setService(prev => ({ ...prev, businessId: bussId }));
 
     }, [bussId]);
 
-    const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputsChange = (e: any) => {
         const id = e.target.id;
         const value = e.target.value;
 
@@ -60,43 +92,80 @@ export default function ServiceForm() {
 
     };
 
-    const handleServiceLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newImage = e.target.files?.[0];
-
-        setServiceLogo(newImage);
-    };
-
     const saveService = async () => {
-
-        if(!serviceLogo) return;
+        
+        setIsSaving(true);
 
         const url = "http://localhost:8080/api/user/business/services";
 
-        service.duration = toISODuration(Number(service.duration), durationUnit);
+        const duration = toISODuration(Number(service.duration), unit);
 
-        console.log(service);
+        const serviceBody = {
+            ...service,
+            duration: duration
+        };
+
+        const availability: Availability[] = selectedDay.map(sd => {
+            const time = hours?.get(sd.value)!;
+            return {
+                day: sd.value,
+                start: to24Hour(time?.start),
+                end: to24Hour(time?.end)
+            }
+        });
+
+        console.log(serviceBody);
+        console.log(availability);
+        console.log(selectedCategory);
 
         const body = new FormData();
-        body.append('body', new Blob([JSON.stringify(service)], { type: 'application/json' }));
-        body.append('file', serviceLogo);
+        body.append('body', new Blob([JSON.stringify(serviceBody)], { type: 'application/json' }));
+        body.append('file', serviceImage as File);
 
-        const result = await PostFormData(url, body);
-      
-        if(result.status === 201) {
-            console.log("good one");
-        }
+        // const result = await PostFormData(url, body);
+
+        // if (result.status === 201) {
+        //     console.log("good one");
+        //     setIsSaving(false);
+        // } else {
+        //     setIsSaving(false);
+        // }
 
     };
 
+    const isItValid = (input: string) => {
+        if(Number.isNaN(Number(input))) {
+            return false;
+        }
+        return true;
+    }
+
+    const notGoods = () => {
+        return service.businessId.trim() === ""
+            || service.capacity.trim() === ""
+            || service.description.trim() === ""
+            || service.duration.trim() === ""
+            || service.price.trim() === ""
+            || service.serviceName.trim() === ""
+            || serviceImage === null
+            || selectedCategory.length <= 0
+            || !hours?.size
+            || selectedDay.length <= 0
+            || !selectedDay.every(d => hours.has(d.value));
+    }
+
     const navigate = useNavigate();
 
+    const handleFileInputChange = (event: ChangeEvent<HTMLInputElement, HTMLInputElement>): void => {
+        setServiceImage(event.target?.files?.[0]!);
+    }
+
     return (
-        <div className="min-h-screen bg-[#0a0a0c]">
-            {/* Top bar — sticky, consistent with app shell */}
+        <div className='overflow-y-auto h-screen'>
             <div className="sticky top-0 z-10 bg-[#0a0a0c]/95 backdrop-blur-sm border-b border-[rgba(255,255,255,0.08)]">
                 <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <button 
+                        <button
                             className="w-9 h-9 rounded-lg flex items-center justify-center text-[#9a9aa3] hover:bg-[#151518] hover:text-[#e8e8ea] transition-all"
                             onClick={() => navigate('/business/services')}
                         >
@@ -111,9 +180,10 @@ export default function ServiceForm() {
                         <button className="px-4 py-2.5 text-[13px] font-medium text-[#9a9aa3] hover:text-[#e8e8ea] transition-all">
                             Discard
                         </button>
-                        <button 
-                            className="px-5 py-2.5 bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all"
+                        <button
+                            className="px-5 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
                             onClick={saveService}
+                            disabled={notGoods()}
                         >
                             Save service
                         </button>
@@ -121,274 +191,287 @@ export default function ServiceForm() {
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-8 py-8 grid lg:grid-cols-[1fr_320px] gap-6">
-                {/* Main column */}
-                <div className="space-y-6">
-                    {/* Basics */}
-                    <Section icon={FileText} title="Basics" subtitle="Name and describe what customers are booking">
-                        <Field label="Service name" required>
-                            <input
-                                type="text"
-                                id='serviceName'
-                                value={service.serviceName}
-                                onChange={(e) => handleInputsChange(e)}
-                                placeholder="e.g. Deep Tissue Massage"
-                                className={inputClass}
-                            />
-                        </Field>
-
-                        <Field label="Description">
-                            <textarea
-                                rows={3}
-                                id='description'
-                                value={service.description}
-                                onChange={(e) => handleInputsChange(e)}
-                                placeholder="What's included, what to expect, any prep needed..."
-                                className={`${inputClass} resize-none`}
-                            />
-                        </Field>
-
-                        <Field label="Category" required>
-                            <div className="flex flex-wrap gap-2">
-                                {categories.map((cat) => (
-                                    <button
-                                        key={cat}
-                                        onClick={() => setSelectedCategory(cat)}
-                                        className={`px-4 py-2 rounded-lg text-[13px] font-medium border transition-all ${selectedCategory === cat
-                                                ? 'bg-[#c9a87c]/10 border-[#c9a87c]/40 text-[#c9a87c]'
-                                                : 'bg-[#151518] border-[rgba(255,255,255,0.08)] text-[#9a9aa3] hover:border-[rgba(255,255,255,0.15)] hover:text-[#e8e8ea]'
-                                            }`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
-                                <button className="px-4 py-2 rounded-lg text-[13px] font-medium border border-dashed border-[rgba(255,255,255,0.15)] text-[#9a9aa3] hover:text-[#e8e8ea] hover:border-[rgba(255,255,255,0.25)] transition-all flex items-center gap-1.5">
-                                    <Plus size={14} />
-                                    New category
-                                </button>
+            <div className='grid p-8 gap-4 grid-cols-1 lg:grid-cols-[1fr_320px]'>
+                <div className='space-y-4'>
+                    <div className='bg-(--surface) border border-(--border) p-4 rounded-2xl'>
+                        <div className='flex gap-2 items-center mb-4'>
+                            <div className='bg-(--text-1)/5 w-fit p-2 rounded-sm'>
+                                <FileText color='white' />
                             </div>
-                        </Field>
-                    </Section>
+                            <div>
+                                <h1 className='leading-4 text-(--text-1) text-base'>Basics</h1>
+                                <p className='text-xs text-(--text-2)'>Name and description what customers are booking</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div className=''>
+                                <p className='text-(--text-1) mb-2 text-[16px]'>Service Name <span className='text-red-600'>*</span></p>
+                                <input 
+                                    className={`w-full py-2 px-4 text-(--text-1) rounded-2xl ${service.serviceName ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} outline-0 placeholder:text-(--text-2) text-sm text-(--text-1)`} 
+                                    type="text"
+                                    placeholder='service name'
+                                    onChange={handleInputsChange}
+                                    id='serviceName'
+                                    value={service.serviceName}
+                                />
+                            </div>
+                            <div className='mb-4 mt-2'>
+                                <p className='text-(--text-1) text-[16px]'>Description</p>
+                                <textarea 
+                                    className={`text-(--text-1) py-2 px-4 ${service.description ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} rounded-2xl mt-2 placeholder:text-(--text-2) w-full text-sm outline-0`}
+                                    placeholder='what are you waiting for to the left to the right' 
+                                    id="description"
+                                    onChange={handleInputsChange}
+                                    value={service.description}
+                                ></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <p className='text-(--text-1) mb-2 text-[16px]'>Category <span className='text-red-600'>*</span></p>
+                            <div className='flex flex-wrap gap-2'>
+                                {categories.map(cat =>
+                                    <button
+                                        key={cat.value}
+                                        onClick={() => setSelectedCategory(prev => {
+                                            if(prev.includes(cat.value)) return prev;
+                                            return [...prev, cat.value]
+                                        })}
+                                        className={`py-2 px-4 cursor-pointer text-sm font-medium active:scale-105 transition border rounded-2xl ${selectedCategory?.includes(cat.value) ? 'bg-(--gold-light) ring ring-(--gold-light) border-(--gold) text-(--text-3)' : 'bg-(--text-3) text-(--text-1) border-(--border)'} `}
+                                    >
+                                        {cat.label}
+                                    </button>
+                                )}
+                            </div>
+                            <div
+                                className='flex gap-2 mt-2'
+                            >
+                                <input className='w-full rounded-2xl outline-0 placeholder:text-(--text-2) text-sm focus:ring ring-(--gold-light) focus:border-(--gold-light) text-(--text-1) border border-(--border) py-2 px-4' placeholder='add some categories' type="text" />
+                                <button className='py-2 px-4 font-medium text-(--text-1) bg-(--violet) rounded-2xl'>Add</button>
+                            </div>
+                            <div className={`mt-4 flex flex-wrap ${selectedCategory.length <= 0 ? 'border-[rgba(255,70,70,.2)] border bg-[rgba(255,70,70,0.07)]' : 'bg-(--teal-dim) border border-(--teal)'} p-2 rounded-2xl gap-2`}>
+                                {selectedCategory.map(sCat => 
+                                    <div
+                                        key={sCat}
+                                        className='relative rounded-2xl py-2 px-4 bg-white'
+                                    >
+                                        <button 
+                                            className='absolute top-0 right-0 cursor-pointer bg-red-600'
+                                            onClick={() => setSelectedCategory(prev => prev.filter(p => p !== sCat))}
+                                        >
+                                            <X size={16} /> 
+                                        </button>
+                                        {sCat}
+                                    </div>
+                                )}
+                                {selectedCategory.length <= 0 && 
+                                    <p className='text-center w-full text-[#ff6b6b]'>no category please add some</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
 
-                    {/* Duration & Pricing */}
-                    <Section icon={Clock} title="Duration & pricing" subtitle="How long it takes and what it costs">
-                        <div className="grid grid-cols-2 gap-4">
-                            <Field label="Duration" required>
-                                <div className="relative">
-                                    <input 
-                                        onChange={(e) => handleInputsChange(e)} 
+                    <div className='bg-(--surface) border border-(--border) p-4 rounded-2xl'>
+                        <div className='flex gap-2 items-center mb-4'>
+                            <div className='bg-(--text-1)/5 w-fit p-2 rounded-sm'>
+                                <Clock color='white' />
+                            </div>
+                            <div>
+                                <h1 className='leading-4 text-(--text-1) text-base'>Duration and pricing</h1>
+                                <p className='text-xs text-(--text-2)'>How long it takes and what it costs</p>
+                            </div>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <div className='w-full'>
+                                <p className='text-(--text-1) text-[16px]'>Duration <span className='text-red-600'>*</span></p>
+                                <div className={`w-full items-center flex mt-2 text-(--text-1) gap-2 px-4 rounded-2xl ${service.duration ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'}`}>
+                                    <p><Clock1 size={16}></Clock1></p>
+                                    <input
+                                        className='outline-0 w-full py-2 placeholder:text-(--text-2) text-sm'
+                                        type="text"
+                                        placeholder='servrice duration'
                                         id='duration'
+                                        onChange={(e) => {
+                                            if (isItValid(e.target.value)) {
+                                                handleInputsChange(e);
+                                            }
+                                        }}
                                         value={service.duration}
-                                        type="text" 
-                                        placeholder="45" 
-                                        className={inputClass} 
                                     />
-                                    <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex bg-[#1a1a1d] border border-[rgba(255,255,255,0.06)] rounded-md p-0.5">
-                                        <button
-                                            type="button"
-                                            onClick={() => setDurationUnit('min')}
-                                            className={`px-2 py-1 text-[11px] rounded-sm transition-colors ${durationUnit === 'min'
-                                                    ? 'bg-[#2a2a2e] text-[#e8e8ea]'
-                                                    : 'text-[#9a9aa3]'
-                                                }`}
-                                        >
-                                            min
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setDurationUnit('hr')}
-                                            className={`px-2 py-1 text-[11px] rounded-sm transition-colors ${durationUnit === 'hr'
-                                                    ? 'bg-[#2a2a2e] text-[#e8e8ea]'
-                                                    : 'text-[#9a9aa3]'
-                                                }`}
-                                        >
-                                            hr
-                                        </button>
+                                    <div className='flex gap-2 bg-(--surface-3) rounded-sm'>
+                                        <button 
+                                            className={`text-sm border p-2 border-(--border) cursor-pointer active:scale-95 transition-colors ${unit === 'min' ? 'bg-(--surface)' : ''} rounded-sm`}
+                                            onClick={() => setUnit('min')}
+                                        >min</button>
+                                        <button 
+                                            className={`text-sm border p-2 cursor-pointer active:scale-95 ${unit === 'hr' ? 'bg-(--surface)' : ''} border-(--border) rounded-sm`}
+                                            onClick={() => setUnit('hr')}
+                                        >hr</button>
                                     </div>
                                 </div>
-                            </Field>
-                            <Field label="Price" required>
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] text-[#9a9aa3]">$</span>
-                                    <input 
-                                        type="number" 
-                                        placeholder="85.00" 
-                                        className={`${inputClass} pl-8`} 
+                            </div>
+                            <div className='w-full'>
+                                <p className='text-(--text-1) text-[16px]'>Price <span className='text-red-600'>*</span></p>
+                                <div className={`w-full flex ${service.price ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} mt-2 text-(--text-1) gap-2 pl-4 items-center rounded-2xl`}>
+                                    <p>₱</p>
+                                    <input
+                                        className='outline-0 placeholder:text-(--text-2) py-2 w-full text-sm'
+                                        type="text"
+                                        placeholder='sevice price'
                                         id='price'
+                                        onChange={(e) => {
+                                            if (isItValid(e.target.value)) {
+                                                handleInputsChange(e);
+                                            }
+                                        }}
                                         value={service.price}
-                                        onChange={(e) => handleInputsChange(e)}
                                     />
                                 </div>
-                            </Field>
+                            </div>
+                        </div>
+                        <div className='mt-4'>
+                            <div className='flex text-(--text-1) justify-between'>
+                                <p className='text-[16px]'>Capacity</p>
+                                <p className='text-(--text-2) text-sm'>Customers per slot</p>
+                            </div>
+                            <input 
+                                className={`w-full mt-2 py-2 px-4 rounded-2xl ${service.capacity ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} outline-0 placeholder:text-(--text-2) text-sm text-(--text-1)`}
+                                type="text" 
+                                placeholder='capacity'
+                                id='capacity'
+                                onChange={(e) => { 
+                                    if (isItValid(e.target.value)) {
+                                        handleInputsChange(e);
+                                    }
+                                }}
+                                value={service.capacity}
+                            />
+                        </div>
+                    </div>
+
+                    <div className='bg-(--surface) border border-(--border) p-4 rounded-2xl'>
+                        <div className='flex gap-2 items-center mb-4'>
+                            <div className='bg-(--text-1)/5 w-fit p-2 rounded-sm'>
+                                <Clock color='white' />
+                            </div>
+                            <div>
+                                <h1 className='leading-4 text-(--text-1) text-base'>Availability</h1>
+                                <p className='text-xs text-(--text-2)'>Days and time this service can be booked</p>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Field label="Buffer time" hint="Gap before next booking">
-                                <div className="relative">
-                                    <input type="number" placeholder="0" className={inputClass} />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-[#9a9aa3]">min</span>
-                                </div>
-                            </Field>
-                            <Field label="Capacity" hint="Customers per slot">
-                                <input 
-                                    type="number" 
-                                    placeholder="1" 
-                                    className={inputClass} 
-                                    id='capacity'
-                                    value={service.capacity}
-                                    onChange={(e) => handleInputsChange(e)}
-                                />
-                            </Field>
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-[#101012] border border-[rgba(255,255,255,0.06)] rounded-lg">
-                            <div className="flex items-center gap-3">
-                                <DollarSign size={16} className="text-[#9a9aa3]" />
-                                <div>
-                                    <p className="text-[13px] font-medium text-[#e8e8ea]">Require a deposit</p>
-                                    <p className="text-[11px] text-[#9a9aa3]">Customers pay a portion upfront to confirm</p>
+                        <div>
+                            <div>
+                                <p className='text-(--text-1) mb-2 text-[16px]'>Available days <span className='text-red-600'>*</span></p>
+                                <div className='flex gap-2'>
+                                    {days.map(d =>
+                                        <button
+                                            key={d.value}
+                                            onClick={() => setSelectedDay(prev => {
+                                                if(prev.includes(d)) return prev;
+                                                return [...prev ,d];
+                                            })}
+                                            className={`py-2 px-4 border border-(--border) cursor-pointer active:scale-105 transition ${selectedDay.includes(d) ? 'ring ring-(--gold) bg-(--gold-dim)' : ''} text-(--text-1) text-sm rounded-2xl`}
+                                        >
+                                            {d.label}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
-                            <Toggle />
-                        </div>
-                    </Section>
+                            <div className={`bg-(--text-3) flex flex-wrap ${selectedDay.length <= 0 ? 'bg-[rgba(255,70,70,0.07)] border-[rgba(255,70,70,.2)] border' : ''} gap-2 p-4 rounded-2xl mt-4`}>
+                                {selectedDay.map(sd => {
 
-                    {/* Availability — placeholder section for future fields */}
-                    <Section
-                        icon={Sparkles}
-                        title="Availability"
-                        subtitle="Booking windows for this service"
-                        badge="Coming soon"
+                                    const hasTime = hours?.get(sd.value);
+
+                                    const featureTime: DayTime[] = [
+                                        { start: '09:00 AM', end: '05:00 PM' },
+                                        { start: '09:00 AM', end: '05:00 PM' },
+                                        { start: '09:00 AM', end: '05:00 PM' },
+                                        { start: '09:00 AM', end: '05:00 PM' },
+                                        { start: '09:00 AM', end: '05:00 PM' },
+                                    ];
+
+                                    return (
+                                        <div
+                                            key={sd.value}
+                                            className='p-2 bg-(--surface-2) rounded-sm relative'
+                                        >
+                                            <button 
+                                                className='absolute bg-red-600 p-1 rounded-sm top-0 right-0 cursor-pointer hover:scale-105 active:scale-95 transition -translate-y-1 translate-x-1'
+                                                onClick={() => {
+                                                    setSelectedDay(prev => { return prev.filter(p => p.value !== sd.value) })
+                                                    setHours(prev => {
+                                                        const next = new Map(prev ?? []);
+                                                        next.delete(sd.value);
+                                                        return next;
+                                                    });
+                                                }}
+                                            ><X size={10} color='white' /></button>
+
+                                            <div className='border w-fit py-2 px-4 rounded-2xl border-(--gold-light) bg-(--gold-dim) text-(--gold) text-sm'>{sd.label}</div>
+                                            {hasTime 
+                                                ? <div className='bg-amber-100 mt-2 relative rounded-sm py-2 px-4'>
+                                                    <button 
+                                                        className='absolute bg-red-600 p-1 rounded-sm top-0 right-0 cursor-pointer hover:scale-105 transition active:scale-95 -translate-y-1 translate-x-1'
+                                                        onClick={() => setHours(prev => {
+                                                            const next = new Map(prev ?? []);
+                                                            next.delete(sd.value);
+                                                            return next;
+                                                        })}
+                                                    ><X size={8} color='white' /></button>
+                                                    {hasTime.start}-{hasTime.end}
+                                                </div> 
+                                                : <div className='mt-4'>
+                                                    <p className='text-xs text-(--text-2)'>no time choose some</p>
+                                                    <div className='space-x-2'>
+                                                        {featureTime.map(ft =>
+                                                            <button 
+                                                                className='bg-(--violet) text-sm cursor-pointer active:scale-105 transition text-(--text-1) py-2 px-4 rounded-sm mt-2'
+                                                                key={ft.start}
+                                                                onClick={() => setHours(prev => {
+                                                                    const next = new Map(prev ?? []);
+                                                                    next.set(sd.value, ft);
+                                                                    return next;
+                                                                })}
+                                                            >{ft.start}-{ft.end}</button>
+                                                        )}
+                                                    </div>
+                                                    <p className='text-xs mb-1 text-(--text-2) mt-2'>or add manually</p>
+                                                    <div className='space-x-2'>
+                                                        <input className='max-w-[50%] border-(--border) border rounded-sm focus:ring w-125 outline-0 px-4 py-2 placeholder:text-(--text-2) text-(--text-1)' placeholder='add some' type="text" />
+                                                        <button className='bg-(--text-1) py-2 px-4 rounded-sm active:scale-105 transition cursor-pointer'>confirm</button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    )
+                                })}
+                                {selectedDay.length <= 0 && 
+                                    <p className={`text-[#ff6b6b] text-center w-full`}>no days selected please select a bit</p>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className='bg-(--surface) h-fit border border-(--border) p-4 rounded-2xl'>
+                    <p className='text-(--text-1) mb-2 text-[16px]'>Image</p>
+                    <label 
+                        className={`${serviceImage ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} group relative overflow-hidden rounded-2xl h-45 w-full flex items-center justify-center`} 
+                        htmlFor="serviceImage"
                     >
-                        <div className="grid grid-cols-2 gap-4 opacity-40 pointer-events-none">
-                            <Field label="Max advance booking">
-                                <input type="text" placeholder="e.g. 30 days" className={inputClass} disabled />
-                            </Field>
-                            <Field label="Min advance booking">
-                                <input type="text" placeholder="e.g. 2 hours" className={inputClass} disabled />
-                            </Field>
+                        <div className='flex flex-col text-blue-400 backdrop-blur-2xl w-full h-full cursor-pointer group-hover:z-50 items-center justify-center'>
+                            <CloudDownload size={44} />
+                            <p>Add some</p>
                         </div>
-                    </Section>
+                        {serviceImage && <img className='absolute' src={URL.createObjectURL(serviceImage)} alt="" />}
+                        <input type="file" onChange={handleFileInputChange} id="serviceImage" hidden />
+                    </label>
                 </div>
 
-                {/* Side column */}
-                <div className="space-y-6">
-                    {/* Image */}
-                    <SidePanel title="Image">
-                        <label htmlFor='serviceLogo' className="relative overflow-hidden w-full aspect-[4/3] rounded-lg border border-dashed border-[rgba(255,255,255,0.12)] bg-[#101012] flex flex-col items-center justify-center gap-2 text-[#9a9aa3] hover:border-[rgba(255,255,255,0.2)] hover:text-[#e8e8ea] transition-all">
-                            <img className='absolute top-0 left-0 w-full h-full' src={serviceLogo === undefined ? '' : URL.createObjectURL(serviceLogo)} alt="" />
-                            <ImageIcon size={22} strokeWidth={1.5} />
-                            <span className="text-[12px] font-medium">Upload image</span>
-                            <span className="text-[11px] text-[#6a6a73]">PNG, JPG up to 5MB</span>
-                        </label>
-                        <input onChange={(e) => handleServiceLogoChange(e)} id='serviceLogo' type="file" hidden />
-                    </SidePanel>
-
-                    {/* Tags — placeholder for future field */}
-                    <SidePanel title="Tags" badge="Optional">
-                        <div className="flex flex-wrap gap-1.5 mb-2">
-                            <span className="px-2.5 py-1 bg-[#1a1a1e] rounded-md text-[11px] text-[#e8e8ea] flex items-center gap-1">
-                                <Tag size={10} />
-                                Popular
-                                <X size={10} className="text-[#9a9aa3] cursor-pointer" />
-                            </span>
-                        </div>
-                        <button className="text-[12px] text-[#9a9aa3] hover:text-[#e8e8ea] transition-all flex items-center gap-1">
-                            <Plus size={12} />
-                            Add tag
-                        </button>
-                    </SidePanel>
-                </div>
             </div>
+
         </div>
-    );
-}
-
-/* ---------- Typed subcomponents ---------- */
-
-interface SectionProps {
-    icon: LucideIcon;
-    title: string;
-    subtitle?: string;
-    badge?: string;
-    children: React.ReactNode;
-}
-
-function Section({ icon: Icon, title, subtitle, badge, children }: SectionProps) {
-    return (
-        <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-            <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#1a1a1e] flex items-center justify-center">
-                        <Icon size={16} className="text-[#9a9aa3]" strokeWidth={1.5} />
-                    </div>
-                    <div>
-                        <h3 className="text-[14px] font-medium text-[#e8e8ea]">{title}</h3>
-                        {subtitle && <p className="text-[12px] text-[#9a9aa3]">{subtitle}</p>}
-                    </div>
-                </div>
-                {badge && (
-                    <span className="px-2.5 py-1 bg-[#1a1a1e] rounded-md text-[10px] font-medium text-[#9a9aa3] uppercase tracking-wide">
-                        {badge}
-                    </span>
-                )}
-            </div>
-            <div className="space-y-4">{children}</div>
-        </div>
-    );
-}
-
-interface SidePanelProps {
-    title: string;
-    subtitle?: string;
-    badge?: string;
-    children: React.ReactNode;
-}
-
-function SidePanel({ title, subtitle, badge, children }: SidePanelProps) {
-    return (
-        <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-                <div>
-                    <h3 className="text-[13px] font-medium text-[#e8e8ea]">{title}</h3>
-                    {subtitle && <p className="text-[11px] text-[#9a9aa3]">{subtitle}</p>}
-                </div>
-                {badge && (
-                    <span className="px-2 py-0.5 bg-[#1a1a1e] rounded-md text-[9px] font-medium text-[#9a9aa3] uppercase tracking-wide">
-                        {badge}
-                    </span>
-                )}
-            </div>
-            {children}
-        </div>
-    );
-}
-
-interface FieldProps {
-    label: string;
-    required?: boolean;
-    hint?: string;
-    children: React.ReactNode;
-}
-
-function Field({ label, required, hint, children }: FieldProps) {
-    return (
-        <div>
-            <div className="flex items-center justify-between mb-2">
-                <label className="text-[12px] font-medium text-[#9a9aa3]">
-                    {label} {required && <span className="text-[#c97c7c]">*</span>}
-                </label>
-                {hint && <span className="text-[11px] text-[#6a6a73]">{hint}</span>}
-            </div>
-            {children}
-        </div>
-    );
-}
-
-function Toggle() {
-    return (
-        <button className="w-10 h-6 rounded-full bg-[#1a1a1e] border border-[rgba(255,255,255,0.08)] relative transition-all">
-            <span className="absolute left-1 top-1 w-4 h-4 rounded-full bg-[#9a9aa3] transition-all" />
-        </button>
     );
 }

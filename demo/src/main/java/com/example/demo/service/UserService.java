@@ -252,11 +252,7 @@ public class UserService {
 
         businessServices.setServiceLogoUrl(supabaseStorageService.uploadBusinessLogo(file, "business_service_logo"));
 
-        try {
-            businessServiceRepo.save(businessServices);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        businessServiceRepo.save(businessServices);
         
     }
 

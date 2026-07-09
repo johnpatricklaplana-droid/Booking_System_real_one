@@ -35,7 +35,7 @@ export function Sidebar() {
     };
 
     return (
-        <div className="fixed left-0 top-0 h-full w-64 bg-[#0f0f11] border-r border-[rgba(255,255,255,0.06)] flex flex-col">
+        <div className="h-full max-h-screen bg-[#0f0f11] border-r border-[rgba(255,255,255,0.06)] flex flex-col">
             <div className="p-6 border-b border-[rgba(255,255,255,0.06)]">
                 <div className="flex items-center gap-3">
                     <Logo />

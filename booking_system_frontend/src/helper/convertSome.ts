@@ -1,3 +1,4 @@
+import { format, parse } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 
 export function toISODuration (value: number, unit: 'min' | 'hr') {
@@ -44,4 +45,10 @@ export function buildBookingPayloadTime(date: Date, time: string, businessTimezo
 
     return `${year}-${month}-${day}T${time}:00${offset}`;
     
+}
+
+export function to24Hour(time12: string): string  {
+    const parsed = parse(time12, 'hh:mm a', new Date());
+    return format(parsed, 'HH:mm');
+
 }

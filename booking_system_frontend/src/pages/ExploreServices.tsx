@@ -140,7 +140,7 @@ export function ExploreServices() {
                                 </p>
                                 <div className="flex mt-2 items-center justify-between">
                                     <div className="font-semibold text-(--gold-light) text-[1rem]">₱{swb.services.price.toLocaleString()}</div>
-                                    <div className="text-[0.75rem] text-(--teal) font-medium">{activeBusiness ? TimezoneLabel(activeBusiness?.timezone) : ""}</div>
+                                    <div className="text-[0.75rem] text-(--teal) font-medium">{swb.business ? TimezoneLabel(swb.business?.timezone) : ""}</div>
                                 </div>
                             </div>
                         </button>
