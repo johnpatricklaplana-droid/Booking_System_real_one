@@ -1,6 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useUser } from "../provider/UserContext";
-import { CustomerRoot } from "../customerRoot";
+import { useUser } from "../../provider/UserContext";
 
 export function CustomerGuard() {
 
@@ -9,6 +8,6 @@ export function CustomerGuard() {
     if (user?.activeRole !== "CUSTOMER") {
         return <Navigate to="/business" replace />
     }
-    
-    return <CustomerRoot />;
+
+    return <Outlet />;
 }

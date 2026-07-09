@@ -17,11 +17,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
     
         @ExceptionHandler(UserAlreadyExistsException.class)
-        public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        public ResponseEntity<AuthResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+                .body(new AuthResponse(409, ex.getMessage()));
         }
     
         @ExceptionHandler(BadGateWayException.class)

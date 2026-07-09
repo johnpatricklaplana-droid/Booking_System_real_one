@@ -1,5 +1,6 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useUser } from "../provider/UserContext";
+import { Root } from "../Root";
 
 export function BusinessGuard () {
 
@@ -9,5 +10,5 @@ export function BusinessGuard () {
         return <Navigate to="/customer/home" replace />
     }
 
-    return <Outlet />;
+    return <Root />;
 }

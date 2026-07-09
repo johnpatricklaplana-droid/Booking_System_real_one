@@ -19,7 +19,6 @@ import StaffManagementPage from "../pages/business/Staff";
 import { ExploreServices } from "../pages/ExploreServices";
 import { ServiceDetails } from "../pages/ServiceDetails";
 import MyBookingsPage from "../pages/MyBookings";
-import { AppShell } from "./AppShell";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -29,7 +28,7 @@ export const router = createBrowserRouter([
 
     {
         path: '/customer',
-        Component: AppShell,
+        Component: CustomerGuard,
         children: [
             { path: 'home', Component: HomePage },
             { path: 'profile', Component: ProfilePage },
@@ -41,7 +40,7 @@ export const router = createBrowserRouter([
 
     {
         path: '/business',
-        Component: AppShell,
+        Component: BusinessGuard,
         children: [
             { index: true, Component: Analytics },
             { path: 'services', Component: Services },

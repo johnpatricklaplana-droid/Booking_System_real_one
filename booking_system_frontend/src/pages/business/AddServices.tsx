@@ -8,6 +8,7 @@ import { to24Hour, toISODuration } from '../../helper/convertSome';
 import { PostFormData } from '../../api/api';
 import { useUser } from '../../provider/UserContext';
 import DaddysHomeLoader from '../../components/MainLoadingScreen';
+import DaddysHomeStatus from '../../components/Error';
 
 interface Services {
     businessId: string;
@@ -23,7 +24,7 @@ interface FeaturedCategory {
     value: string;
 }
 
-const categories: FeaturedCategory[] = [
+const featuredCategories: FeaturedCategory[] = [
     { label: 'realme', value: 'realme' },
     { label: 'iphone', value: 'iphone' },
     { label: 'samsung', value: 'samsung' },
@@ -56,9 +57,10 @@ interface DayTime {
 
 interface Availability {
     day: string;
-    start: string;
-    end: string;
+    startTime: string;
+    endTime: string;
 }
+
 
 export default function ServiceForm() {
     const [selectedCategory, setSelectedCategory] = useState<string[]>(['realme']);
@@ -75,6 +77,7 @@ export default function ServiceForm() {
     const [unit, setUnit] = useState<'min' | 'hr'>('min');
     const [hours, setHours] = useState<Map<'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY', DayTime> | null>(null);
     const [serviceImage, setServiceImage] = useState<File | null>(null);
+    const [result, setResult] = useState<'success' | 'fail' | 'serviceAlreadyExist' | null>(null);
 
     const bussId = useUser().activeBusiness?.businessId;
 
@@ -101,38 +104,46 @@ export default function ServiceForm() {
 
         const duration = toISODuration(Number(service.duration), unit);
 
-        const serviceBody = {
-            ...service,
-            duration: duration
-        };
-
         const availability: Availability[] = selectedDay.map(sd => {
             const time = hours?.get(sd.value)!;
             return {
                 day: sd.value,
-                start: to24Hour(time?.start),
-                end: to24Hour(time?.end)
+                startTime: to24Hour(time?.start),
+                endTime: to24Hour(time?.end)
             }
         });
 
-        console.log({...serviceBody, availability, selectedCategory});
+        const categories = selectedCategory.map(sc => ({ categoryName: sc }));
 
-        // const body = new FormData();
-        // body.append('body', new Blob([JSON.stringify(serviceBody)], { type: 'application/json' }));
-        // body.append('file', serviceImage as File);
+        const serviceBody = {
+            ...service,
+            duration: duration,
+            availability,
+            categories
+        };
 
-        // const result = await PostFormData(url, body);
+        console.log(serviceBody);
 
-        // if (result.status === 201) {
-        //     console.log("good one");
-        //     setIsSaving(false);
-        // } else {
-        //     setIsSaving(false);
-        // }
+        const body = new FormData();
+        body.append('body', new Blob([JSON.stringify(serviceBody)], { type: 'application/json' }));
+        body.append('file', serviceImage as File);
+
+        const apiResult = await PostFormData(url, body);
+
+        if (apiResult.status === 201) {
+            setIsSaving(false);
+            setResult('success');
+        } else if(apiResult.status === 409) {
+            setResult('serviceAlreadyExist');
+            setIsSaving(false);
+        } else {
+            setIsSaving(false);
+            setResult('fail');
+        }
 
         setTimeout(() => {
-            setIsSaving(false);
-        }, 3000);
+            setResult(null);
+        }, 10000);
 
     };
 
@@ -167,6 +178,10 @@ export default function ServiceForm() {
         <div className='overflow-y-auto h-screen'>
 
             {isSaving && <DaddysHomeLoader />}
+
+            {result !== null && result === 'fail' && <DaddysHomeStatus type='error' onPrimaryAction={() => console.log("TODO")} message='check your internet connection and try again' onDismiss={() => setResult(null)}  />}
+            {result !== null && result === 'success' && <DaddysHomeStatus type='success' onPrimaryAction={() => console.log("TODO")} onDismiss={() => setResult(null)} />}
+            {result !== null && result === 'serviceAlreadyExist' && <DaddysHomeStatus type='conflict' onPrimaryAction={() => console.log("TODO")} onDismiss={() => setResult(null)} />}
 
             <div className="sticky top-0 z-10 bg-[#0a0a0c]/95 backdrop-blur-sm border-b border-[rgba(255,255,255,0.08)]">
                 <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between">
@@ -235,7 +250,7 @@ export default function ServiceForm() {
                         <div>
                             <p className='text-(--text-1) mb-2 text-[16px]'>Category <span className='text-red-600'>*</span></p>
                             <div className='flex flex-wrap gap-2'>
-                                {categories.map(cat =>
+                                {featuredCategories.map(cat =>
                                     <button
                                         key={cat.value}
                                         onClick={() => setSelectedCategory(prev => {
