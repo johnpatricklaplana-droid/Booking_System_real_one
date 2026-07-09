@@ -115,13 +115,11 @@ export default function ServiceForm() {
             }
         });
 
-        console.log(serviceBody);
-        console.log(availability);
-        console.log(selectedCategory);
+        console.log({...serviceBody, availability, selectedCategory});
 
-        const body = new FormData();
-        body.append('body', new Blob([JSON.stringify(serviceBody)], { type: 'application/json' }));
-        body.append('file', serviceImage as File);
+        // const body = new FormData();
+        // body.append('body', new Blob([JSON.stringify(serviceBody)], { type: 'application/json' }));
+        // body.append('file', serviceImage as File);
 
         // const result = await PostFormData(url, body);
 

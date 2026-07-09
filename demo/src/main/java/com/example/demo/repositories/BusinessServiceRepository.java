@@ -24,5 +24,7 @@ public interface BusinessServiceRepository extends JpaRepository<BusinessService
     @EntityGraph("ServiceDetails")
     @Query("SELECT s FROM BusinessServices s WHERE s.id = :serviceId")
     BusinessServices getServiceDetails(@Param("serviceId") UUID serviceId);
+
+    boolean existsByBusiness_IdAndServiceNameIgnoreCase(UUID businessId, String serviceName);
     
 } 

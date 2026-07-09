@@ -7,10 +7,15 @@ export function AppShell() {
     const { user } = useUser();
     const location = useLocation();
 
+    console.log(user);
+
     const isBusinessRoute = location.pathname.startsWith('/business');
     const isCustomerRoute = location.pathname.startsWith('/customer');
     const showBusinessShell = isBusinessRoute && user?.activeRole === 'BUSINESS_OWNER';
     const showCustomerShell = isCustomerRoute && user?.activeRole === 'CUSTOMER';
+
+    console.log(showBusinessShell);
+    console.log(showCustomerShell);
 
     if (showBusinessShell) {
         return (

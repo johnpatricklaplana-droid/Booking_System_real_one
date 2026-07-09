@@ -1,11 +1,11 @@
-import { Outlet } from 'react-router';
+// import { Outlet } from 'react-router';
 
-export function Root() {
-    return (
-        <div className="min-h-screen">
-            <main>
-                <Outlet />
-            </main>
-        </div>
-    );
-}
+// export function Root() {
+//     return (
+//         <div className="min-h-screen">
+//             <main>
+//                 <Outlet />
+//             </main>
+//         </div>
+//     );
+// }

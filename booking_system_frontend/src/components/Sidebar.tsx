@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { Calendar, BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
@@ -6,18 +6,20 @@ import { Logo } from './AppLogo';
 
 const navItems = [
     { icon: Grid3x3, label: 'Analytics', path: '/business' },
-    { icon: Calendar, label: 'Calendar', path: 'business/calendar' },
-    { icon: Clock, label: 'Appointments', path: 'business/appointments' },
-    { icon: Users, label: 'Customers', path: 'business/customers' },
-    { icon: Briefcase, label: 'Services', path: 'business/services' },
-    { icon: BarChart3, label: 'staff', path: 'business/staff' },
-    { icon: Settings, label: 'Settings', path: 'business/settings' },
-    { icon: BriefcaseBusinessIcon, label: 'Business', path: 'business/profile' },
+    { icon: Calendar, label: 'Calendar', path: 'calendar' },
+    { icon: Clock, label: 'Appointments', path: 'appointments' },
+    { icon: Users, label: 'Customers', path: 'customers' },
+    { icon: Briefcase, label: 'Services', path: 'services' },
+    { icon: BarChart3, label: 'staff', path: 'staff' },
+    { icon: Settings, label: 'Settings', path: 'settings' },
+    { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
 ];
 
 export function Sidebar() {
 
     const { setUser, user } = useUser();
+
+    const navigate = useNavigate();
 
     const location = useLocation();
 
@@ -31,6 +33,7 @@ export function Sidebar() {
 
         if(result.status === 200) {
             setUser?.(prev => ({ ...prev!, activeRole: "CUSTOMER" }));
+            navigate('/customer/home');
         }
     };
 

@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -105,5 +106,11 @@ public class BusinessServices {
 
     @OneToMany(mappedBy = "services")
     private List<ServiceReviews> reviews;
+
+    @OneToMany(mappedBy = "services", cascade = CascadeType.ALL)
+    private List<ServiceAvailability> availabilities;
+
+    @OneToMany(mappedBy = "services", cascade = CascadeType.ALL)
+    private List<ServiceCategory> categories;
 
 }

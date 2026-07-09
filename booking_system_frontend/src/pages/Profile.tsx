@@ -401,6 +401,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
 
         if(result.status === 200) {
             setUser?.(prev => ({ ...prev!, activeRole: "BUSINESS_OWNER" }));
+            navigate('/business');
         }
     };
 

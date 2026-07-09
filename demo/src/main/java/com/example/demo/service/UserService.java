@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -24,11 +26,15 @@ import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Roles;
+import com.example.demo.entity.ServiceAvailability;
+import com.example.demo.entity.ServiceCategory;
 import com.example.demo.entity.Users;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.UserAlreadyExistsException;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.mapper.BusinessMapper;
+import com.example.demo.mapper.ServiceMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.UserRepository;
@@ -69,6 +75,9 @@ public class UserService {
 
     @Autowired
     BusinessMapper businessMapper;
+
+    @Autowired
+    ServiceMapper serviceMapper;
     
     public void createUser (UserCredentialsSignUp body) {   
 
@@ -246,11 +255,45 @@ public class UserService {
 
     }
 
-    public void addBusinessServices(AddServiceRequestDto request, MultipartFile file) {
+    @Transactional
+    public void addBusinessServices(AddServiceRequestDto request, MultipartFile file) throws BadRequestException {
         
+        if (businessServiceRepo.existsByBusiness_IdAndServiceNameIgnoreCase(
+                request.getBusinessId(),
+                request.getServiceName())) {
+
+            throw new UserAlreadyExistsException("service already exist");
+        }
+
+        if(file.isEmpty()) {
+            throw new BadRequestException("service image is required buddy");
+        }
+
+        if(!file.getContentType().startsWith("image/")) {
+            throw new BadRequestException("invalid image type buddy");
+        }
+
         BusinessServices businessServices = businessMapper.toSaveBusinessServices(request, entityManager);
 
         businessServices.setServiceLogoUrl(supabaseStorageService.uploadBusinessLogo(file, "business_service_logo"));
+
+        List<ServiceCategory> categories = request.getCategories().stream()
+            .map(cat -> {
+                ServiceCategory category = serviceMapper.toServiceCategory(cat);
+                category.setServices(businessServices);
+                return category;
+            })
+            .toList();
+        List<ServiceAvailability> availabilities = request.getAvailability().stream()
+            .map(avail -> {
+                ServiceAvailability availability = serviceMapper.toServiceAvailability(avail);
+                availability.setServices(businessServices);
+                return availability;
+            })
+            .toList();
+
+        businessServices.setAvailabilities(availabilities);
+        businessServices.setCategories(categories);
 
         businessServiceRepo.save(businessServices);
         

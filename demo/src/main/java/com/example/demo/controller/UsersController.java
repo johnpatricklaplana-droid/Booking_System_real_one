@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -180,10 +182,10 @@ public class UsersController {
     @PostMapping("/api/user/business/services")
     @PreAuthorize("@businessOwnershipChecker.hasAccess(#request.businessId, #id)")
     public ResponseEntity<AuthResponse> addService(
-        @RequestPart("body") AddServiceRequestDto request,
+        @RequestPart("body") @Valid AddServiceRequestDto request,
         @RequestPart("file") MultipartFile file,
         @AuthenticationPrincipal UUID id
-    ) {
+    ) throws BadRequestException {
         userService.addBusinessServices(request, file);
         return ResponseEntity
             .status(HttpStatus.CREATED)

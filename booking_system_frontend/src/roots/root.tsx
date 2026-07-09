@@ -28,35 +28,30 @@ export const router = createBrowserRouter([
     { path: 'create-business', Component: BusinessOnboardingWizard },
 
     {
-        path: '/',
+        path: '/customer',
         Component: AppShell,
         children: [
-            {
-                path: 'customer',
-                Component: CustomerGuard,
-                children: [
-                    { path: 'home', Component: HomePage },
-                    { path: 'profile', Component: ProfilePage },
-                    { path: 'explore', Component: ExploreServices },
-                    { path: 'service/:serviceId', Component: ServiceDetails },
-                    { path: 'bookings', Component: MyBookingsPage }
-                ]
-            },
-            {
-                path: 'business',
-                Component: BusinessGuard,
-                children: [
-                    { index: true, Component: Analytics },
-                    { path: 'services', Component: Services },
-                    { path: 'add-services', Component: ServiceForm },
-                    { path: 'customers', Component: Customers },
-                    { path: 'appointments', Component: Appointments },
-                    { path: 'calendar', Component: CalendarPage },
-                    { path: 'settings', Component: Settings },
-                    { path: 'profile', Component: BusinessProfilePage },
-                    { path: 'staff', Component: StaffManagementPage },
-                ]
-            }
+            { path: 'home', Component: HomePage },
+            { path: 'profile', Component: ProfilePage },
+            { path: 'explore', Component: ExploreServices },
+            { path: 'service/:serviceId', Component: ServiceDetails },
+            { path: 'bookings', Component: MyBookingsPage }
+        ]
+    },
+
+    {
+        path: '/business',
+        Component: AppShell,
+        children: [
+            { index: true, Component: Analytics },
+            { path: 'services', Component: Services },
+            { path: 'add-services', Component: ServiceForm },
+            { path: 'customers', Component: Customers },
+            { path: 'appointments', Component: Appointments },
+            { path: 'calendar', Component: CalendarPage },
+            { path: 'settings', Component: Settings },
+            { path: 'profile', Component: BusinessProfilePage },
+            { path: 'staff', Component: StaffManagementPage },
         ]
     },
 ]);
