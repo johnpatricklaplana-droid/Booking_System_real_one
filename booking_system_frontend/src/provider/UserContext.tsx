@@ -40,64 +40,70 @@ export function UserProvider ({ children }: { children: ReactNode }) {
 
             const url = "http://localhost:8080/api/super-me";
 
-            const userResult = await get(url);
+            try {
+                const userResult = await get(url);
 
-            if (userResult.status === 200) {
-                setUser({
-                    profilePic: userResult.message.avatarUrl,
-                    firstName: userResult.message.firstName,
-                    lastName: userResult.message.lastName,
-                    roles: userResult.message.roles,
-                    email: userResult.message.email,
-                    addres: null,
-                    phone: null,
-                    activeRole: userResult.message.lastActiveRole,
-                    lastBusinessIdImViewing: userResult.message.lastBusinessIdImViewing
-                });
+                if (userResult.status === 200) {
+                    setUser({
+                        profilePic: userResult.message.avatarUrl,
+                        firstName: userResult.message.firstName,
+                        lastName: userResult.message.lastName,
+                        roles: userResult.message.roles,
+                        email: userResult.message.email,
+                        addres: null,
+                        phone: null,
+                        activeRole: userResult.message.lastActiveRole,
+                        lastBusinessIdImViewing: userResult.message.lastBusinessIdImViewing
+                    });
+                    setLoading(false);
+                }
+
+                if (userResult.message.roles.includes("BUSINESS_OWNER")) {
+                    const url = "http://localhost:8080/api/business";
+
+                    const businessResult: Business[] = await get(url);
+
+                    setBusiness(
+                        businessResult.map((bus: Business) => {
+                            return {
+                                address: bus.address,
+                                businessEmail: bus.businessEmail,
+                                businessId: bus.businessId,
+                                businessLogoUrl: bus.businessLogoUrl,
+                                businessName: bus.businessName,
+                                description: bus.description,
+                                facebookPage: bus.facebookPage,
+                                ownerName: bus.ownerName,
+                                startedAt: bus.startedAt,
+                                status: bus.status,
+                                timezone: bus.timezone,
+                                type: bus.type
+                            }
+                        })
+                    );
+                    console.log(business);
+                    const activeOne: Business = businessResult.find(buss => buss.businessId === userResult.message.lastBusinessIdImViewing)!;
+                    console.log(activeOne);
+                    setActiveBusiness({
+                        address: activeOne.address,
+                        businessEmail: activeOne.businessEmail,
+                        businessId: activeOne.businessId,
+                        businessLogoUrl: activeOne.businessLogoUrl,
+                        businessName: activeOne.businessName,
+                        description: activeOne.description,
+                        facebookPage: activeOne.facebookPage,
+                        ownerName: activeOne.ownerName,
+                        startedAt: activeOne.startedAt,
+                        timezone: activeOne.timezone,
+                        status: activeOne.status,
+                        type: activeOne.type
+                    })
+                }
+            } catch (error) {
+                console.log(error);
                 setLoading(false);
             }
 
-            if (userResult.message.roles.includes("BUSINESS_OWNER")) {
-                const url = "http://localhost:8080/api/business";
-
-                const businessResult: Business[] = await get(url);
-
-                setBusiness(
-                    businessResult.map((bus: Business) => {
-                        return {
-                            address: bus.address,
-                            businessEmail: bus.businessEmail,
-                            businessId: bus.businessId,
-                            businessLogoUrl: bus.businessLogoUrl,
-                            businessName: bus.businessName,
-                            description: bus.description,
-                            facebookPage: bus.facebookPage,
-                            ownerName: bus.ownerName,
-                            startedAt: bus.startedAt,
-                            status: bus.status,
-                            timezone: bus.timezone,
-                            type: bus.type
-                        }
-                    })
-                );      
-                console.log(business);
-                const activeOne: Business = businessResult.find(buss => buss.businessId === userResult.message.lastBusinessIdImViewing)!;
-                console.log(activeOne);
-                setActiveBusiness({
-                    address: activeOne.address,
-                    businessEmail: activeOne.businessEmail,
-                    businessId: activeOne.businessId,
-                    businessLogoUrl: activeOne.businessLogoUrl,
-                    businessName: activeOne.businessName,
-                    description: activeOne.description,
-                    facebookPage: activeOne.facebookPage,
-                    ownerName: activeOne.ownerName,
-                    startedAt: activeOne.startedAt,
-                    timezone: activeOne.timezone,
-                    status: activeOne.status,
-                    type: activeOne.type
-                })
-            }
         };
 
         getUser();

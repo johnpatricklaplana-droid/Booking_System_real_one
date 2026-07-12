@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
-import type { Business, Review, ReviewWithUser, ServiceAvailability, ServiceResponse, Staff, Time } from "../interfaces/Types";
+import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, Staff, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
-import { getAverageRating } from "../hooks/service";
+import { durationAsMinutes, generateTimeSlots, getAverageRating } from "../hooks/service";
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
 
 function BookingResultModal ({ 
@@ -13,14 +13,14 @@ function BookingResultModal ({
     selectedTime, 
     selectedDate 
 }: 
-    { 
+    Readonly<{ 
         serviceDetails: ServiceResponse | null, 
         selectedStaff: string, 
         selectedTime: Time | null, 
         selectedDate: Date 
-    }) {
+    }>) {
     return (
-        <div className="bg-(--surface) w-[90%] top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] z-50 lg:w-[500px] fixed border border-(--teal)/30 rounded-xl p-8 text-center">
+        <div className="bg-(--surface) w-[90%] top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] z-50 lg:w-125 fixed border border-(--teal)/30 rounded-xl p-8 text-center">
             <div className="w-12 h-12 rounded-full bg-(--teal-dim) flex items-center justify-center mx-auto mb-4">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-(--teal)">
                     <path d="M20 6L9 17l-5-5" />
@@ -40,6 +40,24 @@ function BookingResultModal ({
     );
 }
 
+function dayAsNumber(day: string): number {
+    if (day === "MONDAY") {
+        return 1;
+    } else if (day === "TUESDAY") {
+        return 2;
+    } else if (day === "WEDNESDAY") {
+        return 3;
+    } else if (day === "THURSDAY") {
+        return 4;
+    } else if (day === "FRIDAY") {
+        return 5;
+    } else if (day === "SATURDAY") {
+        return 6;
+    } else {
+        return 7;
+    }
+}
+
 export function ServiceDetails() {
 
     const [serviceDetails, setServiceDetails] = useState<ServiceResponse | null>(null);
@@ -49,38 +67,29 @@ export function ServiceDetails() {
     const [selectedDate, setSelectedDate] = useState<Date>((new Date()));
     const [selectedTime, setSelectedTime] = useState<Time | null>(null);
     const [selectedStaff, setSelectedStaff] = useState<string>("");
-    const [missingFields, setMissingFields] = useState<"time" | "staff" | null>(null);
     const [bookingResult, setBookingResult] = useState<{ success: boolean, message: string } | null>(null);
     const [serviceAvailability, setServiceAvailability] = useState<ServiceAvailability[]>([]);
-
-    const timeFieldRef = useRef<HTMLButtonElement>(null);
-    const staffFieldRef = useRef<HTMLButtonElement>(null);
+    const [searchTimeResult, setSearchTimeResult] = useState<Time[]>([]);
     
     const { serviceId } = useParams();
 
-    function dayAsNumber(day: string): number {
-        if (day === "MONDAY") {
-            return 1;
-        } else if (day === "TUESDAY") {
-            return 2;
-        } else if (day === "WEDNESDAY") {
-            return 3;
-        } else if (day === "THURSDAY") {
-            return 4;
-        } else if (day === "FRIDAY") {
-            return 5;
-        } else if (day === "SATURDAY") {
-            return 6;
-        } else {
-            return 7;
-        }
-    }
+    const timeSlots = useMemo(() => {
+        
+        const selectedDay = serviceAvailability.find(sa => dayAsNumber(sa.day) === selectedDate.getDay());
+
+        if(!selectedDay) return null;
+
+        return generateTimeSlots(selectedDay.startTime, selectedDay.endTime, Number(durationAsMinutes((serviceDetails?.duration!))));
+
+    }, [selectedDate.getDay()]);
+
+    console.log(timeSlots);
 
     const notGoods = () => {
         
         return selectedDate === null
             || selectedTime === null
-            || selectedStaff === null
+            || selectedStaff === ''
             || serviceId === null;
     };
 
@@ -123,14 +132,10 @@ export function ServiceDetails() {
     const book = async () => {
 
         if(!selectedTime) {
-            timeFieldRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-            setMissingFields("time");
             return;
         };
 
         if(!selectedStaff) {
-            staffFieldRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-            setMissingFields("staff");
             return;
         }
 
@@ -161,6 +166,19 @@ export function ServiceDetails() {
         setTimeout(() => {
             setBookingResult(null);
         }, 2000);
+
+    };
+
+    const onTimeSearch = (e: any) => {
+        const value = e.target.value.trim().toLowerCase();
+
+        if (!value) {
+            setSearchTimeResult([]);
+            return;
+        }
+
+        const results: Time[] = timeSlots?.filter(prev => prev.label.toLowerCase().includes(value)).slice(0, 10) ?? [];
+        setSearchTimeResult(results);
 
     };
 
@@ -206,9 +224,6 @@ export function ServiceDetails() {
                         <p className="text-[0.75rem] font-semibold uppercase leading-[0.8em] text-(--text-3) mb-3.5">Pick a date</p>
                         <BookingDatePicker availableDay={serviceAvailability.map(sa => sa.day)} selectDate={setSelectedDate} />
                         <p className="text-[0.75rem] mt-8 font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5">Available times</p>
-                        {missingFields === "time" && <p className="text-[0.8125rem] text-center text-red-600 mb-2 animate-bounce">
-                            Please select a time to continue
-                        </p>}
                         <div className="grid grid-cols-3 gap-2 mb-8">
                             {/* DESIGN IF BOOKED : 
                                 opacity: 0.35;
@@ -220,7 +235,7 @@ export function ServiceDetails() {
                                 const day = dayAsNumber(sa.day);
 
                                 const chosenOne = selectedDate.getDay() === day;
-                                
+
                                 return (<div
                                     key={sa.day}
                                     className={`p-2 border ${chosenOne ? 'bg-(--gold-dim) border-(--gold)' : 'bg-(--surface-2)'} h-fit rounded-sm relative`}
@@ -234,7 +249,30 @@ export function ServiceDetails() {
                                     {chosenOne 
                                         ? <>
                                             <p className="mt-2 text-xs uppercase tracking-tight font-semibold text-(--text-2)">select some time</p>
-                                            <input className="w-full border-(--text-1) border mt-1 rounded-sm px-4 text-(--text-1) py-2" type="time" />
+                                            <input 
+                                                className="my-2 w-full outline-0 border border-(--gold) py-1 px-2 text-(--text-1) text-sm rounded-sm" placeholder="search some time" type="text" 
+                                                onChange={onTimeSearch}
+                                            />
+                                            <div className="mt-1 grid grid-cols-2 h-fit overflow-y-auto gap-1.5">
+                                                {searchTimeResult?.map((sts: Time) => (
+                                                    <button
+                                                        key={sts.value}
+                                                        type="button"
+                                                        className={`text-xs py-2 px-2 h-fit rounded-sm border transition-colors ${selectedTime?.value === sts.value
+                                                                ? 'bg-(--gold) text-(--bg) border-(--gold)'
+                                                                : 'bg-(--surface) border-(--border) text-(--text-1) hover:border-(--gold-light)'
+                                                            }`}
+                                                        onClick={() => setSelectedTime(sts)}
+                                                    >
+                                                        {sts.label}
+                                                    </button>
+                                                ))}
+                                                {searchTimeResult.length <= 0 && 
+                                                    <div className="h-full flex items-center">
+                                                        <p className="text-center text-(--text-2)">no result make sure to think</p>
+                                                    </div>
+                                                }
+                                            </div>
                                         </> 
                                         : ''
                                     }
@@ -242,18 +280,13 @@ export function ServiceDetails() {
                             })}
                         </div>  
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
-                        {missingFields === "staff" && <p className="text-[0.8125rem] text-center text-red-600 mb-2 animate-bounce">
-                            Please select a staff to continue
-                        </p>}
                         <div className="mb-8 grid grid-cols-3 gap-4">
                             {staff?.map(s => 
                                 <button
                                     key={s.id}
-                                    ref={staffFieldRef}
-                                    className={`flex gap-2 ${missingFields === "staff" ? 'ring-1 ring-red-600 ring-offset-2 ring-offset-(--bg)' : ""} ${selectedStaff === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
+                                    className={`flex gap-2 ${selectedStaff === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
                                     onClick={() => {
                                         setSelectedStaff(s.id);
-                                        setMissingFields(null);
                                     }}
                                 >
                                     <img className="w-9 h-9 rounded-[50%]" src={`http://localhost:8080/api/staff/${s.avatarUrl}`} alt="" />

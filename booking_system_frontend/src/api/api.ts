@@ -67,6 +67,10 @@ export async function get(url: string) {
             credentials: 'include'
         });
 
+        if(!result.ok) {
+            throw new Error("ang nais ko malaman mo ooh");
+        }
+
         const response = await result.json();
         console.log(response);
         return response;

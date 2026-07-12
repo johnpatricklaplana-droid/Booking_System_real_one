@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { get } from "../api/api";
-import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings } from "../interfaces/Types";
+import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings, Time } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
 
@@ -130,4 +130,25 @@ export function fillMonths(data: MonthlyStats[]): MonthlyStats[] {
         });
     }
     return filled;
+}
+
+export function generateTimeSlots(startTime: string, endTime: string, durationMinutes: number): Time[] {
+    const slots: Time[] = [];
+
+    const [startHour, startMin] = startTime.split(':').map(Number);
+    const [endHour, endMin] = endTime.split(':').map(Number);
+
+    let current = new Date(2000, 9, 1, startHour, startMin);
+    const end = new Date(2000, 9, 1, endHour, endMin);
+
+    while (current.getTime() + durationMinutes * 60000 <= end.getTime()) {
+        const label = current.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const value = `${String(current.getHours()).padStart(2, '0')}:${String(current.getMinutes()).padStart(2, '0')}`;
+
+        slots.push({ label, value });
+
+        current = new Date(current.getTime() + 60000); // advance by 1 minute, not by duration
+    }
+
+    return slots;
 }

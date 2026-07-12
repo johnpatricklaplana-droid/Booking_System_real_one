@@ -141,7 +141,7 @@ export function ManageService() {
             }
         } catch (error) {
             setAddingServiceAvailability(false);
-            setServiceAvailability(prev => prev.filter(sa => sa.day === body.day));
+            setServiceAvailability(prev => prev.filter(sa => sa.day !== body.day));
         }
 
     };
@@ -149,10 +149,9 @@ export function ManageService() {
     const serviceAvailabilityNoGoods = () => {
         return addServiceAvailability?.day === ''.trim()
             || addServiceAvailability?.startTime === ''.trim()
-            || addServiceAvailability?.endTime === ''.trim();
+            || addServiceAvailability?.endTime === ''.trim()
+            || serviceAvailability.some(sa => sa.day === addServiceAvailability.day);
     };
-
-    
 
     const handleAvailabilityInputChange = (event: any): void  => {
         
@@ -269,7 +268,7 @@ export function ManageService() {
                 <div className="grid grid-cols-2 gap-6">
 
                     {/* Staff panel */}
-                    <div className="bg-(--surface) border border-(--border) rounded-xl p-6">
+                    <div className="bg-(--surface) h-fit border border-(--border) rounded-xl p-6">
                         <div className="flex items-center justify-between mb-5">
                             <div>
                                 <h2 className="text-[0.9375rem] font-semibold text-(--text-1)">Staff who perform this</h2>
