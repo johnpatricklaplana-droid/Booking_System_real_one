@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
 import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, Staff, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
@@ -6,6 +6,7 @@ import { get, post } from "../api/api";
 import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
 import { durationAsMinutes, generateTimeSlots, getAverageRating } from "../hooks/service";
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
+import DaddysHomeBookingTicket from "../components/BookingConfirmation";
 
 function BookingResultModal ({ 
     serviceDetails, 
@@ -66,10 +67,11 @@ export function ServiceDetails() {
     const [rating, setRating] = useState<ReviewWithUser[] | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date>((new Date()));
     const [selectedTime, setSelectedTime] = useState<Time | null>(null);
-    const [selectedStaff, setSelectedStaff] = useState<string>("");
+    const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
     const [bookingResult, setBookingResult] = useState<{ success: boolean, message: string } | null>(null);
     const [serviceAvailability, setServiceAvailability] = useState<ServiceAvailability[]>([]);
     const [searchTimeResult, setSearchTimeResult] = useState<Time[]>([]);
+    const [openBookingConfirmation, setOpenBookingConfirmation] = useState<boolean>(false);
     
     const { serviceId } = useParams();
 
@@ -83,13 +85,12 @@ export function ServiceDetails() {
 
     }, [selectedDate.getDay()]);
 
-    console.log(timeSlots);
 
     const notGoods = () => {
         
         return selectedDate === null
             || selectedTime === null
-            || selectedStaff === ''
+            || selectedStaff === null
             || serviceId === null;
     };
 
@@ -139,7 +140,6 @@ export function ServiceDetails() {
             return;
         }
 
-        // TODO
         if(!selectedDate) return;
 
         const datetimeWithTimeZone = buildBookingPayloadTime(selectedDate, selectedTime?.value, business?.timezone ?? "");
@@ -188,7 +188,9 @@ export function ServiceDetails() {
                 <img className="rounded-[50%] w-40 h-40" src={business?.businessLogoUrl} alt="" />
             </DaddysHomeBanner>
 
-            {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff} />}
+            {openBookingConfirmation && <DaddysHomeBookingTicket onClick={book} onClose={() => setOpenBookingConfirmation(false)} staff={selectedStaff!} service={serviceDetails!} date={selectedDate} time={selectedTime!} />}
+
+            {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff?.id!} />}
 
             <div className="min-h-screen pb-20 max-w-280 mx-auto">
                 <div className="grid grid-cols-[1fr_340px] gap-12 pt-12 px-0 items-start">
@@ -284,9 +286,9 @@ export function ServiceDetails() {
                             {staff?.map(s => 
                                 <button
                                     key={s.id}
-                                    className={`flex gap-2 ${selectedStaff === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
+                                    className={`flex gap-2 ${selectedStaff?.id === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
                                     onClick={() => {
-                                        setSelectedStaff(s.id);
+                                        setSelectedStaff(s);
                                     }}
                                 >
                                     <img className="w-9 h-9 rounded-[50%]" src={`http://localhost:8080/api/staff/${s.avatarUrl}`} alt="" />
@@ -342,7 +344,7 @@ export function ServiceDetails() {
                             <button 
                                 className="btn btn-primary btn-lg w-full"
                                 disabled={notGoods()}
-                                onClick={book}
+                                onClick={() => setOpenBookingConfirmation(true)}
                             >
                                 Book now
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
