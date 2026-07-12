@@ -5,10 +5,9 @@ import {
     Check,
     Users,
 } from "lucide-react";
-import type { Staff } from "../../interfaces/Types";
+import type { ServiceResponse, Staff, StaffWithServices } from "../../interfaces/Types";
 import { useUser } from "../../provider/UserContext";
 import { get } from "../../api/api";
-import { toServices } from "../../mapper/mapper";
 import { StaffCard } from "../../components/StaffCard";
 import { StaffModal } from "../../components/StaffModal";
 
@@ -80,11 +79,11 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 }
 
 export default function StaffManagementPage() {
-    const [staffList, setStaffList] = useState<Staff[]>([]);
+    const [staffList, setStaffList] = useState<StaffWithServices[]>([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState<FilterValue>("all");
     const [modalState, setModalState] = useState<
-        { mode: "add" } | { mode: "edit"; staff: Staff } | null
+        { mode: "add" } | { mode: "edit"; staff: StaffWithServices } | null
     >(null);
     const [toast, setToast] = useState<string | null>(null);
 
@@ -97,19 +96,35 @@ export default function StaffManagementPage() {
         const getStaff = async () => {
             const url = `http://localhost:8080/api/staff/business/${businessId}`;
 
-            const result: Staff[] = await get(url);
+            const result: StaffWithServices[] = await get(url);
 
             console.log(result);
 
             if(result) {
-                setStaffList(result.map(r => ({
-                    id: r.id,
-                    fullName: r.fullName,
-                    title: r.title,
-                    avatarUrl: r.avatarUrl,
-                    active: r.active,
-                    createdAt: r.createdAt
-                })))
+                setStaffList(result.map(sws => {
+                    return {
+                        staff: {
+                            id: sws.staff.id,
+                            fullName: sws.staff.fullName,
+                            title: sws.staff.title,
+                            avatarUrl: sws.staff.avatarUrl,
+                            active: sws.staff.active,
+                            createdAt: sws.staff.createdAt
+                        },
+                        services: sws.services.map(s => {
+                            return {
+                                capacity: s.capacity,
+                                description: s.description,
+                                duration: s.duration,
+                                id: s.id,
+                                price: s.price,
+                                serviceLogoUrl: s.serviceLogoUrl,
+                                serviceName: s.serviceName,
+                                status: s.status
+                            }
+                        })   
+                    }
+                }))
             }
 
         };
@@ -118,41 +133,18 @@ export default function StaffManagementPage() {
 
     }, [businessId]);
 
-    function showToast(message: string) {
-        setToast(message);
-        setTimeout(() => setToast(null), 3000);
-    }
-
     const filteredStaff = useMemo(() => {
         return staffList.filter((s) => {
-            const matchesSearch = s.fullName
+            const matchesSearch = s.staff.fullName
                 .toLowerCase()
                 .includes(search.trim().toLowerCase());
             const matchesFilter =
                 filter === "all" ||
-                (filter === "active" && s.active) ||
-                (filter === "inactive" && !s.active);
+                (filter === "active" && s.staff.active) ||
+                (filter === "inactive" && !s.staff.active);
             return matchesSearch && matchesFilter;
         });
     }, [staffList, search, filter]);
-
-    async function handleSave(input: Omit<Staff, "id"> & { id?: string }) {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-
-        if (input.id) {
-            setStaffList((prev) =>
-                prev.map((s) =>
-                    s.id === input.id ? { ...(input as Staff), id: input.id! } : s
-                )
-            );
-            showToast(`${input.fullName} updated successfully!`);
-        } else {
-            const newStaff: Staff = { ...input, id: crypto.randomUUID() };
-            setStaffList((prev) => [newStaff, ...prev]);
-            showToast(`${input.fullName} added successfully!`);
-        }
-        setModalState(null);
-    }
 
     return (
         <div className="min-h-screen p-8 overflow-y-auto bg-[--bg] text-white">
@@ -201,8 +193,8 @@ export default function StaffManagementPage() {
                     {filteredStaff.length !== 0 && <div className="grid gap-6 grid-cols-2 sm:grid-cols-3">
                         {filteredStaff.map((staff) => (
                             <StaffCard
-                                key={staff.id}
-                                staff={staff}
+                                key={staff.staff.id}
+                                sws={staff}
                                 onEdit={() => setModalState({ mode: "edit", staff })}
                             />
                         ))}

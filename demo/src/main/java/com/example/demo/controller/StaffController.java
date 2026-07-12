@@ -4,11 +4,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.request.AddStaffDto;
+import com.example.demo.dto.request.AssignStaffToServiceDto;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.StaffResponseDto;
+import com.example.demo.dto.response.StaffWithServicesDto;
 import com.example.demo.service.StaffService;
-
-import reactor.core.publisher.Flux;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -26,12 +26,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @RestController
 public class StaffController {
 
-    @Autowired
-    private StaffService staffService;
+    private final StaffService staffService;
+
+    StaffController(StaffService staffService) {
+        this.staffService = staffService;
+    }
     
     @PostMapping("/api/staff")
     @PreAuthorize("@businessOwnershipChecker.hasAccess(#request.businessId, #request.serviceId, #id)")
@@ -45,6 +52,20 @@ public class StaffController {
             .status(HttpStatus.CREATED)
             .body(new AuthResponse(201, "new staff added super successfully"));
     }
+
+    @PostMapping("/api/staff/business/{businessId}")
+    @PreAuthorize("@businessOwnershipChecker.isThisStaffAndServiceYours(#businessId, #userId, #assignStaffToServiceDto.serviceId)")
+    public ResponseEntity<AuthResponse> assignStaffToAService(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID userId,
+        @RequestBody AssignStaffToServiceDto assignStaffToServiceDto
+    ) {
+        staffService.assignStaffToAService(assignStaffToServiceDto);
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(new AuthResponse(201, "created one"));
+    }
+    
     
     @GetMapping("/api/staff/{filename}")
     public ResponseEntity<byte[]> getStaffProfilePic(@PathVariable String filename, @AuthenticationPrincipal UUID uid) throws AccessDeniedException {
@@ -66,11 +87,25 @@ public class StaffController {
     }
 
     @GetMapping("/api/staff/business/{businessId}")
-    public ResponseEntity<List<StaffResponseDto>> getStaff(@PathVariable UUID businessId) {
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
+    public ResponseEntity<List<StaffWithServicesDto>> getStaff(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID id
+    ) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(staffService.getStaff(businessId));
     }
-    
 
+    @GetMapping("/api/staff/business/{businessId}/staff-only")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
+    public ResponseEntity<List<StaffResponseDto>> getMethodName(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID id
+    ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(staffService.getStaffOnly(businessId));
+    }
+    
 }

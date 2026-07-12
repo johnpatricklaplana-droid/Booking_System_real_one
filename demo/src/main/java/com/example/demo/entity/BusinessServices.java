@@ -10,6 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.demo.entity.join_table.StaffServices;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -112,5 +114,8 @@ public class BusinessServices {
 
     @OneToMany(mappedBy = "services", cascade = CascadeType.ALL)
     private List<ServiceCategory> categories;
+
+    @OneToMany(mappedBy = "services")
+    List<StaffServices> staffServices;
 
 }

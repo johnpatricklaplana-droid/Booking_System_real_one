@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.example.demo.entity.join_table.StaffServices;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,6 +69,9 @@ public class Staff {
         inverseJoinColumns = @JoinColumn(name = "service_id")
     )
     private List<BusinessServices> services;
+
+    @OneToMany(mappedBy = "staff")
+    List<StaffServices> staffServices;
 
     @OneToMany(mappedBy = "staff")
     private List<Schedule> staffs;

@@ -32,7 +32,6 @@ export function Sidebar() {
 
         if(result.status === 200) {
             setUser?.(prev => ({ ...prev!, activeRole: "CUSTOMER" }));
-            navigate('/customer/home');
         }
     };
 

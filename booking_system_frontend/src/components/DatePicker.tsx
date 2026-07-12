@@ -2,7 +2,7 @@ import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
-const DAY_OF_WEEK_MAP: Record<string, number> = {
+export const DAY_OF_WEEK_MAP: Record<string, number> = {
     SUNDAY: 0,
     MONDAY: 1,
     TUESDAY: 2,

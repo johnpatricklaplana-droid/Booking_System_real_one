@@ -104,6 +104,11 @@ export interface Staff {
     createdAt: string;
 }
 
+export interface StaffWithServices {
+    staff: Staff;
+    services: ServiceResponse[]
+}
+
 export interface Unavailable {
     start: string;
     end: string;

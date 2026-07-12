@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Loader2, X, Image } from "lucide-react";
 import { ServiceMultiSelect } from "./MultiSelect";
 import { useUser } from "../provider/UserContext";
-import type { ServiceResponse } from "../interfaces/Types";
+import type { ServiceWithRatings } from "../interfaces/Types";
 import { getServices } from "../hooks/service";
 import { PostFormData } from "../api/api";
 
@@ -15,7 +15,7 @@ export function StaffModal({
     const [error, setError] = useState("");
     const [selected, setSelected] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
-    const [services, setServices] = useState<ServiceResponse[]>([]);
+    const [services, setServices] = useState<ServiceWithRatings[]>([]);
     const [image, setImage] = useState(null);
     const [inputs, setInputs] = useState({
         fullName: "",
@@ -30,7 +30,7 @@ export function StaffModal({
 
         const getIt = async () => {
 
-            const result: ServiceResponse[] = await getServices(businessId);
+            const result: ServiceWithRatings[] = await getServices(businessId);
 
             setServices(result);
 
@@ -70,6 +70,7 @@ export function StaffModal({
             setSaving(false);
         } else {
             setError("bad one");
+            setSaving(false);
         }
 
     }
@@ -177,16 +178,16 @@ export function StaffModal({
                                     {services.map(s => 
                                         <button
                                             className="w-full"
-                                            key={s.id}
+                                            key={s.services.id}
                                             onClick={() => setSelected(prev => {
-                                                const isSelected = prev.find(p => s.id === p);
+                                                const isSelected = prev.find(p => s.services.id === p);
 
                                                 return isSelected
-                                                    ? prev.filter(p => s.id !== p)
-                                                    : [...prev, s.id];
+                                                    ? prev.filter(p => s.services.id !== p)
+                                                    : [...prev, s.services.id];
                                             })}
                                         >
-                                            <ServiceMultiSelect service={s} checked={selected.includes(s.id)} />
+                                            <ServiceMultiSelect service={s.services} checked={selected.includes(s.services.id)} />
                                         </button>
                                     )}
                                 </div>

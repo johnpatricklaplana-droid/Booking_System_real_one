@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
-import com.example.demo.entity.Staff;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
@@ -27,17 +26,17 @@ public class BusinessOwnershipCheck {
     @Autowired
     ScheduleRepository scheduleRepo;
 
+    @Autowired
+    StaffRepository staffRepo;
+
     public boolean hasAccess(UUID businessId, UUID userId) {
 
-        return businessRepo.findById(businessId)
-            .map(business -> business.getUser().getId().equals(userId))
-            .orElse(false);
+        return businessRepo.existsByUser_IdAndId(userId, businessId);
     }
 
     public boolean hasAccess(UUID businessId, List<UUID> serviceId, UUID userId) {
-
         return
-            businessRepo.existsByUser_IdAndId(userId, businessId)
+            hasAccess(businessId, userId)
             &&
             validateServicesBelongToBusiness(businessId, serviceId);
     }
@@ -58,6 +57,16 @@ public class BusinessOwnershipCheck {
         BusinessServices service = businessServiceRepo.findById(schedule.getService().getId()).orElse(null);
 
         return hasAccess(service.getBusiness().getId(), userId);
+    }
+
+    public boolean isThisStaffAndServiceYours(UUID businessId, UUID userId, UUID serviceId) {
+        if(!staffRepo.existsByBusiness_Id(businessId)) {
+            return false;
+        }
+
+        return hasAccess(businessId, userId)
+            && validateServicesBelongToBusiness(businessId, List.of(serviceId));
+
     }
 
 }

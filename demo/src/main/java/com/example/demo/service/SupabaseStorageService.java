@@ -124,7 +124,7 @@ public class SupabaseStorageService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new BadGateWayException("Failed to upload file to Supabase");
         }
 
     }

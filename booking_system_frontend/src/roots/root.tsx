@@ -7,10 +7,8 @@ import { Analytics } from "../pages/business/Analytics";
 import { Appointments } from "../pages/business/Appointments";
 import { Landing } from "../pages/business/Landing";
 import { BusinessOnboardingWizard } from "../pages/BusinessRegistrationPage";
-import { BusinessGuard } from "./BusinessGuad";
 import { Settings } from "../pages/business/Settings";
 import { HomePage } from "../pages/CustomerHomePage";
-import { CustomerGuard } from "./CustomerGuard";
 import ServiceForm from "../pages/business/AddServices";
 import { ProfilePage } from "../pages/Profile";
 import BusinessProfilePage from "../pages/business/BusinessProfile";
@@ -18,7 +16,8 @@ import StaffManagementPage from "../pages/business/Staff";
 import { ExploreServices } from "../pages/ExploreServices";
 import { ServiceDetails } from "../pages/ServiceDetails";
 import MyBookingsPage from "../pages/MyBookings";
-import { RoleGuard } from "./Guards/RoleGuard";
+import { BusinessGuard } from "./Guards/BusinessGuard";
+import { ManageService } from "../pages/business/ServiceDetailsBusiness";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -28,7 +27,7 @@ export const router = createBrowserRouter([
 
     {
         path: '/customer',
-        Component: RoleGuard,
+        Component: BusinessGuard,
         children: [
             { path: 'home', Component: HomePage },
             { path: 'profile', Component: ProfilePage },
@@ -40,7 +39,7 @@ export const router = createBrowserRouter([
 
     {
         path: '/business',
-        Component: RoleGuard,
+        Component: BusinessGuard,
         children: [
             { index: true, Component: Analytics },
             { path: 'services', Component: Services },
@@ -50,6 +49,7 @@ export const router = createBrowserRouter([
             { path: 'settings', Component: Settings },
             { path: 'profile', Component: BusinessProfilePage },
             { path: 'staff', Component: StaffManagementPage },
+            { path: 'manage-service/:serviceId', Component: ManageService }
         ]
     },
 ]);

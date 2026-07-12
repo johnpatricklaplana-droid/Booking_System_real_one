@@ -22,6 +22,7 @@ import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
+import com.example.demo.entity.ServiceAvailability;
 import com.example.demo.entity.ServiceReviews;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
@@ -31,6 +32,8 @@ import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.ServiceAvailabilityRepository;
+
+import jakarta.persistence.EntityManager;
 
 @Service
 public class BusinessService {
@@ -42,6 +45,7 @@ public class BusinessService {
     private final ServiceReviewMapper serviceReviewMapper;
     private final ServiceAvailabilityRepository serviceAvailabilityRepo;
     private final ServiceMapper serviceMapper;
+    private final EntityManager entityManager;
 
     public BusinessService(
         BusinessRepository businessRepository,
@@ -50,7 +54,8 @@ public class BusinessService {
         ScheduleRepository scheduleRepo,
         ServiceReviewMapper serviceReviewMapper,
         ServiceAvailabilityRepository serviceAvailabilityRepo,
-        ServiceMapper serviceMapper
+        ServiceMapper serviceMapper,
+        EntityManager entityManager
     ) 
     {
         this.businessRepo = businessRepository;
@@ -60,6 +65,7 @@ public class BusinessService {
         this.serviceReviewMapper = serviceReviewMapper;
         this.serviceAvailabilityRepo = serviceAvailabilityRepo;
         this.serviceMapper = serviceMapper;
+        this.entityManager = entityManager;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {
@@ -143,6 +149,15 @@ public class BusinessService {
             serviceDistribution, 
             peakHour
         );
+
+    }
+
+    public void addServiceAvailability(UUID serviceId, ServiceAvailabilityDto availability) {
+
+        ServiceAvailability serviceAvailability = serviceMapper.toServiceAvailability(availability);
+        serviceAvailability.setServices(entityManager.getReference(BusinessServices.class, serviceId));
+
+        serviceAvailabilityRepo.save(serviceAvailability);
 
     }
 

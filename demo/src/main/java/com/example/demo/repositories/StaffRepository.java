@@ -25,4 +25,8 @@ public interface StaffRepository extends JpaRepository<Staff, UUID> {
     """)
     boolean existByStaffIdAndServiceId(@Param("staffId") UUID staffId, @Param("serviceId") UUID serviceId);
 
+    boolean existsByBusiness_Id(UUID businessId);
+
+    List<Staff> findAllByBusiness_Id(UUID businessId);
+
 }

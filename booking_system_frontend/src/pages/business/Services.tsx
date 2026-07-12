@@ -87,7 +87,12 @@ export function Services() {
 
             <div className="grid grid-cols-3 gap-6">
                 {services?.map((service) => (
-                    <ServiceBox servicesWithRatings={service}  />
+                    <div
+                        key={service.services.id}
+                        onClick={() => navigate(`/business/manage-service/${service.services.id}`)}
+                    >
+                        <ServiceBox servicesWithRatings={service} />
+                    </div>
                 ))}
             </div>
         </div>

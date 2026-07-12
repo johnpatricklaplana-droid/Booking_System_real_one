@@ -58,17 +58,31 @@ export function ServiceDetails() {
     
     const { serviceId } = useParams();
 
-    const availableTime :Time[] = [
-        { value: "09:00", label: "9:00 AM" },
-        { value: "10:00", label: "10:00 AM" },
-        { value: "11:00", label: "11:00 AM" },
-        { value: "12:00", label: "12:00 AM" },
-        { value: "13:00", label: "1:00 PM" },
-        { value: "14:00", label: "2:00 PM" },
-        { value: "15:00", label: "3:00 PM" },
-        { value: "16:00", label: "4:00 PM" },
-        { value: "17:00", label: "5:00 PM" },
-    ]
+    function dayAsNumber(day: string): number {
+        if (day === "MONDAY") {
+            return 1;
+        } else if (day === "TUESDAY") {
+            return 2;
+        } else if (day === "WEDNESDAY") {
+            return 3;
+        } else if (day === "THURSDAY") {
+            return 4;
+        } else if (day === "FRIDAY") {
+            return 5;
+        } else if (day === "SATURDAY") {
+            return 6;
+        } else {
+            return 7;
+        }
+    }
+
+    const notGoods = () => {
+        
+        return selectedDate === null
+            || selectedTime === null
+            || selectedStaff === null
+            || serviceId === null;
+    };
 
     useEffect(() => {
 
@@ -78,7 +92,7 @@ export function ServiceDetails() {
             const url = `http://localhost:8080/api/services/${serviceId}`;
 
             const result: any = await get(url);
-
+        console.log(result);
             setBusiness(result.business);
             setStaff(result.staff);
             setServiceDetails(result.services);
@@ -150,8 +164,6 @@ export function ServiceDetails() {
 
     };
 
-    console.log(selectedDate);
-
     return (
         <div className="min-h-screen">
             <DaddysHomeBanner>
@@ -203,19 +215,30 @@ export function ServiceDetails() {
                                 cursor: not-allowed;
                                 text-decoration: line-through; 
                             */}
-                            {availableTime.map(time => {
-                                const selectedOne = time.value === selectedTime?.value;
-                                return <button
-                                    ref={timeFieldRef}
-                                    className={`hover:border-(--gold) ${missingFields === "time" ? 'ring-1 ring-red-600 ring-offset-2 ring-offset-(--bg)' : ""} ${selectedOne ? 'border-(--gold-light) text-(--gold) bg-(--gold-dim)' : 'border-(--border) bg-(--surface-2) text-(--text-2)'} text-center text-[0.8125rem] font-medium cursor-pointer transition-all duration-150 border rounded-sm py-2.25 px-1.5`}
-                                    key={time.value}
-                                    onClick={() => {
-                                        setSelectedTime(time);
-                                        if(missingFields === "time") {
-                                            setMissingFields(null);
-                                        }
-                                    }}
-                                >{time.label}</button> 
+                            {serviceAvailability.map(sa => {
+
+                                const day = dayAsNumber(sa.day);
+
+                                const chosenOne = selectedDate.getDay() === day;
+                                
+                                return (<div
+                                    key={sa.day}
+                                    className={`p-2 border ${chosenOne ? 'bg-(--gold-dim) border-(--gold)' : 'bg-(--surface-2)'} h-fit rounded-sm relative`}
+                                >
+                                    <div className='border w-fit py-2 px-4 rounded-sm border-(--gold-light) bg-(--gold-dim) text-(--gold) text-sm'>{sa.day.toLocaleLowerCase()} {chosenOne ? selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : ''}</div>
+                                    
+                                    <div className='bg-(--gold) mt-2 relative rounded-sm py-2 px-4'>
+                                        {new Date(2000, 9, 1, Number(sa.startTime.split(':')[0])).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}-
+                                        {new Date(2000, 9, 1, Number(sa.endTime.split(':')[0])).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                    {chosenOne 
+                                        ? <>
+                                            <p className="mt-2 text-xs uppercase tracking-tight font-semibold text-(--text-2)">select some time</p>
+                                            <input className="w-full border-(--text-1) border mt-1 rounded-sm px-4 text-(--text-1) py-2" type="time" />
+                                        </> 
+                                        : ''
+                                    }
+                                </div>)
                             })}
                         </div>  
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
@@ -285,6 +308,7 @@ export function ServiceDetails() {
                             </div>
                             <button 
                                 className="btn btn-primary btn-lg w-full"
+                                disabled={notGoods()}
                                 onClick={book}
                             >
                                 Book now

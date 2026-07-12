@@ -78,6 +78,9 @@
     .btn-primary:hover {
         @apply shadow-[0_4px_24px_rgba(201,169,110,0.4)] translate-y-[1px];
     }
+    .btn-primary:disabled {
+        @apply opacity-40 cursor-not-allowed translate-y-0 hover:shadow-none
+    }
     .btn-secondary {
         @apply bg-(--surface-2) text-(--text-1) border border-(--border-2);
     }

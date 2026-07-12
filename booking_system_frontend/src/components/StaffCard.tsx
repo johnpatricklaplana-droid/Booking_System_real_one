@@ -1,12 +1,12 @@
 import { Pencil, Trash2 } from "lucide-react";
-import type { ServiceResponse, Staff } from "../interfaces/Types";
+import type { ServiceResponse, Staff, StaffWithServices } from "../interfaces/Types";
 import { useUser } from "../provider/UserContext";
 
 export function StaffCard({
-    staff,
+    sws,
     onEdit,
 }: {
-    staff: Staff;
+    sws: StaffWithServices;
     onEdit: () => void;
 }) {
 
@@ -23,23 +23,23 @@ export function StaffCard({
 
     return (
         <div
-            className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-[--surface] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/30 ${staff.active ? "" : "opacity-60"
+            className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-[--surface] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/30 ${sws.staff.active ? "" : "opacity-60"
                 }`}
         >
             <div className="flex flex-col items-center px-6 pt-6">
                 <div className="relative">
                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[--bg] text-xl font-semibold text-[--gold] ring-2 ring-[--gold]/40 ring-offset-2 ring-offset-[--surface] overflow-hidden">
-                        {staff.avatarUrl ? (
+                        {sws.staff.avatarUrl ? (
                             <img
-                                src={`http://localhost:8080/api/staff/${staff.avatarUrl}`}
-                                alt={staff.fullName}
+                                src={`http://localhost:8080/api/staff/${sws.staff.avatarUrl}`}
+                                alt={sws.staff.avatarUrl}
                                 className="h-full w-full object-cover"
                             />
                         ) : (
-                            getInitials(staff.fullName)
+                            getInitials(sws.staff.fullName)
                         )}
                     </div>
-                    {!staff.active && (
+                    {!sws.staff.active && (
                         <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/70">
                             Inactive
                         </span>
@@ -47,10 +47,10 @@ export function StaffCard({
                 </div>
 
                 <h3 className="mt-4 text-center text-lg font-semibold text-white">
-                    {staff.fullName}
+                    {sws.staff.fullName}
                 </h3>
                 <p className="text-center text-sm text-white/50">
-                    {staff.title || "Staff"}
+                    {sws.staff.title || "Staff"}
                 </p>
             </div>
 
@@ -58,7 +58,14 @@ export function StaffCard({
 
             <div className="mt-2 px-6"> 
                 <p className="text-center text-xs text-white/30">
-                    No services assigned
+                    {sws.services.map(s => 
+                        <div
+                            key={s.id}
+                        >
+                            <img src={s.serviceLogoUrl} alt={s.id} /> 
+                            <p>{s.serviceName}</p>
+                        </div>
+                    )}
                 </p>
             </div>
 
@@ -68,14 +75,14 @@ export function StaffCard({
                     <button
                         onClick={onEdit}
                         title="Edit"
-                        aria-label={`Edit ${staff.fullName}`}
+                        aria-label={`Edit ${sws.staff.fullName}`}
                         className="cursor-pointer rounded-lg p-2 text-white/50 transition-colors hover:bg-white/5 hover:text-[--gold]"
                     >
                         <Pencil className="h-4 w-4" />
                     </button>
                     <button
                         title="Archive"
-                        aria-label={`Archive ${staff.fullName}`}
+                        aria-label={`Archive ${sws.staff.fullName}`}
                         className="cursor-pointer rounded-lg p-2 text-white/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
                     >
                         <Trash2 className="h-4 w-4" />
