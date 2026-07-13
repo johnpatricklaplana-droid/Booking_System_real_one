@@ -9,9 +9,7 @@ import com.example.demo.dto.response.CustomerAppointmentDto;
 import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.service.ScheduleService;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
-
 
 @RestController
 public class ScheduleController {

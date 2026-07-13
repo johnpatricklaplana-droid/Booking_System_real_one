@@ -3,8 +3,8 @@ import { BookingDatePicker } from "../components/DatePicker";
 import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, Staff, Time } from "../interfaces/Types";
 import { useParams } from "react-router-dom";
 import { get, post } from "../api/api";
-import { buildBookingPayloadTime, TimezoneLabel } from "../helper/convertSome";
-import { durationAsMinutes, generateTimeSlots, getAverageRating } from "../hooks/service";
+import { buildBookingPayloadTime, formatDuration, TimezoneLabel } from "../helper/convertSome";
+import { durationAsMinutes, getAverageRating } from "../hooks/service";
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
 import DaddysHomeBookingTicket from "../components/BookingConfirmation";
 
@@ -70,28 +70,18 @@ export function ServiceDetails() {
     const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
     const [bookingResult, setBookingResult] = useState<{ success: boolean, message: string } | null>(null);
     const [serviceAvailability, setServiceAvailability] = useState<ServiceAvailability[]>([]);
-    const [searchTimeResult, setSearchTimeResult] = useState<Time[]>([]);
     const [openBookingConfirmation, setOpenBookingConfirmation] = useState<boolean>(false);
+    const [validTime, setValidTime] = useState<boolean>();
     
     const { serviceId } = useParams();
-
-    const timeSlots = useMemo(() => {
-        
-        const selectedDay = serviceAvailability.find(sa => dayAsNumber(sa.day) === selectedDate.getDay());
-
-        if(!selectedDay) return null;
-
-        return generateTimeSlots(selectedDay.startTime, selectedDay.endTime, Number(durationAsMinutes((serviceDetails?.duration!))));
-
-    }, [selectedDate.getDay()]);
-
 
     const notGoods = () => {
         
         return selectedDate === null
             || selectedTime === null
             || selectedStaff === null
-            || serviceId === null;
+            || serviceId === null
+            || validTime;
     };
 
     useEffect(() => {
@@ -140,15 +130,18 @@ export function ServiceDetails() {
             return;
         }
 
+        if(!serviceId) return;
+
         if(!selectedDate) return;
 
         const datetimeWithTimeZone = buildBookingPayloadTime(selectedDate, selectedTime?.value, business?.timezone ?? "");
 
-        const body = {
+        const body: { startsAt: string, staffId: string, serviceId: string } = {
             startsAt: datetimeWithTimeZone,
-            staffId: selectedStaff,
+            staffId: selectedStaff.id,
             serviceId: serviceId
         }
+
         const url = "http://localhost:8080/api/schedule";
 
         try {
@@ -169,17 +162,20 @@ export function ServiceDetails() {
 
     };
 
-    const onTimeSearch = (e: any) => {
-        const value = e.target.value.trim().toLowerCase();
+    const toMinutes = (t: string): number => {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + m;
+    };
 
-        if (!value) {
-            setSearchTimeResult([]);
-            return;
-        }
+    const isTimeCanDoIt = (sa: ServiceAvailability): boolean => {
+        if (!selectedTime) return false;
 
-        const results: Time[] = timeSlots?.filter(prev => prev.label.toLowerCase().includes(value)).slice(0, 10) ?? [];
-        setSearchTimeResult(results);
+        const start = toMinutes(sa.startTime);
+        const end = toMinutes(sa.endTime);
+        const selected = toMinutes(selectedTime.value);
+        const duration = Number(durationAsMinutes(serviceDetails?.duration!));
 
+        return start <= selected && (end - duration) >= selected;
     };
 
     return (
@@ -238,6 +234,8 @@ export function ServiceDetails() {
 
                                 const chosenOne = selectedDate.getDay() === day;
 
+                                const vt = isTimeCanDoIt(sa);
+
                                 return (<div
                                     key={sa.day}
                                     className={`p-2 border ${chosenOne ? 'bg-(--gold-dim) border-(--gold)' : 'bg-(--surface-2)'} h-fit rounded-sm relative`}
@@ -252,29 +250,14 @@ export function ServiceDetails() {
                                         ? <>
                                             <p className="mt-2 text-xs uppercase tracking-tight font-semibold text-(--text-2)">select some time</p>
                                             <input 
-                                                className="my-2 w-full outline-0 border border-(--gold) py-1 px-2 text-(--text-1) text-sm rounded-sm" placeholder="search some time" type="text" 
-                                                onChange={onTimeSearch}
+                                                className={`w-full mt-1 border ${isTimeCanDoIt(sa) ? 'border-(--gold) text-(--gold) bg-(--gold)/10' : 'border-red-700 text-red-700 bg-red-700/10' } py-2 px-4 rounded-sm`}
+                                                type="time" 
+                                                onChange={(e) => {
+                                                    setSelectedTime({ label: e.target.value, value: e.target.value })
+                                                    setValidTime(vt);
+                                                }}
                                             />
-                                            <div className="mt-1 grid grid-cols-2 h-fit overflow-y-auto gap-1.5">
-                                                {searchTimeResult?.map((sts: Time) => (
-                                                    <button
-                                                        key={sts.value}
-                                                        type="button"
-                                                        className={`text-xs py-2 px-2 h-fit rounded-sm border transition-colors ${selectedTime?.value === sts.value
-                                                                ? 'bg-(--gold) text-(--bg) border-(--gold)'
-                                                                : 'bg-(--surface) border-(--border) text-(--text-1) hover:border-(--gold-light)'
-                                                            }`}
-                                                        onClick={() => setSelectedTime(sts)}
-                                                    >
-                                                        {sts.label}
-                                                    </button>
-                                                ))}
-                                                {searchTimeResult.length <= 0 && 
-                                                    <div className="h-full flex items-center">
-                                                        <p className="text-center text-(--text-2)">no result make sure to think</p>
-                                                    </div>
-                                                }
-                                            </div>
+                                            {!vt && <p className="text-red-700 text-center">i gave my heart</p>}
                                         </> 
                                         : ''
                                     }
@@ -337,6 +320,7 @@ export function ServiceDetails() {
                                     <span className="text-[0.75rem] ml-1.5 font-normal">{business?.timezone ? TimezoneLabel(business.timezone) : "enter some"}</span>
                                 </div>
                             </div>
+                            <p className="text-(--text-2) my-2 text-sm">duration: {formatDuration(Number(durationAsMinutes(serviceDetails?.duration!)))}</p>
                             <div className="flex justify-between items-center py-4 px-0 border-t border-t-(--border) mb-5">
                                 <div className="text-[0.875rem] text-(--text-2)">Total</div>
                                 <div className="text-[1.375rem] text-(--teal) font-bold">₱{serviceDetails?.price.toLocaleString()}</div>

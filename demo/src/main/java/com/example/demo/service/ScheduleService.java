@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -23,6 +26,7 @@ import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.dto.response.UserDtoPublic;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
+import com.example.demo.entity.ServiceAvailability;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
@@ -87,6 +91,23 @@ public class ScheduleService {
             throw new InvalidInputsException("super duper bad request");
         }
 
+        OffsetDateTime odt = OffsetDateTime.parse(scheduleDto.getStartsAt());
+        DayOfWeek day = odt.getDayOfWeek();
+        
+        ServiceAvailability sa = services.getAvailabilities().stream()
+                .filter(sav -> sav.getDay().equals(day.toString()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No availability for " + day));
+
+        if(!isTimeFit(sa, odt, (int) services.getDuration().toMinutes())) {
+            throw new InvalidInputsException("service is not available in this time buddy");
+        }
+
+        services.getAvailabilities().forEach(a -> { 
+            a.getStartTime();
+            a.getEndTime(); 
+        });
+
         Schedule schedule = new Schedule();
         schedule.setService(entityManager.getReference(BusinessServices.class, scheduleDto.getServiceId()));
         schedule.setStaff(entityManager.getReference(Staff.class, scheduleDto.getStaffId()));
@@ -99,6 +120,7 @@ public class ScheduleService {
 
         schedule.setTimeRange(Range.closedOpen(start, end));
 
+        // I FORGOT WHY IS THIS EXIST I ACTUALLY REMEMBER BUT AM I USING IT?
         StaffUnavailable unavailable = new StaffUnavailable();
         unavailable.setStaffs(entityManager.getReference(Staff.class, scheduleDto.getStaffId()));
         unavailable.setTimeRange(Range.closedOpen(start, end));
@@ -180,6 +202,14 @@ public class ScheduleService {
 
     private boolean isItTime(ZonedDateTime sched) {
         return ZonedDateTime.now(sched.getZone()).isAfter(sched);
+    }
+
+    private boolean isTimeFit(ServiceAvailability sa, OffsetDateTime startsAt, int durationMinutes) {
+        int start = sa.getStartTime().getHour() * 60 + sa.getStartTime().getMinute();
+        int end = sa.getEndTime().getHour() * 60 + sa.getEndTime().getMinute();
+        int selected = startsAt.getHour() * 60 + startsAt.getMinute();
+
+        return selected >= start && end - durationMinutes >= selected;
     }
 
 }

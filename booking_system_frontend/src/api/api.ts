@@ -11,6 +11,7 @@ export async function post(url: string, body: any) {
         });
 
         if(!result.ok) {
+            console.log(result.json());
             throw new Error("super bad one");
         }
 
