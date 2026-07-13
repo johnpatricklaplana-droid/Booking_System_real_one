@@ -7,6 +7,7 @@ import { buildBookingPayloadTime, formatDuration, TimezoneLabel } from "../helpe
 import { durationAsMinutes, getAverageRating } from "../hooks/service";
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
 import DaddysHomeBookingTicket from "../components/BookingConfirmation";
+import StarRating from "../components/Star";
 
 function BookingResultModal ({ 
     serviceDetails, 
@@ -188,8 +189,8 @@ export function ServiceDetails() {
 
             {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff?.id!} />}
 
-            <div className="min-h-screen pb-20 max-w-280 mx-auto">
-                <div className="grid grid-cols-[1fr_340px] gap-12 pt-12 px-0 items-start">
+            <div className="min-h-screen lg:p-8 p-6 max-w-280 mx-auto">
+                <div className="grid lg:grid-cols-[1fr_340px] gap-12 pt-12 items-start">
                     <div>
                         <div className="inline-flex items-center gap-1.5 text-[0.875rem] text-(--text-3) hover:text-(--text-2) mb-7 cursor-pointer transition-colors duration-200">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -199,14 +200,13 @@ export function ServiceDetails() {
                             Back to results
                         </div>
                         <div className="text-[2rem] font-bold tracking-[0.3em] text-(--text-1) mb-2.5">{serviceDetails?.serviceName}</div>
-                        <div className="flex items-center gap-3.5 mb-6">
+                        <div className="flex lg:flex-row flex-col gap-3.5 mb-6">
                             <div className="flex items-center gap-1.25">
-                                <div className="flex gap-0.5"><span className="star">★</span><span className="star">★</span><span
-                                    className="star">★</span><span className="star">★</span><span className="star">★</span></div>
+                                {/* todo fetch the rating */}
+                                <StarRating rating={4} />
                                 <span className="text-[0.8125rem] text-(--text-2) font-semibold">{rating ? getAverageRating(rating?.map(r => r.review.rating)) : 'no rating'}</span>
                                 <span className="text-[0.75rem] text-(--text-3)">({rating?.length})</span>
                             </div>
-                            <span className="inline-flex items-center gap-1 text-[0.75rem] font-bold py-0.75 px-2.25 rounded-[100px] tracking-widest bg-(--teal-dim) text-(--teal)">Open now</span>
                             <span className="text-[0.8125rem] text-(--text-3)">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     strokeWidth="2" className="inline mr-1">
@@ -222,7 +222,7 @@ export function ServiceDetails() {
                         <p className="text-[0.75rem] font-semibold uppercase leading-[0.8em] text-(--text-3) mb-3.5">Pick a date</p>
                         <BookingDatePicker availableDay={serviceAvailability.map(sa => sa.day)} selectDate={setSelectedDate} />
                         <p className="text-[0.75rem] mt-8 font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5">Available times</p>
-                        <div className="grid grid-cols-3 gap-2 mb-8">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 mb-8">
                             {/* DESIGN IF BOOKED : 
                                 opacity: 0.35;
                                 cursor: not-allowed;
@@ -265,7 +265,7 @@ export function ServiceDetails() {
                             })}
                         </div>  
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
-                        <div className="mb-8 grid grid-cols-3 gap-4">
+                        <div className="mb-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
                             {staff?.map(s => 
                                 <button
                                     key={s.id}
@@ -304,7 +304,7 @@ export function ServiceDetails() {
                             )}
                         </div>
                     </div>
-                    <div className="sticky top-[25%]">
+                    <div className="sticky lg:block hidden top-[25%]">
                         <div className="bg-(--surface) border border-(--border) rounded-xl p-7 sticky top-21">
                             <div className="text-[1rem] text-(--text-1) font-semibold mb-5">Reserve your spot</div>
                             <div className="bg-(--surface-2) border border-(--border) rounded-(--radius) py-3.5 px-4 mb-4">
