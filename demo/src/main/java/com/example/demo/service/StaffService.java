@@ -58,16 +58,12 @@ public class StaffService {
         return supabaseStorageService.getStaffProfilePic(userId, fileName, bucketName);
     }
 
-    public List<StaffWithServicesDto> getStaff(UUID businessId) {
+    public List<StaffResponseDto> getStaff(UUID businessId) {
         
         List<Staff> staff = staffRepo.getStaffs(businessId);
 
         return staff.stream()
-            .map(s -> {
-                StaffResponseDto stuff = businessMapper.toStaffResponseDto(s);
-                List<ServicesDetailsDto> services = s.getServices().stream().map(serve -> businessMapper.toBusinessServices(serve)).toList();
-                return new StaffWithServicesDto(stuff, services);
-            })
+            .map(businessMapper::toStaffResponseDto)
             .toList();
     }
 

@@ -5,7 +5,7 @@ import {
     Check,
     Users,
 } from "lucide-react";
-import type { ServiceResponse, Staff, StaffWithServices } from "../../interfaces/Types";
+import type { Staff, StaffWithServices } from "../../interfaces/Types";
 import { useUser } from "../../provider/UserContext";
 import { get } from "../../api/api";
 import { StaffCard } from "../../components/StaffCard";
@@ -79,7 +79,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 }
 
 export default function StaffManagementPage() {
-    const [staffList, setStaffList] = useState<StaffWithServices[]>([]);
+    const [staffList, setStaffList] = useState<Staff[]>([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState<FilterValue>("all");
     const [modalState, setModalState] = useState<
@@ -96,33 +96,20 @@ export default function StaffManagementPage() {
         const getStaff = async () => {
             const url = `http://localhost:8080/api/staff/business/${businessId}`;
 
-            const result: StaffWithServices[] = await get(url);
+            // TODO: fetch only staff remove the services
+            const result: Staff[] = await get(url);
 
             console.log(result);
 
             if(result) {
-                setStaffList(result.map(sws => {
+                setStaffList(result.map((staff: Staff) => {
                     return {
-                        staff: {
-                            id: sws.staff.id,
-                            fullName: sws.staff.fullName,
-                            title: sws.staff.title,
-                            avatarUrl: sws.staff.avatarUrl,
-                            active: sws.staff.active,
-                            createdAt: sws.staff.createdAt
-                        },
-                        services: sws.services.map(s => {
-                            return {
-                                capacity: s.capacity,
-                                description: s.description,
-                                duration: s.duration,
-                                id: s.id,
-                                price: s.price,
-                                serviceLogoUrl: s.serviceLogoUrl,
-                                serviceName: s.serviceName,
-                                status: s.status
-                            }
-                        })   
+                        id: staff.id,
+                        fullName: staff.fullName,
+                        title: staff.title,
+                        avatarUrl: staff.avatarUrl,
+                        active: staff.active,
+                        createdAt: staff.createdAt
                     }
                 }))
             }
@@ -132,19 +119,6 @@ export default function StaffManagementPage() {
         getStaff();
 
     }, [businessId]);
-
-    const filteredStaff = useMemo(() => {
-        return staffList.filter((s) => {
-            const matchesSearch = s.staff.fullName
-                .toLowerCase()
-                .includes(search.trim().toLowerCase());
-            const matchesFilter =
-                filter === "all" ||
-                (filter === "active" && s.staff.active) ||
-                (filter === "inactive" && !s.staff.active);
-            return matchesSearch && matchesFilter;
-        });
-    }, [staffList, search, filter]);
 
     return (
         <div className="min-h-screen p-8 overflow-y-auto bg-[--bg] text-white">
@@ -185,18 +159,20 @@ export default function StaffManagementPage() {
                 <div className="mt-6">
                     {staffList.length === 0 && <EmptyState onAdd={() => setModalState({ mode: "add" })} />}
                     
-                    {filteredStaff.length === 0 &&
+                    {staffList.length === 0 &&
                         <div className="rounded-2xl border border-white/10 px-6 py-16 text-center text-sm text-white/50">
                             No staff match your search or filter.
                         </div>}
                     
-                    {filteredStaff.length !== 0 && <div className="grid gap-6 grid-cols-2 sm:grid-cols-3">
-                        {filteredStaff.map((staff) => (
-                            <StaffCard
-                                key={staff.staff.id}
-                                sws={staff}
-                                onEdit={() => setModalState({ mode: "edit", staff })}
-                            />
+                    {staffList.length !== 0 && <div className="grid gap-6 grid-cols-2 sm:grid-cols-3">
+                        {staffList.map((staff) => (
+                            <button
+                                key={staff.id}
+                            >
+                                <StaffCard
+                                    staff={staff}
+                                />
+                            </button>
                         ))}
                     </div>}
                    

@@ -88,7 +88,7 @@ public class StaffController {
 
     @GetMapping("/api/staff/business/{businessId}")
     @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
-    public ResponseEntity<List<StaffWithServicesDto>> getStaff(
+    public ResponseEntity<List<StaffResponseDto>> getStaff(
         @PathVariable UUID businessId,
         @AuthenticationPrincipal UUID id
     ) {
