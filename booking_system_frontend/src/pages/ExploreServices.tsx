@@ -131,6 +131,7 @@ export function ExploreServices() {
                                     <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{swb.business.businessName}</div>
                                 </div>
                                 <div className="text-[0.9375rem] text-start text-(--text-1)">{swb.services.serviceName}</div>
+                                <p className="text-(--text-2) text-start text-sm">capacity: {swb.services.capacity}</p>
                                 <div className="mt-2 flex items-center gap-2">
                                     <StarRating rating={getAverageRating(swb.review.map(rev => rev.rating))} />
                                     <p className="text-(--text-2) text-xs">{swb.review.length > 0 ? getAverageRating(swb.review.map(rev => rev.rating)) : 'no'} rating ({swb.review.length})</p>
