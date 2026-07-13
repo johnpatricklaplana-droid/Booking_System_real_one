@@ -1,11 +1,12 @@
 import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, CalendarX2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { formatDuration } from '../../helper/convertSome';
 import { durationAsMinutes, hasAppointmentPassed } from '../../hooks/service';
 import { ErrorMessage } from '../../components/BottomErrorMessage';
+import AppointmentCard from '../../components/AppointmentCard';
 
 const statusIcons = {
     CONFIRMED: CheckCircle,
@@ -105,7 +106,45 @@ export function Appointments() {
 
     };
 
-    console.log("render");
+    const pendingAppointments = useMemo(() => {
+
+        if(!appointments) return;
+
+        return appointments.filter(app => app.schedule.status === 'PENDING');
+
+    }, [appointments]);
+
+    const upcomingAppointment = useMemo(() => {
+
+        if (!appointments) return;
+
+        return appointments.filter(app => app.schedule.status === 'CONFIRMED');
+
+    }, [appointments]);
+
+    const missedAppointments = useMemo(() => {
+
+        if (!appointments) return;
+
+        return appointments.filter(app => app.schedule.status === 'MISSED');
+
+    }, [appointments]);
+
+    const completedAppointments = useMemo(() => {
+
+        if (!appointments) return;
+
+        return appointments.filter(app => app.schedule.status === 'COMPLETED');
+
+    }, [appointments]);
+
+    const cancelledAppointments = useMemo(() => {
+
+        if (!appointments) return;
+
+        return appointments.filter(app => app.schedule.status === 'CANCELLED');
+
+    }, [appointments]);
 
     return (
         <div className="space-y-6 h-screen overflow-y-auto p-8">
@@ -198,123 +237,51 @@ export function Appointments() {
                 </div>
             )}
 
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
-                {appointments?.map((apt) => {
-                    const StatusIcon = statusIcons[apt.schedule.status as keyof typeof statusIcons] ?? AlertCircle;
-                    const statusColor = statusColors[apt.schedule.status as keyof typeof statusColors] ?? statusColors["0"];
-    
-                    return (
-                        <div
-                            key={apt.schedule.id}
-                            className="flex flex-col gap-5 rounded-xs bg-[#151518] border-(--border) border p-4 hover:bg-[#1a1a1e]/50 transition-all cursor-pointer group"
-                        >
-                                    
-                            <div className='flex justify-between w-full'>
-                                <p className="text-[14px] font-medium text-(--teal) shrink-0 text-right">
-                                    ₱{apt.service.price}
-                                </p>
-                                <div className={`shrink-0 px-2.5 py-1 rounded-md border text-[11px] font-medium flex items-center gap-1.5 ${statusColor}`}>
-                                    <StatusIcon size={12} />
-                                        {apt.schedule.status}
-                                </div>
-                            </div>
-
-                            <div className='flex items-center gap-2'>
-                                <img className='rounded-[50%] border border-(--gold) w-11 h-11' src={apt.user.avatarUrl} alt="" />
-                                <div>
-                                    <h2 className='text-(--text-2) uppercase font-semibold text-xs'>Reserved for</h2>
-                                    <h1 className='text-(--text-1) font-semibold text-[18px] tracking-tight'>{apt.user.firstName} {apt.user.lastName}</h1>
-                                </div>
-                            </div>
-
-                            <div className='text-(--text-3) gap-2 flex items-center'>
-                                <hr className='w-full' />
-                                    <Diamond size={8} className='shrink-0' />
-                                <hr className='w-full' />
-                            </div>
-
-                            <div>
-                                <p className='text-xs uppercase font-semibold text-(--text-2)'>service</p>
-                                <h1 className='text-base text-(--text-1)'>{apt.service.serviceName}</h1>
-                                <p className='text-xs text-(--text-2)'>with {apt.staff.fullName}</p>
-                            </div>
-
-                            <div className='text-(--text-3) gap-2 flex items-center'>
-                                <hr className='w-full' />
-                                <Diamond size={8} className='shrink-0' />
-                                <hr className='w-full' />
-                            </div>
-
-                            <div className='flex justify-between'>
-                                <div>
-                                    <p className='text-(--text-2) text-xs font-medium'>DATE</p>
-                                    <p className='text-(--text-1) text-sm'>{new Date(apt.schedule.startsAt).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}</p>
-                                </div>
-                                <div>
-                                    <p className='text-(--text-2) text-xs font-medium'>TIME</p>
-                                    <p className='text-(--text-1) text-sm'>{new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                </div>
-                                <div>
-                                    <p className='text-(--text-2) text-xs font-medium'>DURATION</p>
-                                    <p className='text-(--text-1) text-sm'>{formatDuration(Number(apt.service.duration))}</p>
-                                </div>
-                            </div>
-
-                            <div className='flex flex-col gap-2'>
-                                {apt.schedule.status === "CONFIRMED" && 
-                                    <>
-                                    <button 
-                                        className={`bg-[#c70000]/80 py-2 rounded-xs border ${hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-pointer' : 'cursor-not-allowed'} hover:border-[#c70000] flex justify-center items-center gap-2 text-(--text-1) font-semibold`}
-                                        onClick={() => confirmAppointment(apt.schedule.id, "MISSED")}
-                                        disabled={updating?.schedId === apt.schedule.id || !hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!)}
-                                    >
-                                        {updating?.schedId === apt.schedule.id && updating?.buttonId === 'MISSED' && updating?.status ?
-                                            <div
-                                                className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
-                                            >
-
-                                            </div>
-                                            : <span>missed appointment</span>}
-                                    </button>
-                                    <button
-                                        className={`py-2 text-(--text-1) ${hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!) ? 'cursor-pointer' : 'cursor-not-allowed'} font-semibold hover:border-(--teal) rounded-xs bg-emerald-500/80 border`}
-                                        onClick={() => completeAppointment(apt.schedule.id)}
-                                        disabled={updating?.schedId === apt.schedule.id || !hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!)}
-                                    >
-                                        {updating?.schedId === apt.schedule.id && updating?.buttonId === 'COMPLETED' && updating?.status ?
-                                            <div
-                                                className='rounded-[50%] mx-auto w-6 h-6 border-2 border-b-(--teal) animate-spin'
-                                            >
-
-                                            </div>
-                                            : <span>Mark as complete</span>}
-                                    </button>
-                                    </>
-                                }
-                                {apt.schedule.status === "PENDING" && 
-                                <>
-                                <button
-                                    className={`btn-primary rounded-xs py-2 font-bold tracking-tight`}
-                                    onClick={() => confirmAppointment(apt.schedule.id, "CONFIRMED")}
-                                    disabled={(updating?.schedId === apt.schedule.id && updating?.buttonId === 'CONFIRMED' && updating.status)}
-                                >
-                                    {updating?.schedId === apt.schedule.id && updating?.buttonId === 'CONFIRMED' && updating?.status ? 
-                                        <div
-                                            className='rounded-[50%] mx-auto w-6 h-6 b border-2 border-b-(--teal) animate-spin'
-                                        >
-
-                                        </div>
-                                        : <span>Confirm booking</span>}
-                                </button>
-                                <button className='btn-secondary rounded-xs py-2'>Reject</button>
-                                </>
-                                }
-                            </div>
-
-                        </div>
-                    );
-                })}
+            <div>
+                <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Pending appointments</h1>
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                    {pendingAppointments?.map((apt) => {
+                        return <AppointmentCard apt={apt} />
+                    })}
+                </div>
             </div>
+
+            <div>
+                <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Upcoming appointments</h1>
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                    {upcomingAppointment?.map((apt) => {
+                        return <AppointmentCard apt={apt} />
+                    })}
+                </div>
+            </div>
+
+            <div>
+                <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Completed appointments</h1>
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                    {completedAppointments?.map((apt) => {
+                        return <AppointmentCard apt={apt} />
+                    })}
+                </div>
+            </div>
+
+            <div>
+                <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Missed appointments</h1>
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                    {missedAppointments?.map((apt) => {
+                        return <AppointmentCard apt={apt} />
+                    })}
+                </div>
+            </div>
+
+            <div>
+                <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Cancelled appointments</h1>
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                    {cancelledAppointments?.map((apt) => {
+                        return <AppointmentCard apt={apt} />
+                    })}
+                </div>
+            </div>
+
         </div>
     );
 

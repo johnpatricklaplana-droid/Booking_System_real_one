@@ -7,20 +7,38 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useUser } from '../provider/UserContext';
 import type { Appointment } from '../interfaces/Types';
+import { useUser } from '../provider/UserContext';
 import { hasAppointmentPassed } from '../hooks/service';
 import { update } from '../api/api';
 import { formatDuration } from '../helper/convertSome';
 
-export default function AppointmentCard({ apt }: { apt: Appointment }) {
+interface AppointmentCardProps {
+    appointments: Appointment[];
+}
+
+export default function AppointmentCard({ appointments }: AppointmentCardProps) {
     const business = useUser().activeBusiness;
 
+    return (
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+            {appointments.map((apt) => (
+                <SingleAppointment
+                    key={apt.schedule.id}
+                    apt={apt}
+                    timezone={business?.timezone}
+                />
+            ))}
+        </div>
+    );
+}
+
+function SingleAppointment({ apt, timezone }: { apt: Appointment; timezone?: string }) {
     const [updating, setUpdating] = useState<'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | null>(null);
     const [status, setStatus] = useState(apt.schedule.status);
     const [error, setError] = useState<string | null>(null);
 
-    const passed = hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!);
+    const passed = hasAppointmentPassed(new Date(apt.schedule.startsAt), timezone!);
     const date = new Date(apt.schedule.startsAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const time = new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const customer = `${apt.user.firstName} ${apt.user.lastName}`;
