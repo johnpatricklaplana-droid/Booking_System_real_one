@@ -64,13 +64,13 @@ export function Analytics() {
     }, [business?.businessId]);
 
     return (
-        <div className="space-y-6 p-8 overflow-y-auto h-screen">
+        <div className="space-y-6 lg:p-8 p-6 overflow-y-auto h-screen">
             <div>
                 <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Analytics</h2>
                 <p className="text-[13px] text-[#9a9aa3]">Performance insights and metrics</p>
             </div>
 
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-6">
                 <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-[#c9a87c] to-transparent opacity-5 blur-3xl" />
                     <div className="relative">
@@ -140,12 +140,12 @@ export function Analytics() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
-                <div className="col-span-2 bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                    <div className="mb-6">
-                        <h3 className="text-[15px] font-medium text-[#e8e8ea] mb-1">Revenue & Bookings</h3>
-                        <p className="text-[13px] text-[#9a9aa3]">12-month trend analysis</p>
-                    </div>
+            <div className="col-span-2 overflow-x-auto bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
+                <div className="mb-6">
+                    <h3 className="text-[15px] font-medium text-[#e8e8ea] mb-1">Revenue & Bookings</h3>
+                    <p className="text-[13px] text-[#9a9aa3]">12-month trend analysis</p>
+                </div>
+                <div className='w-3xl lg:w-full'>
                     <ResponsiveContainer width="100%" height={280}>
                         <AreaChart data={monthlyStats}>
                             <defs>
@@ -174,40 +174,40 @@ export function Analytics() {
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
+            </div>
 
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                    <div className="mb-6">
-                        <h3 className="text-[15px] font-medium text-[#e8e8ea] mb-1">Service Distribution</h3>
-                        <p className="text-[13px] text-[#9a9aa3]">By booking volume</p>
-                    </div>
-                    <ResponsiveContainer width="100%" height={200}>
-                        <PieChart>
-                            <Pie
-                                data={serviceData}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={50}
-                                outerRadius={80}
-                                paddingAngle={2}
-                                dataKey="value"
-                            >
-                                {serviceData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                ))}
-                            </Pie>
-                        </PieChart>
-                    </ResponsiveContainer>
-                    <div className="space-y-2 mt-6">
-                        {serviceData.map((service) => (
-                            <div key={service.name} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded" style={{ backgroundColor: service.color }} />
-                                    <span className="text-[12px] text-[#9a9aa3]">{service.name}</span>
-                                </div>
-                                <span className="text-[12px] font-medium text-[#e8e8ea]">{service.value}%</span>
+            <div className="bg-[#151518] border lg:w-[360px] border-[rgba(255,255,255,0.08)] rounded-xl p-6">
+                <div className="mb-6">
+                    <h3 className="text-[15px] font-medium text-[#e8e8ea] mb-1">Service Distribution</h3>
+                    <p className="text-[13px] text-[#9a9aa3]">By booking volume</p>
+                </div>
+                <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                        <Pie
+                            data={serviceData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={80}
+                            paddingAngle={2}
+                            dataKey="value"
+                        >
+                            {serviceData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                        </Pie>
+                    </PieChart>
+                </ResponsiveContainer>
+                <div className="space-y-2 mt-6">
+                    {serviceData.map((service) => (
+                        <div key={service.name} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded" style={{ backgroundColor: service.color }} />
+                                <span className="text-[12px] text-[#9a9aa3]">{service.name}</span>
                             </div>
-                        ))}
-                    </div>
+                            <span className="text-[12px] font-medium text-[#e8e8ea]">{service.value}%</span>
+                        </div>
+                    ))}
                 </div>
             </div>
 

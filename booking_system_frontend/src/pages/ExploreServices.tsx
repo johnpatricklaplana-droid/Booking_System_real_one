@@ -29,9 +29,9 @@ export function ExploreServices() {
     }, []);
 
     return (
-        <div className="min-h-screen" id="page-explore">
+        <div className="min-h-screen p-6 lg:p-8" id="page-explore">
             <div className="pt-12 px-0 pb-8">
-                <div className="max-w-280 my-0 mx-auto py-0 px-8">
+                <div className="max-w-280 my-0 mx-auto">
                     <h1 className="text-[1.75rem] text-(--text-1) font-bold tracking-[-0.03em] mb-5">Explore services
                     </h1>
                     <div className="flex gap-3 items-center mb-5">
@@ -112,11 +112,11 @@ export function ExploreServices() {
                     </div>
                 </div>
             </div>
-            <div className="max-w-280 my-0 mx-auto py-0 px-8">
+            <div className="max-w-280 my-0 mx-auto">
                 <div className="flex items-center justify-between pt-6 px-0 pb-5">
                     <p className="text-[0.875rem] text-(--text-2)"><strong>{services.length}</strong> services near Manila, PH</p>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 pb-20">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
 
                     {services.map(swb => 
                         <button 

@@ -53,28 +53,28 @@ const settingsSections = [
 
 export function Settings() {
     return (
-        <div className="space-y-6 h-screen overflow-y-auto p-8">
+        <div className="space-y-6 h-screen overflow-y-auto p-6 lg:p-8">
             <div>
                 <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Settings</h2>
                 <p className="text-[13px] text-[#9a9aa3]">Manage your account and preferences</p>
             </div>
 
-            <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
-                <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#c9a87c] to-[#b89c7e] flex items-center justify-center text-[20px] font-medium text-[#0a0a0c]">
+            <div className="bg-[#151518] relative border border-[rgba(255,255,255,0.08)] rounded-xl p-6">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#c9a87c] to-[#b89c7e] flex items-center justify-center text-[20px] font-medium text-[#0a0a0c]">
                         JD
                     </div>
                     <div className="flex-1">
                         <h3 className="text-[15px] font-medium text-[#e8e8ea] mb-0.5">John Doe</h3>
-                        <p className="text-[13px] text-[#9a9aa3]">john.doe@apexbooking.com</p>
+                        <p className="text-[13px] max-w-0  text-[#9a9aa3]">john.doe@apexbooking.com</p>
                     </div>
-                    <button className="px-4 py-2 bg-[#1a1a1e] hover:bg-[#2a2a2f] rounded-lg text-[13px] font-medium text-[#e8e8ea] transition-all">
+                    <button className="px-4 py-2 bg-[#1a1a1e] sm:static lg:static absolute top-2 right-2 hover:bg-[#2a2a2f] rounded-lg text-[13px] font-medium text-[#e8e8ea] transition-all">
                         Edit Profile
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {settingsSections.map((section) => (
                     <div
                         key={section.title}

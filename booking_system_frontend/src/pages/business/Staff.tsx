@@ -96,7 +96,6 @@ export default function StaffManagementPage() {
         const getStaff = async () => {
             const url = `http://localhost:8080/api/staff/business/${businessId}`;
 
-            // TODO: fetch only staff remove the services
             const result: Staff[] = await get(url);
 
             console.log(result);
@@ -121,8 +120,8 @@ export default function StaffManagementPage() {
     }, [businessId]);
 
     return (
-        <div className="min-h-screen p-8 overflow-y-auto bg-[--bg] text-white">
-            <div className="mx-auto max-w-7xl">
+        <div className="min-h-screen h-screen p-6 lg:p-8 overflow-y-auto bg-[--bg]">
+            <div className="mx-auto">
                 {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
@@ -164,7 +163,7 @@ export default function StaffManagementPage() {
                             No staff match your search or filter.
                         </div>}
                     
-                    {staffList.length !== 0 && <div className="grid gap-6 grid-cols-2 sm:grid-cols-3">
+                    {staffList.length !== 0 && <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 sm:grid-cols-3">
                         {staffList.map((staff) => (
                             <button
                                 key={staff.id}
@@ -189,21 +188,3 @@ export default function StaffManagementPage() {
         </div>
     );
 }
-
-/*
-  Notes for wiring to the Spring Boot backend:
-
-  - GET    /api/staff                -> populate staffList (filter by businessId server-side)
-  - POST   /api/staff                -> handleSave (input.id undefined)
-  - PUT    /api/staff/{id}           -> handleSave (input.id present)
-  - PATCH  /api/staff/{id}/status    -> handleToggleActive
-  - DELETE /api/staff/{id}           -> handleArchive
-  - GET    /api/services             -> replace ALL_SERVICES with a fetched list
-  - staff_services join rows are derived from Staff.serviceIds on save;
-    send as a plain string[] in the request body and let the backend
-    reconcile the junction table.
-
-  Add to your global stylesheet if not already present:
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { scrollbar-width: none; }
-*/

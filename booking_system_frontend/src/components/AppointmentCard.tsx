@@ -41,7 +41,6 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
         }
     };
 
-    // ── PENDING — needs a decision, gold urgency treatment ──────────────
     if (status === 'PENDING') {
         return (
             <div className="relative flex flex-col gap-4 rounded-lg bg-gradient-to-b from-[#1a1712] to-[#151518] border border-(--gold)/30 p-4 shadow-[0_0_0_1px_rgba(201,168,124,0.06)]">

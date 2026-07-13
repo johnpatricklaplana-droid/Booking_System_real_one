@@ -1,23 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "./AppLogo";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export function CustomerNavBar () {
 
     const navigate = useNavigate();
 
+    const [openMiniNav, setOpenMiniNav] = useState<boolean>(false);
+
     return (
-        <nav 
-            className="sticky hidden sm:flex top-0 z-50 bg-black/85 backdrop-blur-lg border-b border-white/10 px-8 h-16 items-center justify-between"
-        >
-            <Logo />
-            <div className="flex gap-2 items-center">
-                <Link to="home" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Home</Link>
-                <Link to="explore" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</Link>
-                <Link to="bookings" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Appointments</Link>
-            </div>
-            <div className="flex items-center gap-2.5">
+        <div className="sticky top-0 z-50">
+            <nav 
+                className="flex bg-black/85 backdrop-blur-lg border-b border-white/10 px-8 h-16 items-center justify-between"
+            >
+                <Logo showWordmark={false} />
+                <div className="gap-2 lg:flex hidden items-center">
+                    <Link to="home" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Home</Link>
+                    <Link to="explore" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</Link>
+                    <Link to="bookings" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Appointments</Link>
+                </div>
                 <button 
-                    className="py-2.5 btn text-[#9b9898] hover:bg-[#1c1c21] hover:text-[#f0ede8]"
+                    className="py-2.5 lg:flex hidden btn text-[#9b9898] hover:bg-[#1c1c21] hover:text-[#f0ede8]"
                     onClick={() => navigate('profile')}
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -26,13 +30,23 @@ export function CustomerNavBar () {
                     </svg>
                     My account
                 </button>
-                <button className="btn animate-bounce btn-sm bg-[linear-gradient(135deg,var(--gold-light)_0%,var(--gold)_100%)] text-[bg] shadow-[0_2px_16px_rgba(201,169,110,0.25)] hover:shadow-[0_4px_24px_rgba(201,69,110,0.4)] cursor-pointer hover:translate-y-px ">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                    Book now
+                <button
+                    className="lg:hidden block text-(--text-1)"
+                    onClick={() => {
+                        openMiniNav 
+                        ? setOpenMiniNav(false)
+                        : setOpenMiniNav(true)
+                    }}
+                > 
+                    {openMiniNav ? <X /> : <Menu />}
                 </button>
-            </div>
-        </nav>
+            </nav>
+            {openMiniNav && <div className="flex flex-col top-0 backdrop-blur-2xl gap-2">
+                <Link to="home" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Home</Link>
+                <Link to="explore" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Explore</Link>
+                <Link to="bookings" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Appointments</Link>
+                <Link to="profile" className="text-[0.875rem] font-medium text-[#9b9898] py-1.5 px-3.5 rounded-lg transition-colors duration-200 hover:bg-[#1c1c21] hover:text-[#f0ede8] cursor-pointer">Account</Link>
+            </div>}
+        </div>
     );
 }

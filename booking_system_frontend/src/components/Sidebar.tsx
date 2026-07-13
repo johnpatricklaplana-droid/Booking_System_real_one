@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router';
-import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight } from 'lucide-react';
+import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight, PanelLeftClose } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
 import { Logo } from './AppLogo';
@@ -14,11 +14,13 @@ const navItems = [
     { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
 ];
 
-export function Sidebar() {
+export function Sidebar({
+    close
+}: {
+    close: any
+}) {
 
     const { setUser, user } = useUser();
-
-    const navigate = useNavigate();
 
     const location = useLocation();
 
@@ -36,11 +38,17 @@ export function Sidebar() {
     };
 
     return (
-        <div className="h-full max-h-screen bg-[#0f0f11] border-r border-[rgba(255,255,255,0.06)] flex flex-col">
-            <div className="p-6 border-b border-[rgba(255,255,255,0.06)]">
+        <div className={`h-screen w-full max-h-screen bg-[#0f0f11] border-r border-[rgba(255,255,255,0.06)] flex flex-col`}>
+            <div className="p-6 border-b flex items-center justify-between border-[rgba(255,255,255,0.06)]">
                 <div className="flex items-center gap-3">
                     <Logo />
                 </div>
+                <button
+                    className='text-(--gold) lg:hidden block'
+                    onClick={close}
+                >
+                    <PanelLeftClose />
+                </button>
             </div>
 
             <nav className="flex-1 p-4 space-y-1">
@@ -69,7 +77,7 @@ export function Sidebar() {
                 </button>
                 <div className="bg-[#1a1a1e] rounded-lg p-4">
                     <div className="flex items-center gap-3">
-                        <img src={user?.profilePic} alt={user?.firstName} className="w-9 h-9 rounded-full" />
+                        <img src={user?.profilePic!} alt={user?.firstName} className="w-9 h-9 rounded-full" />
                         <div>
                             <p className="text-[13px] font-medium text-[#e8e8ea]">{user?.firstName} {user?.lastName}</p>
                             <p className="text-[11px] text-[#9a9aa3]">Admin</p>

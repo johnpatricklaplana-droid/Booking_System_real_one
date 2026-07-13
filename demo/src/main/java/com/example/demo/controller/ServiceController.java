@@ -68,6 +68,4 @@ public class ServiceController {
             .body(new AuthResponse(201, "created one"));
     }
     
-    
-
 }

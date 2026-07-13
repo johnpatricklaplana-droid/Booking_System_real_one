@@ -198,11 +198,9 @@ export default function BusinessProfilePage() {
 
     }, [activeBusiness?.businessId]);
 
-    console.log(services);
-
     return (
-        <div className="min-h-screen bg-[#0a0a0c] text-[#e8e8ea]">
-            <div className="max-w-5xl mx-auto p-8 h-screen overflow-y-auto">
+        <div className="min-h-screen h-screen p-6 lg:p-8 overflow-y-auto w-full bg-[#0a0a0c] text-[#e8e8ea]">
+            <div className="mx-auto">
 
                 {/* Top bar: switcher + edit action */}
                 <div className="flex items-center justify-between mb-8">
@@ -325,7 +323,7 @@ export default function BusinessProfilePage() {
                             <p className="text-[13px] text-[#9a9aa3]">No services added yet.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-4">
                             {services.map((s) => (
                                 <ServiceBox key={s.services.id} servicesWithRatings={s} />
                             ))}

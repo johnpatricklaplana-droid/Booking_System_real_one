@@ -7,14 +7,11 @@ export function StaffCard({
 }: { 
     staff: Staff 
 }) {
-    const staffName = "Miguel Santos";
-    const staffTitle = "Senior Boat Captain";
-    const staffPhotoUrl = "";
     const rating = 4.9;
     const ratingCount = 214;
     const staffId = "DH-2091";
     const filledStars = Math.round(rating);
-    const initials = staffName
+    const initials = staff.fullName
         .split(" ")
         .filter(Boolean)
         .slice(0, 2)

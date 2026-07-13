@@ -29,7 +29,7 @@ export function Services() {
     const navigate = useNavigate();
 
     return (
-        <div className="space-y-6 overflow-y-auto h-screen p-8">
+        <div className="space-y-6 overflow-y-auto h-screen p-6 lg:p-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Services</h2>
@@ -59,7 +59,7 @@ export function Services() {
                 </button>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-none">
                 {categories.map((cat) => (
                     <button
                         key={cat}
@@ -85,7 +85,7 @@ export function Services() {
                 </div>
             )}
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {services?.map((service) => (
                     <div
                         key={service.services.id}

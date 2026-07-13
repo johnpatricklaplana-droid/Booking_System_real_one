@@ -147,7 +147,7 @@ export function Appointments() {
     }, [appointments]);
 
     return (
-        <div className="space-y-6 h-screen overflow-y-auto p-8">
+        <div className="space-y-6 h-screen overflow-y-auto p-6 lg:p-8">
 
             {errorMessage ? <ErrorMessage success={false} message={errorMessage} head="Couldn' t complete appointment" /> : ''}
 
@@ -155,16 +155,6 @@ export function Appointments() {
                 <div>
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Appointments</h2>
                     <p className="text-[13px] text-[#9a9aa3]">Manage all bookings and reservations</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button className="px-4 py-2.5 bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-lg text-[13px] font-medium text-[#e8e8ea] hover:border-[rgba(255,255,255,0.15)] transition-all flex items-center gap-2">
-                        <Download size={16} />
-                        Export
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
-                        <Plus size={16} strokeWidth={2} />
-                        New Appointment
-                    </button>
                 </div>
             </div>
 
@@ -183,48 +173,6 @@ export function Appointments() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-4 gap-4">
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                            <CheckCircle size={20} className="text-emerald-400" strokeWidth={1.5} />
-                        </div>
-                        <span className="text-[13px] text-[#9a9aa3]">Confirmed</span>
-                    </div>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">24</p>
-                </div>
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                            <AlertCircle size={20} className="text-amber-400" strokeWidth={1.5} />
-                        </div>
-                        <span className="text-[13px] text-[#9a9aa3]">Pending</span>
-                    </div>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">8</p>
-                </div>
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                            <CheckCircle size={20} className="text-blue-400" strokeWidth={1.5} />
-                        </div>
-                        <span className="text-[13px] text-[#9a9aa3]">Completed</span>
-                    </div>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">142</p>
-                </div>
-
-                <div className="bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
-                            <XCircle size={20} className="text-red-400" strokeWidth={1.5} />
-                        </div>
-                        <span className="text-[13px] text-[#9a9aa3]">Cancelled</span>
-                    </div>
-                    <p className="text-[24px] font-medium text-[#e8e8ea]">6</p>
-                </div>
-            </div>
-
             {appointments?.length === 0 && (
                 <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
                     <div className="w-14 h-14 rounded-full bg-[#151518] border border-(--border) flex items-center justify-center">
@@ -239,7 +187,7 @@ export function Appointments() {
 
             <div>
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Pending appointments</h1>
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {pendingAppointments?.map((apt) => {
                         return <AppointmentCard apt={apt} />
                     })}
@@ -248,7 +196,7 @@ export function Appointments() {
 
             <div>
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Upcoming appointments</h1>
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {upcomingAppointment?.map((apt) => {
                         return <AppointmentCard apt={apt} />
                     })}
@@ -257,7 +205,7 @@ export function Appointments() {
 
             <div>
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Completed appointments</h1>
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {completedAppointments?.map((apt) => {
                         return <AppointmentCard apt={apt} />
                     })}
@@ -266,7 +214,7 @@ export function Appointments() {
 
             <div>
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Missed appointments</h1>
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {missedAppointments?.map((apt) => {
                         return <AppointmentCard apt={apt} />
                     })}
@@ -275,7 +223,7 @@ export function Appointments() {
 
             <div>
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Cancelled appointments</h1>
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {cancelledAppointments?.map((apt) => {
                         return <AppointmentCard apt={apt} />
                     })}

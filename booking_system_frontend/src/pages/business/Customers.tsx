@@ -30,21 +30,11 @@ export function Customers() {
     }, [business?.businessId]);
 
     return (
-        <div className="space-y-6 h-screen overflow-y-auto p-8">
+        <div className="space-y-6 h-screen overflow-y-auto p-6 lg:p-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Customers</h2>
                     <p className="text-[13px] text-[#9a9aa3]">Manage your customer database</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button className="px-4 py-2.5 bg-[#151518] border border-[rgba(255,255,255,0.08)] rounded-lg text-[13px] font-medium text-[#e8e8ea] hover:border-[rgba(255,255,255,0.15)] transition-all flex items-center gap-2">
-                        <Download size={16} />
-                        Export
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all">
-                        <Plus size={16} strokeWidth={2} />
-                        Add Customer
-                    </button>
                 </div>
             </div>
 
@@ -75,7 +65,7 @@ export function Customers() {
                 </div>
             )}
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {customer.map((customer) => (
                     <div
                         key={customer.email}
