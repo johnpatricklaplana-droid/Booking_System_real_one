@@ -194,25 +194,19 @@ export default function ServiceForm() {
                         </button>
                         <div>
                             <h1 className="text-[16px] font-medium text-[#e8e8ea]">New Service</h1>
-                            <p className="text-[12px] text-[#9a9aa3]">Services / Add new</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <button className="px-4 py-2.5 text-[13px] font-medium text-[#9a9aa3] hover:text-[#e8e8ea] transition-all">
-                            Discard
-                        </button>
-                        <button
-                            className="px-5 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
-                            onClick={saveService}
-                            disabled={notGoods()}
-                        >
-                            Save service
-                        </button>
-                    </div>
+                    <button
+                        className="px-5 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        onClick={saveService}
+                        disabled={notGoods()}
+                    >
+                        Save service
+                    </button>
                 </div>
             </div>
 
-            <div className='grid p-8 gap-4 grid-cols-1 lg:grid-cols-[1fr_320px]'>
+            <div className='grid p-6 lg:p-8 gap-4 grid-cols-1 lg:grid-cols-[1fr_320px]'>
                 <div className='space-y-4'>
                     <div className='bg-(--surface) border border-(--border) p-4 rounded-2xl'>
                         <div className='flex gap-2 items-center mb-4'>
@@ -303,34 +297,6 @@ export default function ServiceForm() {
                         </div>
                         <div className='flex gap-2 items-center'>
                             <div className='w-full'>
-                                <p className='text-(--text-1) text-[16px]'>Duration <span className='text-red-600'>*</span></p>
-                                <div className={`w-full items-center flex mt-2 text-(--text-1) gap-2 px-4 rounded-2xl ${service.duration ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'}`}>
-                                    <p><Clock1 size={16}></Clock1></p>
-                                    <input
-                                        className='outline-0 w-full py-2 placeholder:text-(--text-2) text-sm'
-                                        type="text"
-                                        placeholder='servrice duration'
-                                        id='duration'
-                                        onChange={(e) => {
-                                            if (isItValid(e.target.value)) {
-                                                handleInputsChange(e);
-                                            }
-                                        }}
-                                        value={service.duration}
-                                    />
-                                    <div className='flex gap-2 bg-(--surface-3) rounded-sm'>
-                                        <button 
-                                            className={`text-sm border p-2 border-(--border) cursor-pointer active:scale-95 transition-colors ${unit === 'min' ? 'bg-(--surface)' : ''} rounded-sm`}
-                                            onClick={() => setUnit('min')}
-                                        >min</button>
-                                        <button 
-                                            className={`text-sm border p-2 cursor-pointer active:scale-95 ${unit === 'hr' ? 'bg-(--surface)' : ''} border-(--border) rounded-sm`}
-                                            onClick={() => setUnit('hr')}
-                                        >hr</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='w-full'>
                                 <p className='text-(--text-1) text-[16px]'>Price <span className='text-red-600'>*</span></p>
                                 <div className={`w-full flex ${service.price ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} mt-2 text-(--text-1) gap-2 pl-4 items-center rounded-2xl`}>
                                     <p>₱</p>
@@ -348,24 +314,49 @@ export default function ServiceForm() {
                                     />
                                 </div>
                             </div>
-                        </div>
-                        <div className='mt-4'>
-                            <div className='flex text-(--text-1) justify-between'>
-                                <p className='text-[16px]'>Capacity</p>
-                                <p className='text-(--text-2) text-sm'>Customers per slot</p>
+                            <div>
+                                <p className='text-[16px] text-(--text-2)'>Capacity</p>
+                                <input
+                                    className={`w-full mt-2 py-2 px-4 rounded-2xl ${service.capacity ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} outline-0 placeholder:text-(--text-2) text-sm text-(--text-1)`}
+                                    type="text"
+                                    placeholder='capacity'
+                                    id='capacity'
+                                    onChange={(e) => {
+                                        if (isItValid(e.target.value)) {
+                                            handleInputsChange(e);
+                                        }
+                                    }}
+                                    value={service.capacity}
+                                />
                             </div>
-                            <input 
-                                className={`w-full mt-2 py-2 px-4 rounded-2xl ${service.capacity ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} outline-0 placeholder:text-(--text-2) text-sm text-(--text-1)`}
-                                type="text" 
-                                placeholder='capacity'
-                                id='capacity'
-                                onChange={(e) => { 
-                                    if (isItValid(e.target.value)) {
-                                        handleInputsChange(e);
-                                    }
-                                }}
-                                value={service.capacity}
-                            />
+                        </div>
+                        <div className='w-full'>
+                            <p className='text-(--text-1) text-[16px]'>Duration <span className='text-red-600'>*</span></p>
+                            <div className={`w-full items-center flex mt-2 text-(--text-1) gap-2 px-4 rounded-2xl ${service.duration ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'}`}>
+                                <p><Clock1 size={16}></Clock1></p>
+                                <input
+                                    className='outline-0 w-full py-2 placeholder:text-(--text-2) text-sm'
+                                    type="text"
+                                    placeholder='servrice duration'
+                                    id='duration'
+                                    onChange={(e) => {
+                                        if (isItValid(e.target.value)) {
+                                            handleInputsChange(e);
+                                        }
+                                    }}
+                                    value={service.duration}
+                                />
+                                <div className='flex gap-2 bg-(--surface-3) rounded-sm'>
+                                    <button
+                                        className={`text-sm border p-2 border-(--border) cursor-pointer active:scale-95 transition-colors ${unit === 'min' ? 'bg-(--surface)' : ''} rounded-sm`}
+                                        onClick={() => setUnit('min')}
+                                    >min</button>
+                                    <button
+                                        className={`text-sm border p-2 cursor-pointer active:scale-95 ${unit === 'hr' ? 'bg-(--surface)' : ''} border-(--border) rounded-sm`}
+                                        onClick={() => setUnit('hr')}
+                                    >hr</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -383,7 +374,7 @@ export default function ServiceForm() {
                         <div>
                             <div>
                                 <p className='text-(--text-1) mb-2 text-[16px]'>Available days <span className='text-red-600'>*</span></p>
-                                <div className='flex gap-2'>
+                                <div className='flex gap-2 overflow-x-auto scrollbar-thumb-(--gold) p-2'>
                                     {days.map(d =>
                                         <button
                                             key={d.value}
@@ -414,7 +405,7 @@ export default function ServiceForm() {
                                     return (
                                         <div
                                             key={sd.value}
-                                            className='p-2 bg-(--surface-2) rounded-sm relative'
+                                            className='p-2 bg-(--surface-2) max-w-full rounded-sm relative'
                                         >
                                             <button 
                                                 className='absolute bg-red-600 p-1 rounded-sm top-0 right-0 cursor-pointer hover:scale-105 active:scale-95 transition -translate-y-1 translate-x-1'
