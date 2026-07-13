@@ -22,26 +22,10 @@ import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types"
 import { durationAsMinutes, isToday } from "../hooks/service";
 import { formatDuration } from "../helper/convertSome";
 import ReviewModal from "../components/ReviewModal";
-import { ErrorMessage } from "../components/BottomErrorMessage";
 import StarRating from "../components/Star";
 import { useNavigate } from "react-router-dom";
 
-/* ------------------------------------------------------------------ */
-/*  Types                                                              */
-/* ------------------------------------------------------------------ */
-
 type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "MISSED";
-
-
-/* ------------------------------------------------------------------ */
-/*  Dummy data                                                         */
-/* ------------------------------------------------------------------ */
-
-
-
-/* ------------------------------------------------------------------ */
-/*  Small UI atoms                                                     */
-/* ------------------------------------------------------------------ */
 
 const STATUS_META: Record<
     BookingStatus,
@@ -53,7 +37,7 @@ const STATUS_META: Record<
         className: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
     },
     PENDING: {
-        label: "Today",
+        label: "Pending",
         icon: AlertCircle,
         className: "bg-[var(--gold)]/15 text-[var(--gold)] border-[var(--gold)]/40",
     },
@@ -74,7 +58,7 @@ const STATUS_META: Record<
     }
 };
 
-function StatusBadge({ status }: { status: BookingStatus }) {
+function StatusBadge({ status }: Readonly<{ status: BookingStatus }>) {
     const meta = STATUS_META[status];
     const Icon = meta.icon;
     return (
@@ -87,7 +71,7 @@ function StatusBadge({ status }: { status: BookingStatus }) {
     );
 }
 
-function IconRow({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) {
+function IconRow({ icon: Icon, children }: Readonly<{ icon: React.ElementType; children: React.ReactNode }>) {
     return (
         <div className="flex items-center gap-2 text-sm text-neutral-400">
             <Icon className="h-4 w-4 shrink-0 text-neutral-500" />
@@ -100,11 +84,11 @@ function OutlinedButton({
     children,
     className = "",
     ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: Readonly<React.ButtonHTMLAttributes<HTMLButtonElement>>) {
     return (
         <button
             {...props}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.02] px-4 py-2.5 text-sm font-medium text-neutral-200 transition-all duration-200 hover:border-[var(--gold)]/50 hover:bg-[var(--gold)]/[0.06] hover:text-[var(--gold)] active:scale-[0.98] ${className}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/2 px-4 py-2.5 text-sm font-medium text-neutral-200 transition-all duration-200 hover:border-(--gold)/50 hover:bg-(--gold)/6 hover:text-(--gold) active:scale-[0.98] ${className}`}
         >
             {children}
         </button>
@@ -115,7 +99,7 @@ function GoldButton({
     children,
     className = "",
     ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: Readonly<React.ButtonHTMLAttributes<HTMLButtonElement>>) {
     return (
         <button
             {...props}
@@ -130,7 +114,7 @@ function GhostDangerButton({
     children,
     className = "",
     ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: Readonly<React.ButtonHTMLAttributes<HTMLButtonElement>>) {
     return (
         <button
             {...props}
@@ -145,7 +129,7 @@ function GhostDangerButton({
 /*  Today's Booking — boarding-pass style hero card                    */
 /* ------------------------------------------------------------------ */
 
-function TodayBookingCard({ booking }: { booking: CustomerAppointments }) {
+function TodayBookingCard({ booking }: Readonly<{ booking: CustomerAppointments }>) {
     return (
         <section className="relative overflow-hidden rounded-2xl border border-(--gold)/25 bg-(--surface) shadow-[0_0_60px_-20px_rgba(212,175,55,0.25)]">
             <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1.4fr]">
@@ -496,6 +480,14 @@ export default function MyBookingsPage() {
         return appointments.filter((apt) => apt.schedule.status === "COMPLETED") ?? [];
     }, [appointments]);
 
+    const missedBookings = useMemo(() => {
+
+        if (!appointments) return [];
+
+        return appointments.filter((apt) => apt.schedule.status === "MISSED") ?? [];
+
+    }, [appointments]);
+
     const todayBooking = useMemo(() => {
         if(!appointments) return [];
         return appointments.filter(apt => isToday(new Date(apt.schedule.startsAt), apt.business.timezone) && apt.schedule.status === "CONFIRMED");
@@ -505,7 +497,13 @@ export default function MyBookingsPage() {
     const hasAnyBookings =
         todayBooking.length > 0 || upcomingBooking.length > 0 || filteredHistory.length > 0;
 
-    console.log(serviceToReview);
+    const pendingBookings = useMemo(() => {
+        
+        if (!appointments) return [];
+
+        return appointments.filter((apt) => apt.schedule.status === "PENDING") ?? [];
+
+    }, [appointments]);
 
     const showToday: boolean = (activeTab === "all" || activeTab === "today") && todayBooking.length > 0;
 
@@ -568,6 +566,24 @@ export default function MyBookingsPage() {
                         </div>
                     )}
 
+                    {!showToday && upcomingBooking.length === 0 && filteredHistory.length === 0 && (
+                        <div 
+                            className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-(--surface) px-6 py-16 text-center"
+                        >
+                            <AlertCircle className="mb-4 h-8 w-8 text-neutral-600" />
+                            <p className="text-neutral-400">No bookings match this filter.</p>
+                        </div>
+                    )}
+
+                    {pendingBookings.length > 0 && <div className="mt-12">
+                        <h2 className="text-xl font-semibold text-white">Pending Bookings</h2>
+                        <div className="mt-5 space-y-4">
+                            {pendingBookings.map((pb) => (
+                                <BookingCard setSchedId={null} setServiceToReview={null} key={pb.schedule.id} setOpenReview={() => setOpenReview(true)} booking={pb} />
+                            ))}
+                        </div>
+                    </div>}
+
                     {filteredHistory.length > 0 && (
                         <div className="mt-12">
                             <h2 className="text-xl font-semibold text-white">Booking History</h2>
@@ -578,13 +594,15 @@ export default function MyBookingsPage() {
                             </div>
                         </div>
                     )}
-
-                    {!showToday && upcomingBooking.length === 0 && filteredHistory.length === 0 && (
-                        <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-(--surface) px-6 py-16 text-center">
-                            <AlertCircle className="mb-4 h-8 w-8 text-neutral-600" />
-                            <p className="text-neutral-400">No bookings match this filter.</p>
+                    
+                    {missedBookings.length > 0 && <div className="mt-12">
+                        <h2 className="text-xl font-semibold text-white">Missed Bookings</h2>
+                        <div className="mt-5 space-y-4">
+                            {missedBookings.map((mb) => (
+                                <BookingCard setSchedId={null} setServiceToReview={null} key={mb.schedule.id} setOpenReview={() => setOpenReview(true)} booking={mb} />
+                            ))}
                         </div>
-                    )}
+                    </div>}
                 </>
             )}
         </div>
