@@ -58,7 +58,8 @@ import lombok.Setter;
 )
 @NamedEntityGraph(name = "serviceWithRating", 
     attributeNodes = {
-        @NamedAttributeNode("reviews")
+        @NamedAttributeNode("reviews"),
+        @NamedAttributeNode("business")
     }
 )
 public class BusinessServices {

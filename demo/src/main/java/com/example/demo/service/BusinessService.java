@@ -76,17 +76,18 @@ public class BusinessService {
         
     }
 
-    public List<ServiceWithRatings> getServices(UUID businessId) {
+    public List<ServiceWithBusinessDto> getServices(UUID businessId) {
         
         List<BusinessServices> services = businessServiceRepo.findByBusiness_Id(businessId);
 
         return services.stream()
             .map(s -> {
                 ServicesDetailsDto service = businessMapper.toBusinessServices(s);
+                BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(s.getBusiness());
                 List<ServiceReviewDto> review = s.getReviews().stream()
                     .map(rev -> serviceReviewMapper.toServiceReviewDto(rev))
                     .toList();
-                return new ServiceWithRatings(review, service);
+                return new ServiceWithBusinessDto(service, business ,review);
             })
             .toList();
 

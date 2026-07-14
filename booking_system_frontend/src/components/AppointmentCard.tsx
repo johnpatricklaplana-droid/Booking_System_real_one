@@ -6,42 +6,28 @@ import {
     Sparkles,
     ChevronRight,
 } from 'lucide-react';
-import { useState } from 'react';
 import { useUser } from '../provider/UserContext';
 import type { Appointment } from '../interfaces/Types';
 import { hasAppointmentPassed } from '../hooks/service';
-import { update } from '../api/api';
 import { formatDuration } from '../helper/convertSome';
 
-export default function AppointmentCard({ apt }: { apt: Appointment }) {
-    const business = useUser().activeBusiness;
 
-    const [updating, setUpdating] = useState<'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | null>(null);
-    const [status, setStatus] = useState(apt.schedule.status);
-    const [error, setError] = useState<string | null>(null);
+export default function AppointmentCard({ 
+    apt, setSchedule, updating, error
+}: { 
+    apt: Appointment, 
+    setSchedule: (status: 'CONFIRMED' | 'MISSED' | 'COMPLETED' | 'CANCELLED', oldStatus: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | 'PENDING', schedId: string) => void, 
+    updating: 'COMPLETED' | 'MISSED' | 'CONFIRMED' | 'CANCELLED' | null,
+    error: string | null
+}) {
+    const business = useUser().activeBusiness;
 
     const passed = hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!);
     const date = new Date(apt.schedule.startsAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const time = new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const customer = `${apt.user.firstName} ${apt.user.lastName}`;
 
-    const setSchedule = async (next: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED') => {
-        setUpdating(next);
-        setError(null);
-        try {
-            const result = await update(`http://localhost:8080/api/schedule/${apt.schedule.id}/${next}`, null);
-            if (result.status === 200) {
-                setStatus(next);
-            }
-        } catch (err: any) {
-            setError(err.message ?? 'Something went wrong');
-            setTimeout(() => setError(null), 4000);
-        } finally {
-            setUpdating(null);
-        }
-    };
-
-    if (status === 'PENDING') {
+    if (apt.schedule.status === 'PENDING') {
         return (
             <div className="relative flex flex-col gap-4 rounded-lg bg-gradient-to-b from-[#1a1712] to-[#151518] border border-(--gold)/30 p-4 shadow-[0_0_0_1px_rgba(201,168,124,0.06)]">
                 <div className="absolute -top-2 left-4 flex items-center gap-1.5 rounded-full bg-(--gold) px-2.5 py-0.5">
@@ -67,7 +53,7 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
 
                 <div className="flex gap-2">
                     <button
-                        onClick={() => setSchedule('CONFIRMED')}
+                        onClick={() => setSchedule('CONFIRMED', apt.schedule.status, apt.schedule.id)}
                         disabled={updating !== null}
                         className="flex-1 flex items-center justify-center gap-1.5 rounded-md bg-(--gold) py-2 text-[13px] font-bold text-[#0a0a0c] hover:brightness-110 transition-all disabled:opacity-50"
                     >
@@ -78,7 +64,7 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
                         )}
                     </button>
                     <button
-                        onClick={() => setSchedule('CANCELLED')}
+                        onClick={() => setSchedule('CANCELLED', apt.schedule.status, apt.schedule.id)}
                         disabled={updating !== null}
                         className="flex-1 rounded-md border border-(--border) py-2 text-[13px] font-medium text-(--text-2) hover:border-(--text-3) transition-all disabled:opacity-50"
                     >
@@ -92,7 +78,7 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
     }
 
     // ── CONFIRMED — premium boarding-pass ticket ─────────────────────────
-    if (status === 'CONFIRMED') {
+    if (apt.schedule.status === 'CONFIRMED') {
         return (
             <div className="relative flex flex-col rounded-lg bg-[#151518] border border-(--teal)/25 overflow-hidden">
                 <div className="flex items-center justify-between bg-gradient-to-r from-(--teal)/15 to-transparent px-4 py-2.5 border-b border-dashed border-(--border)">
@@ -134,14 +120,14 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
                     {passed ? (
                         <div className="flex gap-2">
                             <button
-                                onClick={() => setSchedule('MISSED')}
+                                onClick={() => setSchedule('MISSED', apt.schedule.status, apt.schedule.id)}
                                 disabled={updating !== null}
                                 className="flex-1 rounded-md border border-red-500/30 bg-red-500/10 py-2 text-[13px] font-medium text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-50"
                             >
                                 {updating === 'MISSED' ? <span className="w-4 h-4 mx-auto rounded-full border-2 border-red-400/30 border-t-red-400 animate-spin block" /> : 'No-show'}
                             </button>
                             <button
-                                onClick={() => setSchedule('COMPLETED')}
+                                onClick={() => setSchedule('COMPLETED', apt.schedule.status, apt.schedule.id)}
                                 disabled={updating !== null}
                                 className="flex-1 rounded-md bg-(--teal) py-2 text-[13px] font-bold text-[#0a0a0c] hover:brightness-110 transition-all disabled:opacity-50"
                             >
@@ -159,7 +145,7 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
     }
 
     // ── COMPLETED — quiet receipt, archived ──────────────────────────────
-    if (status === 'COMPLETED') {
+    if (apt.schedule.status === 'COMPLETED') {
         return (
             <div className="flex items-center gap-3 rounded-lg bg-[#121214] border border-(--border) px-4 py-3.5 opacity-80">
                 <div className="w-9 h-9 rounded-full bg-(--teal)/10 flex items-center justify-center shrink-0">
@@ -175,7 +161,7 @@ export default function AppointmentCard({ apt }: { apt: Appointment }) {
     }
 
     // ── MISSED / CANCELLED — dimmed alert state ──────────────────────────
-    const isMissed = status === 'MISSED';
+    const isMissed = apt.schedule.status === 'MISSED';
     return (
         <div className="flex items-center gap-3 rounded-lg bg-[#151112] border border-dashed border-red-500/20 px-4 py-3.5 opacity-70">
             <div className="w-9 h-9 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">

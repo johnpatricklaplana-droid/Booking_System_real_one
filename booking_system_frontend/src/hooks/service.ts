@@ -89,6 +89,19 @@ export function hasAppointmentPassed(date: Date, timezone: string): boolean {
     return appointmentDate.getTime() < now.getTime();
 }
 
+export function isTimeAlreadyPassed(selectedDate: Date, selectedTime: Time | null): boolean {
+
+    if(!selectedTime) return false;
+
+    const bookingDate = new Date(selectedDate);
+
+    const [hour, minute] = selectedTime?.value.split(":").map(Number);
+        bookingDate.setHours(hour, minute, 0, 0);
+
+    return bookingDate < new Date();
+
+}
+
 export function durationAsMinutes(serviceDuration: string) {
 
     dayjs.extend(duration);

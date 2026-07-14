@@ -3,8 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
-import { formatDuration } from '../../helper/convertSome';
-import { durationAsMinutes, hasAppointmentPassed } from '../../hooks/service';
+import { durationAsMinutes } from '../../hooks/service';
 import { ErrorMessage } from '../../components/BottomErrorMessage';
 import AppointmentCard from '../../components/AppointmentCard';
 
@@ -28,8 +27,8 @@ export function Appointments() {
     const business = useUser().activeBusiness;
 
     const [appointments, setAppointments] = useState<Appointment[] | null>(null);
-    const [updating, setUpdating] = useState<{ schedId: string,  buttonId: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'PENDING' | 'COMPLETED' | 'REJECT', status: boolean } | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [updating, setUpdating] = useState<'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if(!business) return;
@@ -51,59 +50,38 @@ export function Appointments() {
 
     }, [business?.businessId]);
 
-    const confirmAppointment = async (scheduleId: string, status: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'PENDING') => {
-
-        setUpdating({ schedId: scheduleId, buttonId: status, status: true });
-        
-        const url = `http://localhost:8080/api/schedule/${scheduleId}/${status}`;
-
+    const setSchedule = async (next: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED', oldStatus: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | 'PENDING', schedId: string) => {
+        setUpdating(next);
+        setError(null);
+        setAppointments(prev => prev!.map(ap => {
+            if(ap.schedule.id !== schedId) return ap;
+            return {
+                ...ap,
+                schedule: {
+                    ...ap.schedule,
+                    status: next
+                }
+            };
+        }));
         try {
-            const result = await update(url, null);
-
-            if (result.status === 200) {
-                const sched: Appointment[] = appointments?.map(apt => {
-                    if (apt.schedule.id === scheduleId) {
-                        apt.schedule.status = status;
+             await update(`http://localhost:8080/api/schedule/${schedId}/${next}`, null);
+            
+        } catch (err: any) {
+            setError(err.message ?? 'Something went wrong');
+            setAppointments(prev => prev!.map(ap => {
+                if (ap.schedule.id !== schedId) return ap;
+                return {
+                    ...ap,
+                    schedule: {
+                        ...ap.schedule,
+                        status: oldStatus
                     }
-                    return apt;
-                })!;
-                setAppointments(sched);
-                setUpdating(null);
-            }
-        } catch (error) {
+                };
+            }));
+            setTimeout(() => setError(null), 4000);
+        } finally {
             setUpdating(null);
-            console.log(error);
         }
-
-    }
-
-    const completeAppointment = async (scheduleId: string) => {
-        const url = `http://localhost:8080/api/schedule/${scheduleId}/COMPLETED`;
-
-        setUpdating({ schedId: scheduleId, buttonId: 'COMPLETED', status: true });
-
-        try {
-            const result = await update(url, null);
-
-            if (result.status === 200) {
-                const sched: Appointment[] = appointments?.map(apt => {
-                    if (apt.schedule.id === scheduleId) {
-                        apt.schedule.status = "COMPLETED";
-                    }
-                    return apt;
-                })!;
-                setAppointments(sched);
-                setUpdating(null);
-            }
-        } catch (error: any) {
-            console.log(`TODO: ERROR message ${error}`);
-            setErrorMessage(error.message);
-            setUpdating(null);
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
-        }
-
     };
 
     const pendingAppointments = useMemo(() => {
@@ -149,7 +127,7 @@ export function Appointments() {
     return (
         <div className="space-y-6">
 
-            {errorMessage ? <ErrorMessage success={false} message={errorMessage} head="Couldn' t complete appointment" /> : ''}
+            {/* {errorMessage ? <ErrorMessage success={false} message={errorMessage} head="Couldn' t complete appointment" /> : ''} */}
 
             <div className="flex items-center justify-between">
                 <div>
@@ -189,7 +167,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Pending appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {pendingAppointments?.map((apt) => {
-                        return <AppointmentCard apt={apt} />
+                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -198,7 +176,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Upcoming appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {upcomingAppointment?.map((apt) => {
-                        return <AppointmentCard apt={apt} />
+                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -207,7 +185,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Completed appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {completedAppointments?.map((apt) => {
-                        return <AppointmentCard apt={apt} />
+                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -216,7 +194,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Missed appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {missedAppointments?.map((apt) => {
-                        return <AppointmentCard apt={apt} />
+                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -225,7 +203,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Cancelled appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {cancelledAppointments?.map((apt) => {
-                        return <AppointmentCard apt={apt} />
+                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>

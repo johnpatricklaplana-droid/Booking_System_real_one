@@ -33,7 +33,7 @@ public class ServiceController {
     BusinessService businessService;
     
     @GetMapping("/api/business/services/{businessId}")
-    public ResponseEntity<List<ServiceWithRatings>> getBusinessServices(@PathVariable UUID businessId) {
+    public ResponseEntity<List<ServiceWithBusinessDto>> getBusinessServices(@PathVariable UUID businessId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(businessService.getServices(businessId));

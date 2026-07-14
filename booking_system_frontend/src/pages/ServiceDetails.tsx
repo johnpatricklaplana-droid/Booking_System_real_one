@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
-import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, Staff, Time } from "../interfaces/Types";
-import { useParams } from "react-router-dom";
+import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, ServiceWithBusiness, ServiceWithRatings, Staff, Time } from "../interfaces/Types";
+import { useNavigate, useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, formatDuration, TimezoneLabel } from "../helper/convertSome";
-import { durationAsMinutes, getAverageRating } from "../hooks/service";
+import { durationAsMinutes, getAverageRating, isTimeAlreadyPassed } from "../hooks/service";
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
 import DaddysHomeBookingTicket from "../components/BookingConfirmation";
 import StarRating from "../components/Star";
@@ -73,8 +73,11 @@ export function ServiceDetails() {
     const [serviceAvailability, setServiceAvailability] = useState<ServiceAvailability[]>([]);
     const [openBookingConfirmation, setOpenBookingConfirmation] = useState<boolean>(false);
     const [validTime, setValidTime] = useState<boolean>();
+    const [servicesFromSameBusiness, setServicesFromSameBusiness] = useState<ServiceWithBusiness[]>([]);
     
     const { serviceId } = useParams();
+
+    const navigate = useNavigate();
 
     const notGoods = () => {
         
@@ -82,7 +85,8 @@ export function ServiceDetails() {
             || selectedTime === null
             || selectedStaff === null
             || serviceId === null
-            || validTime;
+            || !validTime
+            || isTimeAlreadyPassed(selectedDate, selectedTime);
     };
 
     useEffect(() => {
@@ -93,7 +97,7 @@ export function ServiceDetails() {
             const url = `http://localhost:8080/api/services/${serviceId}`;
 
             const result: any = await get(url);
-        console.log(result);
+            console.log(result);
             setBusiness(result.business);
             setStaff(result.staff);
             setServiceDetails(result.services);
@@ -120,6 +124,23 @@ export function ServiceDetails() {
         getIt();
 
     }, [serviceId]);
+
+    useEffect(() => {
+
+        if(!business) return;
+
+        const url = `http://localhost:8080/api/business/services/${business.businessId}`;
+
+        const getIt = async () => {
+            const result: ServiceWithBusiness[] = await get(url);
+
+            setServicesFromSameBusiness(result);
+
+        };
+
+        getIt();
+
+    }, [business]);
 
     const book = async () => {
 
@@ -170,7 +191,7 @@ export function ServiceDetails() {
     };
 
     const isTimeCanDoIt = (sa: ServiceAvailability): boolean => {
-        if (!selectedTime) return false;
+        if (!selectedTime) return true;
 
         const start = toMinutes(sa.startTime);
         const end = toMinutes(sa.endTime);
@@ -235,8 +256,6 @@ export function ServiceDetails() {
 
                                 const chosenOne = selectedDate.getDay() === day;
 
-                                const vt = isTimeCanDoIt(sa);
-
                                 return (<div
                                     key={sa.day}
                                     className={`p-2 border ${chosenOne ? 'bg-(--gold-dim) border-(--gold)' : 'bg-(--surface-2)'} h-fit rounded-sm relative`}
@@ -251,14 +270,22 @@ export function ServiceDetails() {
                                         ? <>
                                             <p className="mt-2 text-xs uppercase tracking-tight font-semibold text-(--text-2)">select some time</p>
                                             <input 
-                                                className={`w-full mt-1 border ${isTimeCanDoIt(sa) ? 'border-(--gold) text-(--gold) bg-(--gold)/10' : 'border-red-700 text-red-700 bg-red-700/10' } py-2 px-4 rounded-sm`}
+                                                className={`w-full mt-1 border ${!isTimeCanDoIt(sa) || isTimeAlreadyPassed(selectedDate, selectedTime) ? 'border-red-700 text-red-700 bg-red-700/10' : 'border-(--gold) text-(--gold) bg-(--gold)/10' } py-2 px-4 rounded-sm`}
                                                 type="time" 
                                                 onChange={(e) => {
-                                                    setSelectedTime({ label: e.target.value, value: e.target.value })
-                                                    setValidTime(vt);
+                                                    const time = e.target.value;
+
+                                                    setSelectedTime({ label: time, value: time });
+
+                                                    const selected = toMinutes(time);
+                                                    const start = toMinutes(sa.startTime);
+                                                    const end = toMinutes(sa.endTime);
+                                                    const duration = Number(durationAsMinutes(serviceDetails!.duration));
+
+                                                    setValidTime(start <= selected && selected <= end - duration);
                                                 }}
                                             />
-                                            {!vt && <p className="text-red-700 text-center">i gave my heart</p>}
+                                            {(!isTimeCanDoIt(sa) || isTimeAlreadyPassed(selectedDate, selectedTime)) && <p className="text-red-700 text-center">i gave my heart</p>}
                                         </> 
                                         : ''
                                     }
@@ -343,16 +370,36 @@ export function ServiceDetails() {
                         </div>
                     </div>
                 </div>
-                <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-4">Services From Lumiere studio</p>
-                <div className="flex mb-16 overflow-x-auto px-4 gap-6">
-                    {/* {featuredServices.map(service =>
-                        <div 
-                            key={service.id}
-                            className="shrink-0 w-[32%]"
+                <p className="text-[0.75rem] font-semibold mt-11 uppercase tracking-[0.8em] text-(--text-3) mb-4">Other Services From {business?.businessName}</p>
+                <div className="flex mb-16 scrollbar-thumb-amber-200 scrollbar-thin overflow-x-auto p-2 px-4 gap-6">
+                    {servicesFromSameBusiness.map(swr =>
+                        <button
+                            className="service-card shrink-0 group w-full lg:w-auto relative bg-(--surface) border border-(--border) rounded-2xl overflow-hidden transition-transform duration-200 cursor-pointer hover:-translate-y-1.5"
+                            key={swr.services.id}
+                            onClick={() => navigate(`/customer/service/${swr.services.id}`)}
                         >
-                            <ServiceBox services={service} />
-                        </div>
-                    )} */}
+                            <img src={swr.services.serviceLogoUrl} alt={swr.services.id} className="h-40 w-full object-contain" />
+                            <div className="pt-4 px-4.5 pb-4.5">
+                                <div className="flex gap-2 items-center">
+                                    <img className="w-5.5 h-5.5 mb-2 rounded-[50%]" src={swr.business.businessLogoUrl} alt={swr.business.businessName} />
+                                    <div className="text-[0.75rem] text-(--text-3) mb-1 font-medium">{swr.business.businessName}</div>
+                                </div>
+                                <div className="text-[0.9375rem] text-start text-(--text-1)">{swr.services.serviceName}</div>
+                                <p className="text-(--text-2) text-start text-sm">capacity: {swr.services.capacity}</p>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <StarRating rating={getAverageRating(swr.review.map(rev => rev.rating))} />
+                                    <p className="text-(--text-2) text-xs">{swr.review.length > 0 ? getAverageRating(swr.review.map(rev => rev.rating)) : 'no'} rating ({swr.review.length})</p>
+                                </div>
+                                <p className="flex items-center text-start gap-2.5 text-[0.8125rem] text-(--text-2) mt-2">
+                                    {swr.business.address.displayName}
+                                </p>
+                                <div className="flex mt-2 items-center justify-between">
+                                    <div className="font-semibold text-(--gold-light) text-[1rem]">₱{swr.services.price.toLocaleString()}</div>
+                                    <div className="text-[0.75rem] text-(--teal) font-medium">{swr.business ? TimezoneLabel(swr.business?.timezone) : ""}</div>
+                                </div>
+                            </div>
+                        </button>
+                    )}
                 </div>
                 <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-4">Related Services</p>
                 <div className="grid grid-cols-3 gap-6">
@@ -361,7 +408,7 @@ export function ServiceDetails() {
                     )} */}
                 </div>
             </div>
-            <div className="sticky flex backdrop-blur-2xl items-center gap-4 justify-end bottom-0 border-t border-t-(--border) py-4 px-6">
+            <div className="sticky lg:hidden flex backdrop-blur-2xl items-center gap-4 justify-end bottom-0 border-t border-t-(--border) py-4 px-6">
                 <p className="text-(--text-1)">₱{serviceDetails?.price.toLocaleString()}</p>
                 <button 
                     className="btn-primary py-2 px-4 rounded-sm"
