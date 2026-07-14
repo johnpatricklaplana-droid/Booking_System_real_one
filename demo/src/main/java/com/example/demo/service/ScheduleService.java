@@ -82,6 +82,10 @@ public class ScheduleService {
 
         BusinessServices services = businessServiceRepo.findById(scheduleDto.getServiceId()).orElse(null);
 
+        if (ZonedDateTime.parse(scheduleDto.getStartsAt()).isBefore(ZonedDateTime.now(ZoneId.of(services.getBusiness().getTimezone())))) {
+            throw new InvalidInputsException("this time is already passed buddy");
+        }
+
         String timezone = services.getBusiness().getTimezone();
         ZoneOffset timZoneOffset = ZoneId.of(timezone).getRules().getOffset(Instant.now());
 
