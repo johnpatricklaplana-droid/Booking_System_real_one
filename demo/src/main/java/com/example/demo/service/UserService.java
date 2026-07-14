@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -258,6 +260,24 @@ public class UserService {
     @Transactional
     public void addBusinessServices(AddServiceRequestDto request, MultipartFile file) throws BadRequestException {
         
+        if(request.getCapacity() <= 0) {
+            throw new InvalidInputsException("capacity can't be zero or less buddy");
+        }
+    
+        boolean invalidDuration = request.getAvailability().stream()
+            .anyMatch(sa -> !isDurationCanFitToTimeSlots(sa.getStartTime(), sa.getEndTime(), request.getDuration()));
+
+        boolean invalidTimeSlot = request.getAvailability().stream()
+            .anyMatch(sa -> sa.getStartTime().getHour() * 60 + sa.getStartTime().getMinute() == sa.getStartTime().getHour() * 60 + sa.getEndTime().getMinute() && !sa.getEndTime().isAfter(sa.getStartTime()));
+
+        if(invalidTimeSlot) {
+            throw new InvalidInputsException("time slots start and end should not be equal buddy");
+        }
+
+        if(invalidDuration) {
+            throw new InvalidInputsException("duration should be fit to times slots of the service buddy");
+        }
+
         if (businessServiceRepo.existsByBusiness_IdAndServiceNameIgnoreCase(
                 request.getBusinessId(),
                 request.getServiceName())) {
@@ -310,6 +330,16 @@ public class UserService {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean isDurationCanFitToTimeSlots(LocalTime startTime, LocalTime endTime, Duration duration) {
+
+        Long durationMin = duration.toMinutes();
+        int startTimeMin = startTime.getHour() * 60 + startTime.getMinute();
+        int endTimeMin = endTime.getHour() * 60 + endTime.getMinute();
+        int startToEndDifference = Math.abs(startTimeMin - endTimeMin);
+
+        return startToEndDifference >= durationMin;
     }
 
 }
