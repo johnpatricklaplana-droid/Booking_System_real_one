@@ -151,6 +151,7 @@ export function ServiceDetails() {
             if (result.status === 201) {
                 console.log("good one");
                 setBookingResult({ success: true, message: "super success" });
+                setOpenBookingConfirmation(false);
             }
         } catch (error) {
             console.log(error);
@@ -359,6 +360,15 @@ export function ServiceDetails() {
                         <ServiceBox key={service.id} services={service} />
                     )} */}
                 </div>
+            </div>
+            <div className="sticky flex backdrop-blur-2xl items-center gap-4 justify-end bottom-0 border-t border-t-(--border) py-4 px-6">
+                <p className="text-(--text-1)">₱{serviceDetails?.price.toLocaleString()}</p>
+                <button 
+                    className="btn-primary py-2 px-4 rounded-sm"
+                    disabled={notGoods()}
+                    onClick={() => setOpenBookingConfirmation(true)}
+                >Book now
+                </button>
             </div>
         </div>
     );

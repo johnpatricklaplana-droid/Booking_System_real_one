@@ -20,16 +20,15 @@ export default function DaddysHomeBookingTicket({
     date,
     time,
     onClick,
-    onClose
+    onClose,
 }: {
     service: ServiceResponse,
     staff: Staff,
     date: Date,
     time: Time,
     onClick: any,
-    onClose: any
+    onClose: any,
 } ) {
-    const [confirmed, setConfirmed] = useState(false);
 
     return (
         <div className="dht-overlay" role="dialog" aria-modal="true">
@@ -111,17 +110,12 @@ export default function DaddysHomeBookingTicket({
 
                 {/* CTA */}
                 <button
-                    className={`dht-cta ${confirmed ? "dht-cta--done" : ""}`}
-                    onClick={onClick}
-                    disabled={confirmed}
-                >
-                    {confirmed ? (
-                        <>
-                            <Check size={16} strokeWidth={3} /> Booking Confirmed
-                        </>
-                    ) : (
-                        "Confirm Booking"
-                    )}
+                    className={`dht-cta`}
+                    onClick={() => {
+                      onClick();
+                    }}
+                >  
+                  <Check size={16} strokeWidth={3} /> Booking Confirmed
                 </button>
             </div>
 

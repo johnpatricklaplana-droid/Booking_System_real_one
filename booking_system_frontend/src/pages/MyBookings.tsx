@@ -378,77 +378,17 @@ const TABS: { key: "all" | BookingStatus; label: string }[] = [
     { key: "CANCELLED", label: "Cancelled" },
 ];
 
-function StatusTabs({
-    active,
-    onChange,
-}: {
-    active: string;
-    onChange: (key: string) => void;
-}) {
-    return (
-        <div className="flex flex-wrap gap-2">
-            {TABS.map((tab) => {
-                const isActive = active === tab.key;
-                return (
-                    <button
-                        key={tab.key}
-                        onClick={() => onChange(tab.key)}
-                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${isActive
-                                ? "border-(--gold)/60 bg-(--gold)/12 text-white shadow-[0_0_16px_-6px_var(--gold)]"
-                                : "border-white/10 bg-(--surface) text-neutral-400 hover:border-white/25 hover:text-neutral-200"
-                            }`}
-                    >
-                        {tab.label}
-                    </button>
-                );
-            })}
-        </div>
-    );
-}
-
-function SearchAndFilters() {
-    return (
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-                <input
-                    type="text"
-                    placeholder="Search bookings..."
-                    className="w-full rounded-xl border border-white/10 bg-(--surface) py-2.5 pl-10 pr-4 text-sm text-neutral-200 placeholder:text-neutral-500 transition-all duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-[var(--gold)]/30"
-                />
-            </div>
-
-            <div className="flex gap-3">
-                <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-(--surface) px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-44">
-                    <Calendar className="h-4 w-4 text-neutral-500" />
-                    Date
-                </button>
-
-                <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-(--surface) px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-44">
-                    <Filter className="h-4 w-4 text-neutral-500" />
-                    Category
-                </button>
-
-                <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[var(--surface)] px-4 py-2.5 text-sm text-neutral-300 transition-all duration-200 hover:border-white/25 lg:w-52">
-                    <ArrowUpDown className="h-4 w-4 text-neutral-500" />
-                    Newest first
-                </button>
-            </div>
-        </div>
-    );
-}
-
 /* ------------------------------------------------------------------ */
 /*  Main page                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function MyBookingsPage() {
-    const [activeTab, setActiveTab] = useState<string>("all");
-    const [isLoading] = useState(false);
     const [appointments, setAppointments] = useState<CustomerAppointments[] | null>(null);
     const [openReview, setOpenReview] = useState<boolean>(false);
     const [serviceToReview, setServiceToReview] = useState<ServiceResponse | null>(null);
     const [schedIdToReview, setSchedIdToReview] = useState<string>("");
+    const [filters] = useState<['all', 'today', 'completed', 'missed', 'upcoming', 'cancelled', 'pending']>(['all', 'today', 'completed', 'missed', 'upcoming', 'cancelled', 'pending']);
+    const [filter, setFilter] = useState<'all' | 'today' | 'completed' | 'upcoming' | 'cancelled' | 'pending' | 'missed'>('all');
 
     useEffect(() => {
         
@@ -505,8 +445,6 @@ export default function MyBookingsPage() {
 
     }, [appointments]);
 
-    const showToday: boolean = (activeTab === "all" || activeTab === "today") && todayBooking.length > 0;
-
     return (
         <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <style>{`
@@ -528,26 +466,36 @@ export default function MyBookingsPage() {
                 </OutlinedButton>
             </div>
 
-            <div className="mt-8">
-                <StatusTabs active={activeTab} onChange={setActiveTab} />
+            <div className="mt-8 flex flex-wrap gap-2">
+                {filters.map(f => 
+                    <button
+                        key={f}
+                        onClick={() => setFilter(f)}
+                        className={`py-2 px-4 border cursor-pointer active:text-(--gold) active:bg-(--gold-light) transition-colors rounded-2xl ${filter === f ? 'border-(--gold) text-(--gold) shadow shadow-amber-200' : 'text-(--text-2) border-(--gold)'}`}
+                    >
+                        {f}
+                    </button>
+                )}
             </div>
 
             <div className="mt-5">
-                <SearchAndFilters />
+                <div className="relative flex-1">
+                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                    <input
+                        type="text"
+                        placeholder="Search bookings..."
+                        className="w-full rounded-xl border border-white/10 bg-(--surface) py-2.5 pl-10 pr-4 text-sm text-neutral-200 placeholder:text-neutral-500 transition-all duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-(--gold)/30"
+                    />
+                </div>
             </div>
 
-            {isLoading ? (
-                <div className="mt-10 space-y-6">
-                    <SkeletonBookingCard />
-                    <SkeletonBookingCard />
-                </div>
-            ) : !hasAnyBookings ? (
+            {!hasAnyBookings ? (
                 <div className="mt-10">
                     <EmptyState />
                 </div>
             ) : (
                 <>
-                    {showToday && (
+                    {todayBooking && (filter === 'all' || filter === 'today') && (
                         <div className="mt-10 space-y-4">
                             {todayBooking.map(tod => 
                                 <TodayBookingCard key={tod.schedule.id} booking={tod} />
@@ -555,7 +503,7 @@ export default function MyBookingsPage() {
                         </div>
                     )}
 
-                    {upcomingBooking.length > 0 && (
+                    {upcomingBooking.length > 0 && (filter === 'all' || filter === 'upcoming') && (
                         <div className="mt-12">
                             <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
                             <div className="mt-5 space-y-4">
@@ -566,7 +514,7 @@ export default function MyBookingsPage() {
                         </div>
                     )}
 
-                    {!showToday && upcomingBooking.length === 0 && filteredHistory.length === 0 && (
+                    {upcomingBooking.length === 0 && (filter === 'all' || filter === 'upcoming') && (
                         <div 
                             className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-(--surface) px-6 py-16 text-center"
                         >
@@ -575,7 +523,7 @@ export default function MyBookingsPage() {
                         </div>
                     )}
 
-                    {pendingBookings.length > 0 && <div className="mt-12">
+                    {pendingBookings.length > 0 && (filter === 'all' || filter === 'pending') && <div className="mt-12">
                         <h2 className="text-xl font-semibold text-white">Pending Bookings</h2>
                         <div className="mt-5 space-y-4">
                             {pendingBookings.map((pb) => (
@@ -584,7 +532,7 @@ export default function MyBookingsPage() {
                         </div>
                     </div>}
 
-                    {filteredHistory.length > 0 && (
+                    {filteredHistory.length > 0 && (filter === 'all' || filter === 'completed') && (
                         <div className="mt-12">
                             <h2 className="text-xl font-semibold text-white">Booking History</h2>
                             <div className="mt-5 space-y-4">
@@ -595,7 +543,7 @@ export default function MyBookingsPage() {
                         </div>
                     )}
                     
-                    {missedBookings.length > 0 && <div className="mt-12">
+                    {missedBookings.length > 0 && (filter === 'all' || filter === 'missed') && <div className="mt-12">
                         <h2 className="text-xl font-semibold text-white">Missed Bookings</h2>
                         <div className="mt-5 space-y-4">
                             {missedBookings.map((mb) => (

@@ -34,7 +34,10 @@ export function BookingDatePicker({
                 setSelected(date);
             }}
             disabled={(date) => {
-                return !availableDaysOfWeek.includes((date.getDay())) || date < new  Date()
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                return !availableDaysOfWeek.includes((date.getDay())) || date < today
             }}
             className="bg-(--surface) text-(--text-2) border border-(--border) rounded-2xl p-4"
         />
