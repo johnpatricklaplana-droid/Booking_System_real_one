@@ -29,7 +29,7 @@ export function Services() {
     const navigate = useNavigate();
 
     return (
-        <div className="space-y-6 overflow-y-auto h-screen p-6 lg:p-8">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Services</h2>

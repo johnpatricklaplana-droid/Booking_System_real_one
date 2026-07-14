@@ -5,7 +5,7 @@ import { get, post } from "../../api/api";
 import { durationAsMinutes } from "../../hooks/service";
 import { useUser } from "../../provider/UserContext";
 import { formatDuration } from "../../helper/convertSome";
-import { Plus, X } from "lucide-react";
+import { Edit, Plus, X } from "lucide-react";
 
 const statusStyles: Record<ServiceStatus, string> = {
     ACTIVE: "bg-(--teal-dim) text-(--teal)",
@@ -163,9 +163,9 @@ export function ManageService() {
     }
 
     return (
-        <div className="p-8 overflow-y-auto h-screen">
+        <div className="h-screen">
 
-            <div className="max-w-280 mx-auto">
+            <div className="mx-auto">
 
                 <button 
                     className="inline-flex items-center gap-1.5 text-[0.875rem] text-(--text-3) hover:text-(--text-2) mb-8 cursor-pointer transition-colors duration-200"
@@ -179,8 +179,8 @@ export function ManageService() {
 
                 {/* Service — the main subject of this page */}
                 <div className="bg-(--surface) border border-(--border) rounded-xl overflow-hidden mb-10">
-                    <div className="flex gap-7 p-8">
-                        <div className="w-40 h-40 shrink-0 rounded-(--radius) bg-(--surface-2) border border-(--border) overflow-hidden flex items-center justify-center">
+                    <div className="flex lg:flex-row flex-col gap-7 p-8">
+                        <div className="lg:w-40 h-40 w-full shrink-0 rounded-(--radius) bg-(--surface-2) border border-(--border) overflow-hidden flex items-center justify-center">
                             {service?.serviceLogoUrl ? (
                                 <img className="w-full h-full object-cover" src={service?.serviceLogoUrl} alt="" />
                             ) : (
@@ -194,17 +194,10 @@ export function ManageService() {
 
                         <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-4 mb-3">
-                                <div>
-                                    <span className={`inline-block text-[0.6875rem] font-bold py-1 px-2.5 rounded-[100px] tracking-widest mb-3 ${service?.status ? statusStyles[service?.status] : ''}`}>
-                                        {service?.status}
-                                    </span>
-                                    <h1 className="text-[1.875rem] font-bold text-(--text-1) leading-tight">{service?.serviceName}</h1>
-                                </div>
+                                <h1 className="lg:text-[1.875rem] text-2xl font-bold text-(--text-1) leading-tight">{service?.serviceName}</h1>
+
                                 <button className="btn btn-secondary shrink-0 flex items-center gap-1.5 text-[0.8125rem]">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" />
-                                    </svg>
+                                    <Edit />
                                     Edit service
                                 </button>
                             </div>
@@ -215,7 +208,7 @@ export function ManageService() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-3 px-8 pb-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 px-8 pb-8">
                         <MetricCard
                             tone="teal"
                             value={`₱${service?.price.toLocaleString()}`}
@@ -265,7 +258,7 @@ export function ManageService() {
 
                 <p className="text-[0.75rem] font-semibold uppercase tracking-[0.3em] text-(--text-3) mb-4">Service configuration</p>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                     {/* Staff panel */}
                     <div className="bg-(--surface) h-fit border border-(--border) rounded-xl p-6">
@@ -348,7 +341,7 @@ export function ManageService() {
                         </div>
 
                         {/* Add slot row, editable, no logic attached */}
-                        <div className="flex items-end gap-2 bg-(--surface-2) border border-(--border) rounded-(--radius) p-3 mb-4">
+                        <div className="flex flex-wrap items-end gap-2 bg-(--surface-2) border border-(--border) rounded-(--radius) p-3 mb-4">
                             <div className="flex flex-col gap-1">
                                 <label className="text-[0.6875rem] text-(--text-3)">Day</label>
                                 <select 
@@ -389,9 +382,7 @@ export function ManageService() {
                                 disabled={serviceAvailabilityNoGoods()}
                                 onClick={addServiceAvailabilityFunction}
                             >
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <path d="M12 5v14M5 12h14" />
-                                </svg>
+                                <Plus size={12} />
                                 Add
                             </button>
                         </div>

@@ -9,6 +9,7 @@ import { PostFormData } from '../../api/api';
 import { useUser } from '../../provider/UserContext';
 import DaddysHomeLoader from '../../components/MainLoadingScreen';
 import DaddysHomeStatus from '../../components/Error';
+import { isDurationCanFitToTimeSlots } from '../../hooks/service';
 
 interface Services {
     businessId: string;
@@ -78,6 +79,7 @@ export default function ServiceForm() {
     const [hours, setHours] = useState<Map<'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY', DayTime> | null>(null);
     const [serviceImage, setServiceImage] = useState<File | null>(null);
     const [result, setResult] = useState<'success' | 'fail' | 'serviceAlreadyExist' | null>(null);
+    const [validDuration, setValidDuration] = useState<boolean>();
 
     const bussId = useUser().activeBusiness?.businessId;
 
@@ -98,6 +100,20 @@ export default function ServiceForm() {
 
     const saveService = async () => {
         
+        if (selectedDay.some(sa => {
+            if (!hours?.get(sa.value)?.start && !hours?.get(sa.value)?.end) return false;
+            const start = to24Hour(hours?.get(sa.value)?.start!);
+            const end = to24Hour(hours?.get(sa.value)?.end!);
+
+            const durationMin = unit === 'hr' ? (Number(service.duration) * 60) : Number(service.duration);
+
+            return !isDurationCanFitToTimeSlots(start!, end!, durationMin);
+        }
+        )) {
+            setValidDuration(false);
+            return;
+        }
+
         setIsSaving(true);
 
         const url = "http://localhost:8080/api/user/business/services";
@@ -155,17 +171,18 @@ export default function ServiceForm() {
     }
 
     const notGoods = () => {
-        return service.businessId.trim() === ""
-            || service.capacity.trim() === ""
-            || service.description.trim() === ""
-            || service.duration.trim() === ""
-            || service.price.trim() === ""
-            || service.serviceName.trim() === ""
-            || serviceImage === null
-            || selectedCategory.length <= 0
-            || !hours?.size
-            || selectedDay.length <= 0
-            || !selectedDay.every(d => hours.has(d.value));
+        return  service.businessId.trim() === ""
+            ||  service.capacity.trim() === ""
+            ||  service.description.trim() === ""
+            ||  service.duration.trim() === ""
+            ||  service.price.trim() === ""
+            ||  service.serviceName.trim() === ""
+            ||  serviceImage === null
+            ||  selectedCategory.length <= 0
+            ||  !hours?.size
+            ||  selectedDay.length <= 0
+            ||  !selectedDay.every(d => hours.has(d.value))
+            ||  !validDuration;
     }
 
     const navigate = useNavigate();
@@ -174,39 +191,21 @@ export default function ServiceForm() {
         setServiceImage(event.target?.files?.[0]!);
     }
 
-    return (
-        <div className='overflow-y-auto h-screen'>
+    console.log(selectedDay.map((sd: any) => 
+        hours?.get(sd.value)
+    ));
 
+    console.log(validDuration);
+
+    return (
+        <div>
             {isSaving && <DaddysHomeLoader />}
 
             {result !== null && result === 'fail' && <DaddysHomeStatus type='error' onPrimaryAction={() => console.log("TODO")} message='check your internet connection and try again' onDismiss={() => setResult(null)}  />}
             {result !== null && result === 'success' && <DaddysHomeStatus type='success' onPrimaryAction={() => console.log("TODO")} onDismiss={() => setResult(null)} />}
             {result !== null && result === 'serviceAlreadyExist' && <DaddysHomeStatus type='conflict' onPrimaryAction={() => console.log("TODO")} onDismiss={() => setResult(null)} />}
 
-            <div className="sticky top-0 z-10 bg-[#0a0a0c]/95 backdrop-blur-sm border-b border-[rgba(255,255,255,0.08)]">
-                <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <button
-                            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#9a9aa3] hover:bg-[#151518] hover:text-[#e8e8ea] transition-all"
-                            onClick={() => navigate('/business/services')}
-                        >
-                            <ArrowLeft size={18} strokeWidth={2} />
-                        </button>
-                        <div>
-                            <h1 className="text-[16px] font-medium text-[#e8e8ea]">New Service</h1>
-                        </div>
-                    </div>
-                    <button
-                        className="px-5 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
-                        onClick={saveService}
-                        disabled={notGoods()}
-                    >
-                        Save service
-                    </button>
-                </div>
-            </div>
-
-            <div className='grid p-6 lg:p-8 gap-4 grid-cols-1 lg:grid-cols-[1fr_320px]'>
+            <div className='grid gap-4 grid-cols-1 lg:grid-cols-[1fr_320px]'>
                 <div className='space-y-4'>
                     <div className='bg-(--surface) border border-(--border) p-4 rounded-2xl'>
                         <div className='flex gap-2 items-center mb-4'>
@@ -341,6 +340,23 @@ export default function ServiceForm() {
                                     id='duration'
                                     onChange={(e) => {
                                         if (isItValid(e.target.value)) {
+                                            const invalidOne = selectedDay.some(sa => {
+                                                    if(!hours?.get(sa.value)?.start && !hours?.get(sa.value)?.end) return false;
+                                                    const start = to24Hour(hours?.get(sa.value)?.start!);
+                                                    const end = to24Hour(hours?.get(sa.value)?.end!);
+
+                                                    const durationMin = unit === 'hr' ? (Number(e.target.value) * 60) : Number(e.target.value);
+
+                                                    return !isDurationCanFitToTimeSlots(start!, end!, durationMin);
+                                                }
+                                            );
+
+                                            if(invalidOne) {
+                                                setValidDuration(false);
+                                            } else {
+                                                setValidDuration(true);
+                                            }
+
                                             handleInputsChange(e);
                                         }
                                     }}
@@ -348,15 +364,16 @@ export default function ServiceForm() {
                                 />
                                 <div className='flex gap-2 bg-(--surface-3) rounded-sm'>
                                     <button
-                                        className={`text-sm border p-2 border-(--border) cursor-pointer active:scale-95 transition-colors ${unit === 'min' ? 'bg-(--surface)' : ''} rounded-sm`}
+                                        className={`text-sm border p-2 border-(--border) cursor-pointer active:scale-95 transition-colors ${unit === 'min' ? 'bg-(--gold)' : ''} rounded-sm`}
                                         onClick={() => setUnit('min')}
                                     >min</button>
                                     <button
-                                        className={`text-sm border p-2 cursor-pointer active:scale-95 ${unit === 'hr' ? 'bg-(--surface)' : ''} border-(--border) rounded-sm`}
+                                        className={`text-sm border p-2 cursor-pointer active:scale-95 ${unit === 'hr' ? 'bg-(--gold)' : ''} border-(--border) rounded-sm`}
                                         onClick={() => setUnit('hr')}
                                     >hr</button>
                                 </div>
                             </div>
+                            {!validDuration && <p className='text-red-700 text-center'>invalid duration buddy check your time slots</p>}
                         </div>
                     </div>
 
@@ -481,9 +498,29 @@ export default function ServiceForm() {
                         <input type="file" onChange={handleFileInputChange} id="serviceImage" hidden />
                     </label>
                 </div>
-
             </div>
-
+            <div className="sticky bottom-0 z-10 bg-[#0a0a0c]/95 backdrop-blur-sm border-b border-[rgba(255,255,255,0.08)]">
+                <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button
+                            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#9a9aa3] hover:bg-[#151518] hover:text-[#e8e8ea] transition-all"
+                            onClick={() => navigate('/business/services')}
+                        >
+                            <ArrowLeft size={18} strokeWidth={2} />
+                        </button>
+                        <div>
+                            <h1 className="text-[16px] font-medium text-[#e8e8ea]">New Service</h1>
+                        </div>
+                    </div>
+                    <button
+                        className="px-5 py-2.5 bg-linear-to-br from-[#c9a87c] to-[#b89c7e] rounded-lg text-[13px] font-medium text-[#0a0a0c] hover:shadow-lg hover:shadow-[#c9a87c]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        onClick={saveService}
+                        disabled={notGoods()}
+                    >
+                        Save service
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

@@ -147,7 +147,7 @@ export function Appointments() {
     }, [appointments]);
 
     return (
-        <div className="space-y-6 h-screen overflow-y-auto p-6 lg:p-8">
+        <div className="space-y-6">
 
             {errorMessage ? <ErrorMessage success={false} message={errorMessage} head="Couldn' t complete appointment" /> : ''}
 

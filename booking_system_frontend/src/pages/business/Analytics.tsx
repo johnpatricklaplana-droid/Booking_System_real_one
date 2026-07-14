@@ -64,7 +64,7 @@ export function Analytics() {
     }, [business?.businessId]);
 
     return (
-        <div className="space-y-6 lg:p-8 p-6 overflow-y-auto h-screen">
+        <div className="space-y-6">
             <div>
                 <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Analytics</h2>
                 <p className="text-[13px] text-[#9a9aa3]">Performance insights and metrics</p>

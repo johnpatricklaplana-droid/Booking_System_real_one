@@ -53,7 +53,7 @@ const settingsSections = [
 
 export function Settings() {
     return (
-        <div className="space-y-6 h-screen overflow-y-auto p-6 lg:p-8">
+        <div className="space-y-6">
             <div>
                 <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Settings</h2>
                 <p className="text-[13px] text-[#9a9aa3]">Manage your account and preferences</p>
@@ -134,10 +134,10 @@ export function Settings() {
             <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 rounded-xl p-6">
                 <h3 className="text-[15px] font-medium text-red-400 mb-2">Danger Zone</h3>
                 <p className="text-[13px] text-[#9a9aa3] mb-4">
-                    Permanently delete your account and all associated data. This action cannot be undone.
+                    Permanently delete your Business and all associated data. This action cannot be undone.
                 </p>
                 <button className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg text-[13px] font-medium text-red-400 transition-all">
-                    Delete Account
+                    Delete Business
                 </button>
             </div>
         </div>

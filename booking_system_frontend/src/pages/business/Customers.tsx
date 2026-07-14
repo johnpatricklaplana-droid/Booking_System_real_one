@@ -30,7 +30,7 @@ export function Customers() {
     }, [business?.businessId]);
 
     return (
-        <div className="space-y-6 h-screen overflow-y-auto p-6 lg:p-8">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Customers</h2>

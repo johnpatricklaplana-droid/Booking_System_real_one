@@ -120,7 +120,7 @@ export default function StaffManagementPage() {
     }, [businessId]);
 
     return (
-        <div className="min-h-screen h-screen p-6 lg:p-8 overflow-y-auto bg-[--bg]">
+        <div className="min-h-screen bg-[--bg]">
             <div className="mx-auto">
                 {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-4">

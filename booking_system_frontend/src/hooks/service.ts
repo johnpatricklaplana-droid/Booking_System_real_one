@@ -131,3 +131,13 @@ export function fillMonths(data: MonthlyStats[]): MonthlyStats[] {
     }
     return filled;
 }
+
+export function isDurationCanFitToTimeSlots(startTime: string, endTime: string, duration: number) {
+
+    const startTimeMin = Number(startTime.split(':')[0]) * 60 + Number(startTime.split(':')[1]);
+    const endTimeMin = Number(endTime.split(':')[0]) * 60 + Number(endTime.split(':')[1]);
+    const startToEndDifference = Math.abs(endTimeMin - startTimeMin);
+
+    return startToEndDifference >= duration;
+
+}

@@ -199,7 +199,7 @@ export default function BusinessProfilePage() {
     }, [activeBusiness?.businessId]);
 
     return (
-        <div className="min-h-screen h-screen p-6 lg:p-8 overflow-y-auto w-full bg-[#0a0a0c] text-[#e8e8ea]">
+        <div className="min-h-screen bg-[#0a0a0c] text-[#e8e8ea]">
             <div className="mx-auto">
 
                 {/* Top bar: switcher + edit action */}
