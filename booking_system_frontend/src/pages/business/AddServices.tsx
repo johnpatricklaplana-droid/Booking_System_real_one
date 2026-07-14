@@ -172,7 +172,7 @@ export default function ServiceForm() {
 
     const notGoods = () => {
         return  service.businessId.trim() === ""
-            ||  service.capacity.trim() === ""
+            ||  Number(service.capacity) <= 0
             ||  service.description.trim() === ""
             ||  service.duration.trim() === ""
             ||  service.price.trim() === ""
@@ -316,7 +316,7 @@ export default function ServiceForm() {
                             <div>
                                 <p className='text-[16px] text-(--text-2)'>Capacity</p>
                                 <input
-                                    className={`w-full mt-2 py-2 px-4 rounded-2xl ${service.capacity ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} outline-0 placeholder:text-(--text-2) text-sm text-(--text-1)`}
+                                    className={`w-full mt-2 py-2 px-4 rounded-2xl ${Number(service.capacity) > 0 ? 'ring ring-(--teal) border border-(--teal)' : 'ring ring-red-600 border border-red-600'} outline-0 placeholder:text-(--text-2) text-sm text-(--text-1)`}
                                     type="text"
                                     placeholder='capacity'
                                     id='capacity'
