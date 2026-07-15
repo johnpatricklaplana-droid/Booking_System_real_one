@@ -1,5 +1,6 @@
 package com.example.demo.repositories;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
         JOIN s.reviews r
         WHERE s.business.id = :businessId
     """)
-    Double getAverageRating(@Param("businessId") UUID businessId);
+    BigDecimal getAverageRating(@Param("businessId") UUID businessId);
 
     @Query("""
         SELECT new com.example.demo.dto.response.ServiceDistributionDto(

@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -41,7 +41,7 @@ public class ServiceReviews {
     private String comment;
 
     @Column(name = "rating")
-    private Integer rating;
+    private BigDecimal rating;
 
     @Column(name = "created_at")
     @CreationTimestamp

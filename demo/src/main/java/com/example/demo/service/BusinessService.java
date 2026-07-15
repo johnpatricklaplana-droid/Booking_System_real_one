@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -139,7 +140,7 @@ public class BusinessService {
         
         BusinessTotalsDto businessTotals = businessRepo.getBussinessAnalytics(businessId);
         List<MonthlyStatsDto> monthlyStats = businessRepo.getMonthlyBreakdown(businessId, year);
-        Double averageRating = businessRepo.getAverageRating(businessId);
+        BigDecimal averageRating = businessRepo.getAverageRating(businessId);
         List<ServiceDistributionDto> serviceDistribution = businessRepo.getServiceDestribution(businessId);
         List<PeakHourDto> peakHour = businessRepo.getPeakHours(businessId);
 

@@ -12,6 +12,7 @@ import com.example.demo.service.ScheduleService;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +65,7 @@ public class ScheduleController {
         @PathVariable UUID scheduleId,
         @AuthenticationPrincipal UUID uid,
         @PathVariable ScheduleStatus status
-    ) {
+    ) throws BadRequestException {
 
         scheduleService.updateBookingStatus(scheduleId, status);
         return ResponseEntity
@@ -72,5 +73,11 @@ public class ScheduleController {
             .body(new AuthResponse(200, "succesful one"));
     }
       
+    public ResponseEntity<AuthResponse> cancelBooking() {
+        
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(null);
+    }
 
 }

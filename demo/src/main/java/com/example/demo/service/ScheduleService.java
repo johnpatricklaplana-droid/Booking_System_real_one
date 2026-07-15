@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.dto.response.UserDtoPublic;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.CancellationRequest;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.ServiceAvailability;
 import com.example.demo.entity.Staff;
@@ -36,6 +38,7 @@ import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repositories.BusinessServiceRepository;
+import com.example.demo.repositories.CancellationRequestRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.StaffRepository;
 import com.example.demo.repositories.StaffUnavailableRepository;
@@ -70,6 +73,9 @@ public class ScheduleService {
 
     @Autowired
     ServiceReviewMapper serviceReviewMapper;
+
+    @Autowired
+    CancellationRequestRepository cancellationRequestRepo;
 
     @Transactional
     public void addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
@@ -178,7 +184,7 @@ public class ScheduleService {
 
     }
 
-    public void updateBookingStatus(UUID scheduleId, ScheduleStatus status) {
+    public void updateBookingStatus(UUID scheduleId, ScheduleStatus status) throws BadRequestException {
         
         Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
 
@@ -196,6 +202,40 @@ public class ScheduleService {
 
         if((status.equals(ScheduleStatus.COMPLETED) || status.equals(ScheduleStatus.MISSED)) && !isItTime(schedule.getStartsAt())) {
             throw new InvalidInputsException("Appointment cannot be marked as completed or missed before its scheduled start time.");
+        }
+
+        if(status.equals(ScheduleStatus.CANCELLED)) {
+            
+            int freeCancelationTime = 24;
+            int lockCancelHours = 2; 
+
+            ZonedDateTime now = ZonedDateTime.now(
+                    ZoneId.of(schedule.getService().getBusiness().getTimezone()));
+
+            if (schedule.getStartsAt().isAfter(now.plusHours(freeCancelationTime))) {
+                schedule.setStatus(status.toString());
+
+                scheduleRepo.save(schedule);
+                return;
+            }
+
+            if(schedule.getStartsAt().isAfter(now.plusHours(lockCancelHours))
+              && schedule.getStartsAt().isBefore(now.plusHours(freeCancelationTime))) {
+                
+                CancellationRequest cancellationRequest = new CancellationRequest();
+                cancellationRequest.setSchedule(schedule);
+                cancellationRequest.setMessage("todo");
+
+                cancellationRequestRepo.save(cancellationRequest);
+
+                return;
+
+            }
+
+            if(schedule.getStartsAt().isBefore(now.plusHours(lockCancelHours))) {
+                throw new BadRequestException("This booking can no longer be cancelled because it is within 2 hours of the scheduled time");
+            }
+
         }
 
         schedule.setStatus(status.toString());

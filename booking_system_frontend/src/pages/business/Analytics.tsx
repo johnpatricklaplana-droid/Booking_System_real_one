@@ -135,7 +135,7 @@ export function Analytics() {
                             </div>
                         </div>
                         <p className="text-[13px] text-[#9a9aa3] mb-1">Avg. Rating</p>
-                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{averageRating ?? '0'}</p>
+                        <p className="text-[28px] font-medium text-[#e8e8ea] tracking-tight">{averageRating?.toLocaleString() ?? '0'}</p>
                     </div>
                 </div>
             </div>

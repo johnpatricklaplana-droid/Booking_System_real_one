@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,6 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedSubgraph;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -87,5 +89,8 @@ public class Schedule {
 
     @OneToOne(mappedBy = "schedule")
     private ServiceReviews reviews;
+
+    @OneToMany(mappedBy = "schedule")
+    private List<CancellationRequest> cancellationRequests;
 
 }
