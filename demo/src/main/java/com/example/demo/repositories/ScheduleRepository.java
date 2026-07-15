@@ -21,6 +21,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     @Query("SELECT s FROM Schedule s WHERE s.service.id IN :serviceIds")
     List<Schedule> getBookings(@Param("serviceIds") List<UUID> serviceIds);
 
+    @EntityGraph("schedule.staff.service")
+    @Query("SELECT s FROM Schedule s JOIN FETCH s.cancellationRequests cr WHERE s.service.id IN :serviceIds AND s.status = 'CANCELL_REQUEST'")
+    List<Schedule> getCancellationRequest(@Param("serviceIds") List<UUID> serviceIds);
+
     @EntityGraph("customer.appointments")
     @Query("SELECT s FROM Schedule s WHERE s.user.id = :uid")
     List<Schedule> getCustomerAppointments(@Param("uid") UUID uid);

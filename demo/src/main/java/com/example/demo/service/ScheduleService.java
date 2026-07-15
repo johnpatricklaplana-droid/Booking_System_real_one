@@ -142,7 +142,7 @@ public class ScheduleService {
     }
 
     public List<BookingsDto> getBookings(UUID businessId) {
-        
+        //TODO: get only IDS
         List<UUID> serviceIds = businessServiceRepo.findByBusiness_Id(businessId).stream().map(service -> service.getId()).toList();
 
         List<Schedule> schedules = scheduleRepo.getBookings(serviceIds);

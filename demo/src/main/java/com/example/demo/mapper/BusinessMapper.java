@@ -14,6 +14,7 @@ import com.example.demo.dto.request.AddServiceRequestDto;
 import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.dto.response.AddressDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.CancellationRequestMiniDto;
 import com.example.demo.dto.response.ScheduleDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
@@ -23,6 +24,7 @@ import com.example.demo.dto.response.StaffUnavailableDto;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.CancellationRequest;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.StaffUnavailable;
@@ -97,6 +99,8 @@ public interface BusinessMapper {
     @Mapping(target = "start", expression = "java(mapStart(unavailable.getTimeRange()))" )
     @Mapping(target = "end", expression = "java(mapEnd(unavailable.getTimeRange()))")
     StaffUnavailableDto toStaffUnavailableDto(StaffUnavailable unavailable);
+
+    CancellationRequestMiniDto toCancellationRequestMiniDto(CancellationRequest cancellationRequest);
 
     default String mapUserToOwnerName(Users user) {
         return user != null ? user.getFirstName() + " " + user.getLastName() : "Unknown";

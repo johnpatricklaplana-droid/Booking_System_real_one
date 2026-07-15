@@ -8,12 +8,16 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.request.ServiceAvailabilityDto;
+import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.BusinessTotalsDto;
+import com.example.demo.dto.response.CancellationRequestDto;
+import com.example.demo.dto.response.CancellationRequestMiniDto;
 import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.FullAnalyticsResponse;
 import com.example.demo.dto.response.MonthlyStatsDto;
 import com.example.demo.dto.response.PeakHourDto;
+import com.example.demo.dto.response.ScheduleDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceDistributionDto;
 import com.example.demo.dto.response.ServiceReviewDto;
@@ -21,6 +25,7 @@ import com.example.demo.dto.response.ServiceWithBusinessDto;
 import com.example.demo.dto.response.ServiceWithRatings;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
+import com.example.demo.dto.response.UserDtoPublic;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.ServiceAvailability;
@@ -29,6 +34,7 @@ import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
 import com.example.demo.repositories.ScheduleRepository;
@@ -47,6 +53,7 @@ public class BusinessService {
     private final ServiceAvailabilityRepository serviceAvailabilityRepo;
     private final ServiceMapper serviceMapper;
     private final EntityManager entityManager;
+    private final UserMapper userMapper;
 
     public BusinessService(
         BusinessRepository businessRepository,
@@ -56,7 +63,8 @@ public class BusinessService {
         ServiceReviewMapper serviceReviewMapper,
         ServiceAvailabilityRepository serviceAvailabilityRepo,
         ServiceMapper serviceMapper,
-        EntityManager entityManager
+        EntityManager entityManager,
+        UserMapper userMapper
     ) 
     {
         this.businessRepo = businessRepository;
@@ -67,6 +75,7 @@ public class BusinessService {
         this.serviceAvailabilityRepo = serviceAvailabilityRepo;
         this.serviceMapper = serviceMapper;
         this.entityManager = entityManager;
+        this.userMapper = userMapper;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {
@@ -160,6 +169,23 @@ public class BusinessService {
         serviceAvailability.setServices(entityManager.getReference(BusinessServices.class, serviceId));
 
         serviceAvailabilityRepo.save(serviceAvailability);
+
+    }
+
+    public List<CancellationRequestDto> getCancellationRequest(UUID businessId) {
+        
+        List<UUID> serviceIds = businessServiceRepo.findByBusiness_Id(businessId).stream().map(s -> s.getId()).toList();
+
+        return scheduleRepo.getCancellationRequest(serviceIds).stream()
+            .map(s -> {
+                ServicesDetailsDto service = businessMapper.toBusinessServices(s.getService());
+                StaffResponseDto staff = businessMapper.toStaffResponseDto(s.getStaff());
+                ScheduleDto schedule = businessMapper.toScheduleDto(s);
+                UserDtoPublic user = userMapper.toUserDtoPublic(s.getUser());
+                CancellationRequestMiniDto cancellationRequest = businessMapper.toCancellationRequestMiniDto(s.getCancellationRequests());
+                return new CancellationRequestDto(service, staff, schedule, user, cancellationRequest);
+            })
+            .toList();
 
     }
 

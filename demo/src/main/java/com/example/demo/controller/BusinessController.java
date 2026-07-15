@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
+import com.example.demo.dto.response.CancellationRequestDto;
 import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.FullAnalyticsResponse;
 import com.example.demo.service.BusinessService;
@@ -54,5 +56,17 @@ public class BusinessController {
             .status(HttpStatus.OK)
             .body(businessService.getBusinessAnalysis(businessId, year));
     }
+
+    @GetMapping("/api/business/{businessId}/schedule")
+    @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")
+    public ResponseEntity<List<CancellationRequestDto>> getCancellationRequest(
+        @PathVariable UUID businessId,
+        @AuthenticationPrincipal UUID id
+        ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(businessService.getCancellationRequest(businessId));
+    }
+    
     
 }

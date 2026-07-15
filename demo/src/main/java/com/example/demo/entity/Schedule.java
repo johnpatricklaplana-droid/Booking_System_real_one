@@ -90,7 +90,7 @@ public class Schedule {
     @OneToOne(mappedBy = "schedule")
     private ServiceReviews reviews;
 
-    @OneToMany(mappedBy = "schedule")
-    private List<CancellationRequest> cancellationRequests;
+    @OneToOne(mappedBy = "schedule")
+    private CancellationRequest cancellationRequests;
 
 }

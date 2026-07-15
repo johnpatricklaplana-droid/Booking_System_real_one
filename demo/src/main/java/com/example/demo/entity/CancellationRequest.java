@@ -12,7 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ public class CancellationRequest {
     private UUID id;
 
     @JoinColumn(name = "schedule_id")
-    @ManyToOne
+    @OneToOne
     private Schedule schedule;
 
     @Column(name = "message")

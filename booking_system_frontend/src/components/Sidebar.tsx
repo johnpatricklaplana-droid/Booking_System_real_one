@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate } from 'react-router';
-import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, TrendingUp, ArrowLeftRight, PanelLeftClose } from 'lucide-react';
+import { Link, useLocation } from 'react-router';
+import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, CircleSlashedIcon, ArrowLeftRight, PanelLeftClose } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
 import { Logo } from './AppLogo';
@@ -12,6 +12,7 @@ const navItems = [
     { icon: BarChart3, label: 'staff', path: 'staff' },
     { icon: Settings, label: 'Settings', path: 'settings' },
     { icon: BriefcaseBusinessIcon, label: 'Business', path: 'profile' },
+    { icon: CircleSlashedIcon, label: 'cancellation request', path: 'cancellation-request' },
 ];
 
 export function Sidebar({

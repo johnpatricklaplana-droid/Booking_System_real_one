@@ -157,3 +157,16 @@ export interface Appointment {
     staff: Staff;
     user: UserPublic;
 }
+
+export interface CancellationRequest {
+    schedule: Schedule;
+    service: ServiceResponse;
+    staff: Staff;
+    user: UserPublic;
+    cancellationRequest: {
+        id: string;
+        message: string;
+        createdAt: string;
+        updatedAt: string;
+    }
+}
