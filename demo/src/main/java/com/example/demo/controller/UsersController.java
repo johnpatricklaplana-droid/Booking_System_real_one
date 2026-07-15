@@ -26,8 +26,10 @@ import com.example.demo.dto.request.UserCredentialsSignUp;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.UserDto;
 import com.example.demo.entity.Users;
+import com.example.demo.enums.ScheduleStatusForCustomerUpdate;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.service.JwtService;
+import com.example.demo.service.ScheduleService;
 import com.example.demo.service.UserService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
@@ -54,6 +56,9 @@ public class UsersController {
 
     @Autowired 
     UserHelper userHelper;
+
+    @Autowired
+    ScheduleService scheduleService;
 
     @PostMapping("/api/auth/signup")
     public ResponseEntity<AuthResponse> signup(@RequestBody UserCredentialsSignUp body) {
@@ -203,5 +208,18 @@ public class UsersController {
             .status(HttpStatus.OK)
             .body(new AuthResponse(200, "successful one"));
     }
+
+    @PatchMapping("/api/user/schedule/{scheduleId}/{status}")
+    public ResponseEntity<?> postMethodName(
+        @PathVariable UUID scheduleId,
+        @PathVariable ScheduleStatusForCustomerUpdate status,
+        @RequestBody String message
+    ) throws BadRequestException {
+        scheduleService.updateCustomerBookingStatus(scheduleId, status, message);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(null);
+    }
+    
 
 }

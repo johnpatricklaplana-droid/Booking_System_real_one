@@ -33,6 +33,7 @@ import com.example.demo.entity.Staff;
 import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
 import com.example.demo.enums.ScheduleStatus;
+import com.example.demo.enums.ScheduleStatusForCustomerUpdate;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
@@ -184,7 +185,7 @@ public class ScheduleService {
 
     }
 
-    public void updateBookingStatus(UUID scheduleId, ScheduleStatus status) throws BadRequestException {
+    public void updateBookingStatus(UUID scheduleId, ScheduleStatus status) {
         
         Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
 
@@ -204,48 +205,52 @@ public class ScheduleService {
             throw new InvalidInputsException("Appointment cannot be marked as completed or missed before its scheduled start time.");
         }
 
-        if(status.equals(ScheduleStatus.CANCELLED)) {
-            
-            int freeCancelationTime = 24;
-            int lockCancelHours = 2; 
-
-            ZonedDateTime now = ZonedDateTime.now(
-                    ZoneId.of(schedule.getService().getBusiness().getTimezone()));
-
-            if (schedule.getStartsAt().isAfter(now.plusHours(freeCancelationTime))) {
-                schedule.setStatus(status.toString());
-
-                scheduleRepo.save(schedule);
-                return;
-            }
-
-            if(schedule.getStartsAt().isAfter(now.plusHours(lockCancelHours))
-              && schedule.getStartsAt().isBefore(now.plusHours(freeCancelationTime))) {
-                
-                CancellationRequest cancellationRequest = new CancellationRequest();
-                cancellationRequest.setSchedule(schedule);
-                cancellationRequest.setMessage("todo");
-
-                cancellationRequestRepo.save(cancellationRequest);
-                
-                schedule.setStatus(ScheduleStatus.CANCELL_REQUEST.toString());
-
-                scheduleRepo.save(schedule);
-
-                return;
-
-            }
-
-            if(schedule.getStartsAt().isBefore(now.plusHours(lockCancelHours))) {
-                throw new BadRequestException("This booking can no longer be cancelled because it is within 2 hours of the scheduled time");
-            }
-
-        }
-
         schedule.setStatus(status.toString());
 
         scheduleRepo.save(schedule);
 
+    }
+
+    public void updateCustomerBookingStatus(UUID scheduleId, ScheduleStatusForCustomerUpdate status, String message) throws BadRequestException {
+
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
+
+        if (schedule == null) {
+            throw new InvalidInputsException("super bad request");
+        }
+
+        int freeCancelationTime = 24;
+        int lockCancelHours = 2;
+
+        ZonedDateTime now = ZonedDateTime.now(
+                ZoneId.of(schedule.getService().getBusiness().getTimezone()));
+
+        if (schedule.getStartsAt().isAfter(now.plusHours(freeCancelationTime)) || schedule.getStatus().equals(ScheduleStatus.PENDING.toString())) {
+            schedule.setStatus(status.toString());
+
+            scheduleRepo.save(schedule);
+            return;
+        }
+
+        if (schedule.getStartsAt().isAfter(now.plusHours(lockCancelHours))
+                && schedule.getStartsAt().isBefore(now.plusHours(freeCancelationTime))) {
+            CancellationRequest cancellationRequest = new CancellationRequest();
+            cancellationRequest.setSchedule(schedule);
+            cancellationRequest.setMessage(message);
+            cancellationRequestRepo.save(cancellationRequest);
+            schedule.setStatus(ScheduleStatus.CANCELL_REQUEST.toString());
+
+            scheduleRepo.save(schedule);
+
+            return;
+
+        }
+
+        if (schedule.getStartsAt().isBefore(now.plusHours(lockCancelHours))) {
+                throw new BadRequestException(
+                    "This booking can no longer be cancelled because it is within 2 hours of the scheduled time");
+        }
+        
     }
 
     private boolean isItTime(ZonedDateTime sched) {
