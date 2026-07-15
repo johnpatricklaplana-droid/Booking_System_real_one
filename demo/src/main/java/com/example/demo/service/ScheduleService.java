@@ -227,6 +227,10 @@ public class ScheduleService {
                 cancellationRequest.setMessage("todo");
 
                 cancellationRequestRepo.save(cancellationRequest);
+                
+                schedule.setStatus(ScheduleStatus.CANCELL_REQUEST.toString());
+
+                scheduleRepo.save(schedule);
 
                 return;
 

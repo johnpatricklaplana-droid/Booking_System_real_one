@@ -18,6 +18,7 @@ import { ServiceDetails } from "../pages/ServiceDetails";
 import MyBookingsPage from "../pages/MyBookings";
 import { BusinessGuard } from "./Guards/BusinessGuard";
 import { ManageService } from "../pages/business/ServiceDetailsBusiness";
+import CancellationRequestsPage from "../pages/business/CancellationRequest";
 
 export const router = createBrowserRouter([
     { path: 'landing', Component: Landing },
@@ -49,7 +50,8 @@ export const router = createBrowserRouter([
             { path: 'settings', Component: Settings },
             { path: 'profile', Component: BusinessProfilePage },
             { path: 'staff', Component: StaffManagementPage },
-            { path: 'manage-service/:serviceId', Component: ManageService }
+            { path: 'manage-service/:serviceId', Component: ManageService },
+            { path: 'cancellation-request', Component: CancellationRequestsPage },
         ]
     },
 ]);
