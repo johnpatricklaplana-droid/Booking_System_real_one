@@ -11,24 +11,20 @@ import {
     X,
     Sparkles,
     AlertTriangle,
+    Check,
 } from "lucide-react";
 import { useUser } from "../../provider/UserContext";
-import { get } from "../../api/api";
+import { get, update } from "../../api/api";
 import type { CancellationRequest } from "../../interfaces/Types";
 import { differenceInMinutes, isBefore } from "date-fns";
 import { formatDuration } from "../../helper/convertSome";
-
-
-
-type DecisionStatus = "approved" | "rejected";
+import { SpinnerLoading } from "../../components/SpinnerLoading";
 
 interface RejectDialogProps {
     request: CancellationRequest;
     onClose: () => void;
     onConfirm: (reason: string) => void;
 }
-
-type DialogKind = "approve" | "reject" | null;
 
 type UrgencyTone = "urgent" | "soon" | "normal";
 
@@ -39,12 +35,33 @@ const URGENCY_CLASSES: Record<UrgencyTone, string> = {
 };
 
 
-function ApproveDialog({ request, onClose, onConfirm }: Readonly<{
+function ApproveDialog({ request, onClose, setCansellationRequests }: Readonly<{
     request: CancellationRequest,
     onClose: any,
-    onConfirm: any
+    setCansellationRequests: React.Dispatch<React.SetStateAction<CancellationRequest[]>>
 }>) {
-    const [note, setNote] = useState<string>("");
+
+    const [approving, setApproving] = useState<boolean>(false);
+    const [approved, setApproved] = useState<boolean>(false);
+
+    const approveCancellationRequest = async () => {
+        setApproving(true);
+        
+        const url = `http://localhost:8080/api/business/cancellation-request/${request.cancellationRequest.id}`;
+
+        try {
+            const result = await update(url, null);
+
+            if(result.status === 200) {
+                setApproving(false);
+                setApproved(true);
+                setCansellationRequests(prev => prev.filter(cr => cr.cancellationRequest.id !== request.cancellationRequest.id));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
+    };
 
     return (
         <div
@@ -111,11 +128,12 @@ function ApproveDialog({ request, onClose, onConfirm }: Readonly<{
                         Go back
                     </button>
                     <button  
-                        onClick={() => onConfirm(note)}
+                        onClick={approveCancellationRequest}
+                        disabled={approving || approved}
                         className="btn-primary py-2 px-4 flex cursor-pointer items-center gap-2 rounded-sm transition"
                     >
-                        <CheckCircle2 size={16} />
-                        Confirm approval
+                        {approved ? <> <span>approved</span> <Check /> </> : <> <CheckCircle2 size={16} /> Confirm approval </>}
+                        {approving && <SpinnerLoading color="black" /> }
                     </button>
                 </div>
             </div>
@@ -198,45 +216,29 @@ function urgency(minutes: number, isPast: boolean): { label: string; tone: Urgen
     if (isPast) return { label: `${formatDuration(minutes)} left`, tone: "urgent" };
     if (minutes <= 720) return { label: `${formatDuration(minutes)} left`, tone: "urgent" };
     if (minutes <= 2880)
-        return { label: `${formatDuration(minutes) || 1}d left`, tone: "soon" };
+        return { label: `${formatDuration(minutes) || 1} left`, tone: "soon" };
     return { label: `${formatDuration(minutes)}d left`, tone: "normal" };
 }
 
-function RequestCard({ request }: Readonly<{ request: CancellationRequest }>) {
+function RequestCard({ 
+    request, 
+    setCansellationRequests 
+}: Readonly<{ 
+    request: CancellationRequest, 
+    setCansellationRequests: React.Dispatch<React.SetStateAction<CancellationRequest[]>> 
+}>) {
 
     const [openApproveDialog, setOpenApproveDialog] = useState<boolean>(false);
     const [openRejectDialog, setOpenRejectDialog] = useState<boolean>(false);
     
-    console.log(differenceInMinutes(request.schedule.startsAt, new Date()));
     const isPast = isBefore(request.schedule.startsAt, new Date());
 
-    const u = urgency(30, isPast);
-
-    // if (status) {
-    //     return (
-    //         <div className="flex items-center gap-3.5 rounded-2xl border border-(--border) bg-(--surface) px-7 py-5 opacity-70">
-    //             <div
-    //                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${status === "approved" ? "bg-(--teal)/20 text-(--teal)" : "bg-red-500/20 text-red-300"
-    //                     }`}
-    //             >
-    //                 {status === "approved" ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
-    //             </div>
-    //             <div>
-    //                 <p className="text-[14.5px] font-bold text-(--text-1)">
-    //                     {status === "approved" ? "Cancellation approved" : "Request rejected"}
-    //                 </p>
-    //                 <p className="text-[13px] text-(--text-3)">
-    //                     {request.user.firstName} {request.user.lastName} · {request.schedule.id}
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    const u = urgency(differenceInMinutes(request.schedule.startsAt, new Date()), isPast);
 
     return (
         <article className="rounded-[20px] border border-(--border) bg-(--surface) p-7 shadow-lg shadow-black/20">
 
-            {openApproveDialog && <ApproveDialog request={request} onConfirm={() => console.log("TODO")} onClose={() => setOpenApproveDialog(false)} />}
+            {openApproveDialog && <ApproveDialog setCansellationRequests={setCansellationRequests} request={request} onClose={() => setOpenApproveDialog(false)} />}
             {openRejectDialog && <RejectDialog request={request} onConfirm={() => console.log("TODO")} onClose={() => setOpenRejectDialog(false)} />}
 
             <header className="mb-5 flex items-start justify-between gap-4">
@@ -367,7 +369,7 @@ export default function CancellationRequestsPage(): React.JSX.Element {
 
             <div className="mx-auto flex flex-col gap-5">
                 {cancellationRequest.map((cr) => (
-                    <RequestCard key={cr.schedule.id} request={cr} />
+                    <RequestCard setCansellationRequests={setCancellationRequest} key={cr.schedule.id} request={cr} />
                 ))}
             </div>
         </div>
