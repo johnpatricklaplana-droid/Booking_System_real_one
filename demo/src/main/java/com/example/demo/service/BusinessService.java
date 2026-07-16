@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -26,21 +27,29 @@ import com.example.demo.dto.response.ServiceWithRatings;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.dto.response.UserDtoPublic;
+import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.CancellationRequest;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.ServiceAvailability;
 import com.example.demo.entity.ServiceReviews;
+import com.example.demo.enums.CancellationRequestStatus;
+import com.example.demo.enums.ScheduleStatus;
+import com.example.demo.enums.ScheduleStatusForCustomerUpdate;
 import com.example.demo.exceptions.InvalidInputsException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
+import com.example.demo.repositories.CancellationRequestRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.ServiceAvailabilityRepository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @Service
 public class BusinessService {
@@ -54,6 +63,7 @@ public class BusinessService {
     private final ServiceMapper serviceMapper;
     private final EntityManager entityManager;
     private final UserMapper userMapper;
+    private final CancellationRequestRepository cancellationRequestRepo;
 
     public BusinessService(
         BusinessRepository businessRepository,
@@ -64,7 +74,8 @@ public class BusinessService {
         ServiceAvailabilityRepository serviceAvailabilityRepo,
         ServiceMapper serviceMapper,
         EntityManager entityManager,
-        UserMapper userMapper
+        UserMapper userMapper,
+        CancellationRequestRepository cancellationRequestRepo
     ) 
     {
         this.businessRepo = businessRepository;
@@ -76,6 +87,7 @@ public class BusinessService {
         this.serviceMapper = serviceMapper;
         this.entityManager = entityManager;
         this.userMapper = userMapper;
+        this.cancellationRequestRepo = cancellationRequestRepo;
     }
 
     public List<BusinessDetailsDto> getBusinesses(UUID uid) {
@@ -188,5 +200,21 @@ public class BusinessService {
             .toList();
 
     }
+
+    @Transactional
+    public void approveCancellationRequest(UUID cancellationRequestId) {
+        
+        CancellationRequest cr = cancellationRequestRepo.findById(cancellationRequestId).orElse(null);
+        cr.setStatus(CancellationRequestStatus.APPROVED.toString());
+
+        Schedule schedule = scheduleRepo.findById(cr.getSchedule().getId()).orElse(null);
+        schedule.setStatus(ScheduleStatusForCustomerUpdate.CANCELLED.toString());
+
+        scheduleRepo.save(schedule);
+        cancellationRequestRepo.save(cr);
+        
+    }
+
+    
 
 }

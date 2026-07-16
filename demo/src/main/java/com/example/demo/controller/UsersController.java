@@ -215,7 +215,7 @@ public class UsersController {
         @PathVariable ScheduleStatusForCustomerUpdate status,
         @RequestBody String message
     ) throws BadRequestException {
-        scheduleService.updateCustomerBookingStatus(scheduleId, status, message);
+        scheduleService.sendCancellationRequest(scheduleId, status, message);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new AuthResponse(200, "succesful one"));

@@ -9,16 +9,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.CancellationRequestDto;
 import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.FullAnalyticsResponse;
 import com.example.demo.service.BusinessService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -66,6 +71,18 @@ public class BusinessController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(businessService.getCancellationRequest(businessId));
+    }
+    
+    @PatchMapping("/api/business/cancellation-request/{cancellationRequestId}")
+    @PreAuthorize("@businessOwnershipChecker.isThisCancellationRequestSentToYou(#cancellationRequestId, #userId)")
+    public ResponseEntity<AuthResponse> postMethodName(
+        @PathVariable UUID cancellationRequestId,
+        @AuthenticationPrincipal UUID userId
+    ) {
+        businessService.approveCancellationRequest(cancellationRequestId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new AuthResponse(200, "super approved"));
     }
     
     

@@ -205,13 +205,17 @@ public class ScheduleService {
             throw new InvalidInputsException("Appointment cannot be marked as completed or missed before its scheduled start time.");
         }
 
+        if((status.equals(ScheduleStatus.COMPLETED) || status.equals(ScheduleStatus.MISSED)) && schedule.getStatus().equals(ScheduleStatus.CANCELL_REQUEST.toString())) {
+            throw new InvalidInputsException("super bad request don't do that");
+        }
+
         schedule.setStatus(status.toString());
 
         scheduleRepo.save(schedule);
 
     }
 
-    public void updateCustomerBookingStatus(UUID scheduleId, ScheduleStatusForCustomerUpdate status, String message) throws BadRequestException {
+    public void sendCancellationRequest(UUID scheduleId, ScheduleStatusForCustomerUpdate status, String message) throws BadRequestException {
 
         Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
 

@@ -22,7 +22,15 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     List<Schedule> getBookings(@Param("serviceIds") List<UUID> serviceIds);
 
     @EntityGraph("schedule.staff.service")
-    @Query("SELECT s FROM Schedule s JOIN FETCH s.cancellationRequests cr WHERE s.service.id IN :serviceIds AND s.status = 'CANCELL_REQUEST'")
+    @Query("""
+        SELECT s 
+        FROM Schedule s 
+        JOIN FETCH s.cancellationRequests cr 
+        WHERE s.service.id IN :serviceIds 
+        AND 
+        s.status = 'CANCELL_REQUEST'
+        AND cr.status = 'PENDING'
+    """)
     List<Schedule> getCancellationRequest(@Param("serviceIds") List<UUID> serviceIds);
 
     @EntityGraph("customer.appointments")

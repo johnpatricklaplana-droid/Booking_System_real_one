@@ -6,11 +6,15 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
+import com.example.demo.entity.CancellationRequest;
 import com.example.demo.entity.Schedule;
 import com.example.demo.exceptions.InvalidInputsException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repositories.BusinessRepository;
 import com.example.demo.repositories.BusinessServiceRepository;
+import com.example.demo.repositories.CancellationRequestRepository;
 import com.example.demo.repositories.ScheduleRepository;
 import com.example.demo.repositories.StaffRepository;
 
@@ -28,6 +32,9 @@ public class BusinessOwnershipCheck {
 
     @Autowired
     StaffRepository staffRepo;
+
+    @Autowired 
+    CancellationRequestRepository cancellationRequestRepo;
 
     public boolean hasAccess(UUID businessId, UUID userId) {
 
@@ -67,6 +74,32 @@ public class BusinessOwnershipCheck {
         return hasAccess(businessId, userId)
             && validateServicesBelongToBusiness(businessId, List.of(serviceId));
 
+    }
+
+    public boolean isThisCancellationRequestSentToYou(UUID cancellationRequestId, UUID userId) {
+
+        CancellationRequest cr = cancellationRequestRepo.findById(cancellationRequestId).orElse(null);
+
+        if(cr == null) {
+            throw new ResourceNotFoundException("cancellation request not found");
+        }
+
+        Schedule schedule = scheduleRepo.findById(cr.getSchedule().getId()).orElse(null);
+
+        if(schedule == null) {
+            throw new ResourceNotFoundException("schedule not found");
+        }
+
+        BusinessServices services = businessServiceRepo.findById(schedule.getService().getId()).orElse(null);
+
+        if(services == null) throw new ResourceNotFoundException("service not found");
+
+        Business business = businessRepo.findById(services.getBusiness().getId()).orElse(null);
+
+        if(business == null) throw new ResourceNotFoundException("business not found");
+
+        return businessRepo.existsByUser_IdAndId(userId, business.getId());
+        
     }
 
 }
