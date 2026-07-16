@@ -10,22 +10,51 @@ import { useUser } from '../provider/UserContext';
 import type { Appointment } from '../interfaces/Types';
 import { hasAppointmentPassed } from '../hooks/service';
 import { formatDuration } from '../helper/convertSome';
+import { useState } from 'react';
+import { update } from '../api/api';
 
 
 export default function AppointmentCard({ 
-    apt, setSchedule, updating, error
+    apt,
+    setAppointments
 }: { 
-    apt: Appointment, 
-    setSchedule: (status: 'CONFIRMED' | 'MISSED' | 'COMPLETED' | 'CANCELLED', oldStatus: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | 'PENDING', schedId: string) => void, 
-    updating: 'COMPLETED' | 'MISSED' | 'CONFIRMED' | 'CANCELLED' | null,
-    error: string | null
+    apt: Appointment;
+    setAppointments: React.Dispatch<React.SetStateAction<Appointment[] | null>>;
 }) {
     const business = useUser().activeBusiness;
+
+    const [updating, setUpdating] = useState<'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const passed = hasAppointmentPassed(new Date(apt.schedule.startsAt), business?.timezone!);
     const date = new Date(apt.schedule.startsAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const time = new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const customer = `${apt.user.firstName} ${apt.user.lastName}`;
+
+    const setSchedule = async (next: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED', oldStatus: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | 'PENDING', schedId: string) => {
+        setUpdating(next);
+        setError(null);
+        try {
+             await update(`http://localhost:8080/api/schedule/${schedId}/${next}`, null);
+             
+            setAppointments(prev => prev!.map(ap => {
+                if (ap.schedule.id !== schedId) return ap;
+                return {
+                    ...ap,
+                    schedule: {
+                        ...ap.schedule,
+                        status: next
+                    }
+                };
+            }));
+
+        } catch (err: any) {
+            setError(err.message ?? 'Something went wrong');
+            setTimeout(() => setError(null), 4000);
+        } finally {
+            setUpdating(null);
+        }
+    };
 
     if (apt.schedule.status === 'PENDING') {
         return (

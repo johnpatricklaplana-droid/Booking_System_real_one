@@ -4,31 +4,13 @@ import { useUser } from '../../provider/UserContext';
 import { get, update } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { durationAsMinutes } from '../../hooks/service';
-import { ErrorMessage } from '../../components/BottomErrorMessage';
 import AppointmentCard from '../../components/AppointmentCard';
-
-const statusIcons = {
-    CONFIRMED: CheckCircle,
-    PENDING: AlertCircle,
-    "0": CheckCircle,
-    MISSED: XCircle,
-    COMPLETED: CheckCircle,
-};
-
-const statusColors = {
-    CONFIRMED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    PENDING: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    "0": 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    MISSED: 'bg-red-500/10 text-red-400 border-red-500/20',
-};
 
 export function Appointments() {
 
     const business = useUser().activeBusiness;
 
     const [appointments, setAppointments] = useState<Appointment[] | null>(null);
-    const [updating, setUpdating] = useState<'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | null>(null);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if(!business) return;
@@ -49,40 +31,6 @@ export function Appointments() {
         getIt();
 
     }, [business?.businessId]);
-
-    const setSchedule = async (next: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED', oldStatus: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | 'PENDING', schedId: string) => {
-        setUpdating(next);
-        setError(null);
-        setAppointments(prev => prev!.map(ap => {
-            if(ap.schedule.id !== schedId) return ap;
-            return {
-                ...ap,
-                schedule: {
-                    ...ap.schedule,
-                    status: next
-                }
-            };
-        }));
-        try {
-             await update(`http://localhost:8080/api/schedule/${schedId}/${next}`, null);
-            
-        } catch (err: any) {
-            setError(err.message ?? 'Something went wrong');
-            setAppointments(prev => prev!.map(ap => {
-                if (ap.schedule.id !== schedId) return ap;
-                return {
-                    ...ap,
-                    schedule: {
-                        ...ap.schedule,
-                        status: oldStatus
-                    }
-                };
-            }));
-            setTimeout(() => setError(null), 4000);
-        } finally {
-            setUpdating(null);
-        }
-    };
 
     const pendingAppointments = useMemo(() => {
 
@@ -127,8 +75,6 @@ export function Appointments() {
     return (
         <div className="space-y-6">
 
-            {/* {errorMessage ? <ErrorMessage success={false} message={errorMessage} head="Couldn' t complete appointment" /> : ''} */}
-
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-[20px] font-medium text-[#e8e8ea] mb-1">Appointments</h2>
@@ -167,7 +113,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Pending appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {pendingAppointments?.map((apt) => {
-                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
+                        return <AppointmentCard setAppointments={setAppointments} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -176,7 +122,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Upcoming appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {upcomingAppointment?.map((apt) => {
-                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
+                        return <AppointmentCard setAppointments={setAppointments} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -185,7 +131,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Completed appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {completedAppointments?.map((apt) => {
-                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
+                        return <AppointmentCard setAppointments={setAppointments} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -194,7 +140,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Missed appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {missedAppointments?.map((apt) => {
-                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
+                        return <AppointmentCard setAppointments={setAppointments} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
@@ -203,7 +149,7 @@ export function Appointments() {
                 <h1 className='text-[22px] text-(--text-2) mb-4 tracking-wide font-medium'>Cancelled appointments</h1>
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
                     {cancelledAppointments?.map((apt) => {
-                        return <AppointmentCard error={error} setSchedule={setSchedule} updating={updating} key={apt.schedule.id} apt={apt} />
+                        return <AppointmentCard setAppointments={setAppointments} key={apt.schedule.id} apt={apt} />
                     })}
                 </div>
             </div>
