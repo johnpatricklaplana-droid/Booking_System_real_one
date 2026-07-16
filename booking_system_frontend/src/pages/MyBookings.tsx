@@ -21,13 +21,14 @@ import {
     MessageSquareWarning,
     X,
 } from "lucide-react";
-import { get } from "../api/api";
+import { get, post, update } from "../api/api";
 import type { Appointment, CancellationRequest, CustomerAppointments, ServiceResponse } from "../interfaces/Types";
 import { durationAsMinutes, isToday } from "../hooks/service";
 import { formatDuration } from "../helper/convertSome";
 import ReviewModal from "../components/ReviewModal";
 import StarRating from "../components/Star";
 import { useNavigate } from "react-router-dom";
+import { SpinnerLoading } from "../components/SpinnerLoading";
 
 type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "MISSED";
 
@@ -286,9 +287,10 @@ function BookingCardShell({
 /*  CONFIRMED — reschedule / cancel, owns its own cancel-modal state   */
 /* ------------------------------------------------------------------ */
 
-function ConfirmedBookingCard({ booking }: 
+function ConfirmedBookingCard({ booking, setAppointments }: 
     Readonly<{
         booking: CustomerAppointments;
+        setAppointments: any;
     }>) 
 {
 
@@ -310,7 +312,7 @@ function ConfirmedBookingCard({ booking }:
                     </div>
                 }
             />
-            {showCancel && <CancelBookingModal onClose={() => setShowCancel(false)} appointment={booking} />}
+            {showCancel && <CancelBookingModal setAppointments={setAppointments} onClose={() => setShowCancel(false)} appointment={booking} />}
         </>
     );
 }
@@ -530,7 +532,11 @@ export default function MyBookingsPage() {
                             <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
                             <div className="mt-5 space-y-4">
                                 {upcomingBooking.map((ub) => (
-                                    <ConfirmedBookingCard key={ub.schedule.id} booking={ub} />
+                                    <ConfirmedBookingCard 
+                                        setAppointments={setAppointments}
+                                        key={ub.schedule.id} 
+                                        booking={ub} 
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -581,7 +587,15 @@ export default function MyBookingsPage() {
     );
 }
 
-function CancelBookingModal({ appointment, onClose }: Readonly<{ appointment: CustomerAppointments, onClose: any }>) {
+function CancelBookingModal({ 
+    appointment, 
+    onClose,
+    setAppointments
+}: Readonly<{ 
+    appointment: CustomerAppointments;
+    onClose: any; 
+    setAppointments: React.Dispatch<React.SetStateAction<CustomerAppointments[] | null>>;
+}>) {
     const startsAt = new Date(appointment.schedule.startsAt);
     const status: string = "CONFIRMED"; 
     const now = new Date();
@@ -596,6 +610,32 @@ function CancelBookingModal({ appointment, onClose }: Readonly<{ appointment: Cu
     const isRequestable = !isFree && milisecondsUntil > lockCancelHours;
     const isLocked = !isFree && !isRequestable;
 
+    const [sending, setSending] = useState<boolean>(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const [cancellationRequestResult, setCancellationRequestResult] = useState<{ success: boolean, message: string } | null>(null);
+
+    const sendCancellationRequest = async () => {
+        setSending(true);
+
+        const url = `http://localhost:8080/api/user/schedule/${appointment.schedule.id}/CANCELLED`;
+
+        try {
+            const result = await update(url, message);
+
+            if(result.status === 200) {
+                setSending(false);
+                setCancellationRequestResult({ success: true, message: 'successful one' });
+                setAppointments(prev => prev?.filter(app => app.schedule.id !== appointment.schedule.id) ?? []);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
+        setTimeout(() => {
+            onClose();
+        }, 3000);
+
+    };
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
@@ -658,17 +698,16 @@ function CancelBookingModal({ appointment, onClose }: Readonly<{ appointment: Cu
                             <Clock className="h-4 w-4 shrink-0" />
                             No cancellation fee applies for this booking.
                         </div>
-                        <div className="flex justify-end gap-2.5">
-                            <button 
-                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/2 px-4 py-2.5 text-sm font-medium text-neutral-200 transition-all duration-200 hover:border-(--gold)/50 hover:bg-(--gold)/6 hover:text-(--gold) active:scale-[0.98]"
-                                onClick={onClose}
+                        <div className="flex flex-col items-end gap-2.5">
+                            <button
+                                className="inline-flex w-fit items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition-all duration-200 hover:border-red-500/50 hover:bg-red-500/15 active:scale-[0.98]"
+                                onClick={sendCancellationRequest}
+                                disabled={sending}
                             >
-                                Keep booking
-                            </button>
-                            <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition-all duration-200 hover:border-red-500/50 hover:bg-red-500/15 active:scale-[0.98]">
                                 <Ban className="h-4 w-4" />
-                                Confirm cancellation
+                                {sending ? <SpinnerLoading color="white" size={22} /> : 'Confirm cancellation'}
                             </button>
+                            {cancellationRequestResult !== null && cancellationRequestResult.success && <p className="text-(--teal) text-sm text-center">request sent</p>}
                         </div>
                     </>
                 )}
@@ -684,6 +723,7 @@ function CancelBookingModal({ appointment, onClose }: Readonly<{ appointment: Cu
                         <textarea
                             id="cancel-request-message"
                             rows={3}
+                            onChange={(e) => setMessage(e.target.value)}
                             placeholder="Let the business know why you need to cancel…"
                             className="mb-4 w-full resize-y rounded-xl border border-white/10 bg-black/20 px-3.5 py-3 text-sm text-neutral-200 placeholder:text-neutral-500 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-(--gold)/30"
                         />
@@ -696,14 +736,12 @@ function CancelBookingModal({ appointment, onClose }: Readonly<{ appointment: Cu
                         </div>
                         <div className="flex justify-end gap-2.5">
                             <button 
-                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/2 px-4 py-2.5 text-sm font-medium text-neutral-200 transition-all duration-200 hover:border-(--gold)/50 hover:bg-(--gold)/6 hover:text-(--gold) active:scale-[0.98]"
-                                onClick={onClose}
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--gold) px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:shadow-[0_0_24px_-4px_var(--gold)] hover:brightness-110 active:scale-[0.98]"
+                                onClick={sendCancellationRequest}
+                                disabled={sending}
                             >
-                                Never mind
-                            </button>
-                            <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--gold) px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:shadow-[0_0_24px_-4px_var(--gold)] hover:brightness-110 active:scale-[0.98]">
                                 <CalendarClock className="h-4 w-4" />
-                                Send cancellation request
+                                {sending ? <SpinnerLoading color="black" size={22} /> : 'Send cancellation request'}
                             </button>
                         </div>
                     </>

@@ -210,7 +210,7 @@ public class UsersController {
     }
 
     @PatchMapping("/api/user/schedule/{scheduleId}/{status}")
-    public ResponseEntity<?> postMethodName(
+    public ResponseEntity<AuthResponse> postMethodName(
         @PathVariable UUID scheduleId,
         @PathVariable ScheduleStatusForCustomerUpdate status,
         @RequestBody String message
@@ -218,7 +218,7 @@ public class UsersController {
         scheduleService.updateCustomerBookingStatus(scheduleId, status, message);
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(null);
+            .body(new AuthResponse(200, "succesful one"));
     }
     
 
