@@ -1,16 +1,13 @@
-import { Check, ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
 import type { ServiceResponse } from "../interfaces/Types";
-import { getServices } from "../hooks/service";
-import { useUser } from "../provider/UserContext";
 
 export function ServiceMultiSelect({
     service,
     checked = true
-}: {
+}: Readonly<{
     service: ServiceResponse,
     checked: boolean
-}) {
+}>) {
 
     return <div
             key={service.id}

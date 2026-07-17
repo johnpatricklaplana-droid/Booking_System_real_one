@@ -8,9 +8,9 @@ import { PostFormData } from "../api/api";
 
 export function StaffModal({
     onClose,
-}: {
+}: Readonly<{
     onClose: () => void;
-}) {
+}>) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [selected, setSelected] = useState<string[]>([]);

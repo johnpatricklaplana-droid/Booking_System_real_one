@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
     Plus,
     Search,
-    Check,
     Users,
 } from "lucide-react";
 import type { Staff, StaffWithServices } from "../../interfaces/Types";
@@ -13,24 +12,13 @@ import { StaffModal } from "../../components/StaffModal";
 
 type FilterValue = "all" | "active" | "inactive";
 
-function Toast({ message }: { message: string }) {
-    return (
-        <div className="fixed bottom-6 right-6 z-[100] flex items-center gap-2 rounded-xl border border-[--teal]/30 bg-[--surface] px-4 py-3 shadow-lg shadow-black/30 animate-in fade-in slide-in-from-bottom-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[--teal]/20 text-[--teal]">
-                <Check className="h-3.5 w-3.5" />
-            </span>
-            <p className="text-sm text-white">{message}</p>
-        </div>
-    );
-}
-
 function FilterTabs({
     value,
     onChange,
-}: {
+}: Readonly<{
     value: FilterValue;
     onChange: (v: FilterValue) => void;
-}) {
+}>) {
     const options: { value: FilterValue; label: string }[] = [
         { value: "all", label: "All" },
         { value: "active", label: "Active" },
@@ -55,7 +43,7 @@ function FilterTabs({
     );
 }
 
-function EmptyState({ onAdd }: { onAdd: () => void }) {
+function EmptyState({ onAdd }: Readonly<{ onAdd: () => void }>) {
     return (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-20 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[--gold]/10">

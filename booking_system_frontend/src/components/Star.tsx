@@ -4,11 +4,11 @@ function StarRating({
     rating,
     max = 5,
     size = "h-4 w-4",
-}: {
+}: Readonly<{
     rating: number;
     max?: number;
     size?: string;
-}) {
+}>) {
     return (
         <div className="flex items-center gap-0.5">
             {Array.from({ length: max }, (_, i) => {

@@ -4,9 +4,9 @@ import type { Staff } from "../interfaces/Types";
 
 export function StaffCard({ 
     staff 
-}: { 
+}: Readonly<{ 
     staff: Staff 
-}) {
+}>) {
     const rating = 4.9;
     const ratingCount = 214;
     const staffId = "DH-2091";
@@ -21,7 +21,7 @@ export function StaffCard({
     const business = useUser().activeBusiness;
 
     return (
-        <div className="relative rounded-[22px] border border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[#081f30] px-6 pb-7 pt-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.65),0_0_40px_-10px_rgba(232,200,120,0.12)] overflow-hidden">
+        <div className="relative rounded-[22px] border border-(--border) bg-gradient-to-b from-[var(--surface)] to-[#081f30] px-6 pb-7 pt-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.65),0_0_40px_-10px_rgba(232,200,120,0.12)] overflow-hidden">
             <div className="pointer-events-none absolute -top-[60%] -left-[20%] h-[220%] w-[60%] rotate-[18deg] bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent" />
 
             <div className="absolute left-2.5 top-2.5 h-6.5 w-[26px] rounded-tl-[10px] border-t-2 border-l-2 border-[var(--gold-dim)]/70" />

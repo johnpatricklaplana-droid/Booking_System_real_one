@@ -60,7 +60,7 @@ export function Login() {
 
             const userinfo = await login("http://localhost:8080/api/auth/login", await result.user.getIdToken());
 
-            user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null, activeRole: userinfo.message.lastActiveRole });
+            user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null, activeRole: userinfo.message.lastActiveRole, lastBusinessIdImViewing: userinfo.message.lastBusinessImViewing });
 
             if(userinfo.status === 200) {
                 user.setLoading(false);

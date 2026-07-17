@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Star, X } from "lucide-react";
-import type { Appointment, CustomerAppointments, ServiceResponse } from "../interfaces/Types";
+import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types";
 import { post } from "../api/api";
 import { ErrorMessage } from "./BottomErrorMessage";
 
@@ -10,12 +10,12 @@ export default function ReviewModal({
     schedId,
     setBooking
 }: 
-    { 
+    Readonly<{ 
         onClose: any, 
         service: ServiceResponse | null,
         schedId: string,
         setBooking: any,
-}) {
+}>) {
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState("");
@@ -118,7 +118,7 @@ export default function ReviewModal({
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Share details of your experience (optional)"
                     rows={4}
-                    className="mt-5 w-full resize-none rounded-xl border border-white/10 bg-white/[0.02] p-3.5 text-sm text-neutral-200 placeholder:text-neutral-500 transition-colors duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-(--gold)/30"
+                    className="mt-5 w-full resize-none rounded-xl border border-white/10 bg-white/2 p-3.5 text-sm text-neutral-200 placeholder:text-neutral-500 transition-colors duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-(--gold)/30"
                 />
 
                 {/* Actions */}

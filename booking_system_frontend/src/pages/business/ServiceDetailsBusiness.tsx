@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import type { ServiceAvailability, ServiceResponse, ServiceStatus, Staff } from "../../interfaces/Types";
+import type { ServiceAvailability, ServiceResponse, Staff } from "../../interfaces/Types";
 import { useEffect, useState } from "react";
 import { get, post } from "../../api/api";
 import { durationAsMinutes } from "../../hooks/service";
@@ -151,7 +151,7 @@ export function ManageService() {
 
     const handleAvailabilityInputChange = (event: any): void  => {
         
-        let value = event.target.value;
+        const value = event.target.value;
         const id = event.target.id;
 
         setAddServiceAvailability(prev => ({ ...prev, [id]: value }));

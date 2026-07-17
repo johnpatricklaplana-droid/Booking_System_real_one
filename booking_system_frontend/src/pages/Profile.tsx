@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckIcon, CircleUser, User, ArrowBigLeftDash } from "lucide-react";
+import { CheckIcon, CircleUser, ArrowBigLeftDash } from "lucide-react";
 import { useUser } from "../provider/UserContext";
 import { PostFormData, update } from "../api/api";
-
-type BookingTab = "upcoming" | "past";
 
 const mockUser = {
     name: "Juan dela Cruz",
@@ -15,42 +13,9 @@ const mockUser = {
     phone: "+63 912 345 6789",
 };
 
-const mockUpcoming = [
-    { id: 1, service: "Haircut & Styling", business: "Noir Barber Co.", date: "Jun 15, 2026", time: "2:00 PM", price: "₱450", status: "confirmed", category: "Barbershop", img: "https://picsum.photos/seed/barber/80/80" },
-    { id: 2, service: "Deep Tissue Massage", business: "Tranquil Massage", date: "Jun 20, 2026", time: "4:30 PM", price: "₱800", status: "pending", category: "Wellness", img: "https://picsum.photos/seed/massage/80/80" },
-    { id: 3, service: "Personal Training", business: "Forge Performance Gym", date: "Jun 25, 2026", time: "7:00 AM", price: "₱600", status: "confirmed", category: "Fitness", img: "https://picsum.photos/seed/gym/80/80" },
-];
-
-const mockPast = [
-    { id: 4, service: "Facial Treatment", business: "Pure Skin Manila", date: "May 28, 2026", price: "₱1,200", rating: 5, img: "https://picsum.photos/seed/facial/80/80" },
-    { id: 5, service: "Full Body Massage", business: "Serenity Wellness Spa", date: "May 10, 2026", price: "₱900", rating: 4, img: "https://picsum.photos/seed/spa/80/80" },
-    { id: 6, service: "Haircut", business: "Noir Barber Co.", date: "Apr 22, 2026", price: "₱350", rating: 5, img: "https://picsum.photos/seed/cut/80/80" },
-    { id: 7, service: "Yoga Session", business: "Zen Studio MNL", date: "Apr 10, 2026", price: "₱500", rating: 5, img: "https://picsum.photos/seed/yoga/80/80" },
-];
-
-const STATUS_STYLES: Record<string, React.CSSProperties> = {
-    confirmed: { background: "rgba(94,196,176,0.10)", color: "#5ec4b0" },
-    pending: { background: "rgba(201,169,110,0.10)", color: "#c9a96e" },
-    completed: { background: "rgba(255,255,255,0.06)", color: "#9b9898" },
-    active: { background: "rgba(94,196,176,0.10)", color: "#5ec4b0" },
-    paused: { background: "rgba(255,255,255,0.06)", color: "#9b9898" },
-};
-
-function StatusPill({ status }: { status: string }) {
-    return (
-        <span style={{
-            ...STATUS_STYLES[status],
-            fontSize: ".68rem", fontWeight: 700, padding: "2px 8px",
-            borderRadius: 20, display: "inline-block",
-        }}>
-            {status}
-        </span>
-    );
-}
-
 function SectionHeader({
     title, action, onAction,
-}: { title: string; action?: string; onAction?: () => void }) {
+}: Readonly<{ title: string; action?: string; onAction?: () => void }>) {
     return (
         <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",

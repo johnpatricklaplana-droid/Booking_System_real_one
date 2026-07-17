@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import type { ServiceWithBusiness } from "../interfaces/Types";
 import { getAllServices, getAverageRating } from "../hooks/service";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../provider/UserContext";
 import { TimezoneLabel } from "../helper/convertSome";
 import StarRating from "../components/Star";
 
 export function ExploreServices() {
 
     const [services, setServices] = useState<ServiceWithBusiness[]>([]);
-
-    const activeBusiness = useUser().activeBusiness;
 
     const navigate = useNavigate();
     

@@ -10,8 +10,5 @@ export function toServices(someService: any): ServiceResponse {
         duration: someService.description,
         price: someService.price,
         capacity: someService.capacity,
-        address: someService.address,
-        businessName: someService.businessName,
-        timezone: someService.timezone
     } 
 }

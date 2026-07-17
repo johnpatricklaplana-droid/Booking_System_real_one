@@ -21,8 +21,8 @@ import {
     MessageSquareWarning,
     X,
 } from "lucide-react";
-import { get, post, update } from "../api/api";
-import type { Appointment, CancellationRequest, CustomerAppointments, ServiceResponse } from "../interfaces/Types";
+import { get, update } from "../api/api";
+import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types";
 import { durationAsMinutes, isToday } from "../hooks/service";
 import { formatDuration } from "../helper/convertSome";
 import ReviewModal from "../components/ReviewModal";

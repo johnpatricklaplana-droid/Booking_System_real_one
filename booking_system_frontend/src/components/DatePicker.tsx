@@ -15,15 +15,15 @@ export const DAY_OF_WEEK_MAP: Record<string, number> = {
 export function BookingDatePicker({ 
     selectDate,
     availableDay
-}: { 
+}: Readonly<{ 
     selectDate: (date: Date) => void,
     availableDay: string[]
-}) {
+}>) {
     const [selected, setSelected] = useState<Date>();
 
-    const availableDaysOfWeek: number[] = availableDay.map(
+    const availableDaysOfWeek: Set<number> = new Set(availableDay.map(
         (a) => DAY_OF_WEEK_MAP[a]
-    );
+    ));
 
     return (
         <DayPicker
@@ -37,7 +37,7 @@ export function BookingDatePicker({
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                return !availableDaysOfWeek.includes((date.getDay())) || date < today
+                return !availableDaysOfWeek.has((date.getDay())) || date < today
             }}
             className="bg-(--surface) text-(--text-2) border border-(--border) rounded-2xl p-4"
         />

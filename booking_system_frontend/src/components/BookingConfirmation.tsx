@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Anchor, Calendar, Clock, Users, X, Check, Waves } from "lucide-react";
+import { Calendar, Clock, Users, X, Check, Waves } from "lucide-react";
 import type { ServiceResponse, Staff, Time } from "../interfaces/Types";
 
 // Hardcoded booking data — swap this block for real props later
@@ -21,14 +20,14 @@ export default function DaddysHomeBookingTicket({
     time,
     onClick,
     onClose,
-}: {
+}: Readonly<{
     service: ServiceResponse,
     staff: Staff,
     date: Date,
     time: Time,
     onClick: any,
     onClose: any,
-} ) {
+}> ) {
 
     return (
         <div className="dht-overlay" role="dialog" aria-modal="true">

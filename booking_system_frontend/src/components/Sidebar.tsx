@@ -17,9 +17,9 @@ const navItems = [
 
 export function Sidebar({
     close
-}: {
+}: Readonly<{
     close: any
-}) {
+}>) {
 
     const { setUser, user } = useUser();
 

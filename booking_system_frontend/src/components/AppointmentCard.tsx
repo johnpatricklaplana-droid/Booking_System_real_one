@@ -17,10 +17,10 @@ import { update } from '../api/api';
 export default function AppointmentCard({ 
     apt,
     setAppointments
-}: { 
+}: Readonly<{ 
     apt: Appointment;
     setAppointments: React.Dispatch<React.SetStateAction<Appointment[] | null>>;
-}) {
+}>) {
     const business = useUser().activeBusiness;
 
     const [updating, setUpdating] = useState<'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | null>(null);
@@ -31,7 +31,7 @@ export default function AppointmentCard({
     const time = new Date(apt.schedule.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const customer = `${apt.user.firstName} ${apt.user.lastName}`;
 
-    const setSchedule = async (next: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED', oldStatus: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED' | 'PENDING', schedId: string) => {
+    const setSchedule = async (next: 'CONFIRMED' | 'MISSED' | 'CANCELLED' | 'COMPLETED', schedId: string) => {
         setUpdating(next);
         setError(null);
         try {
@@ -58,7 +58,7 @@ export default function AppointmentCard({
 
     if (apt.schedule.status === 'PENDING') {
         return (
-            <div className="relative flex flex-col gap-4 rounded-lg bg-gradient-to-b from-[#1a1712] to-[#151518] border border-(--gold)/30 p-4 shadow-[0_0_0_1px_rgba(201,168,124,0.06)]">
+            <div className="relative flex flex-col gap-4 rounded-lg bg-linear-to-b from-[#1a1712] to-[#151518] border border-(--gold)/30 p-4 shadow-[0_0_0_1px_rgba(201,168,124,0.06)]">
                 <div className="absolute -top-2 left-4 flex items-center gap-1.5 rounded-full bg-(--gold) px-2.5 py-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#0a0a0c] animate-pulse" />
                     <span className="text-[10px] font-bold tracking-wide uppercase text-[#0a0a0c]">Awaiting response</span>
@@ -82,7 +82,7 @@ export default function AppointmentCard({
 
                 <div className="flex gap-2">
                     <button
-                        onClick={() => setSchedule('CONFIRMED', apt.schedule.status, apt.schedule.id)}
+                        onClick={() => setSchedule('CONFIRMED', apt.schedule.status)}
                         disabled={updating !== null}
                         className="flex-1 flex items-center justify-center gap-1.5 rounded-md bg-(--gold) py-2 text-[13px] font-bold text-[#0a0a0c] hover:brightness-110 transition-all disabled:opacity-50"
                     >
@@ -93,7 +93,7 @@ export default function AppointmentCard({
                         )}
                     </button>
                     <button
-                        onClick={() => setSchedule('CANCELLED', apt.schedule.status, apt.schedule.id)}
+                        onClick={() => setSchedule('CANCELLED', apt.schedule.status)}
                         disabled={updating !== null}
                         className="flex-1 rounded-md border border-(--border) py-2 text-[13px] font-medium text-(--text-2) hover:border-(--text-3) transition-all disabled:opacity-50"
                     >
@@ -110,7 +110,7 @@ export default function AppointmentCard({
     if (apt.schedule.status === 'CONFIRMED') {
         return (
             <div className="relative flex flex-col rounded-lg bg-[#151518] border border-(--teal)/25 overflow-hidden">
-                <div className="flex items-center justify-between bg-gradient-to-r from-(--teal)/15 to-transparent px-4 py-2.5 border-b border-dashed border-(--border)">
+                <div className="flex items-center justify-between bg-linear-to-r from-(--teal)/15 to-transparent px-4 py-2.5 border-b border-dashed border-(--border)">
                     <span className="flex items-center gap-1.5 text-(--teal) text-[11px] font-bold uppercase tracking-wide">
                         <Sparkles size={12} /> Confirmed
                     </span>
@@ -126,8 +126,8 @@ export default function AppointmentCard({
                 </div>
 
                 <div className="relative flex px-4 py-4 my-3">
-                    <div className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#0a0a0c]" />
-                    <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#0a0a0c]" />
+                    <div className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#0a0a0c]" />
+                    <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#0a0a0c]" />
                     <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 border-t border-dashed border-(--border)" />
                     <div className="flex-1 text-center">
                         <p className="text-(--text-3) text-[10px] uppercase font-medium">Date</p>
@@ -149,14 +149,14 @@ export default function AppointmentCard({
                     {passed ? (
                         <div className="flex gap-2">
                             <button
-                                onClick={() => setSchedule('MISSED', apt.schedule.status, apt.schedule.id)}
+                                onClick={() => setSchedule('MISSED', apt.schedule.status)}
                                 disabled={updating !== null}
                                 className="flex-1 rounded-md border border-red-500/30 bg-red-500/10 py-2 text-[13px] font-medium text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-50"
                             >
                                 {updating === 'MISSED' ? <span className="w-4 h-4 mx-auto rounded-full border-2 border-red-400/30 border-t-red-400 animate-spin block" /> : 'No-show'}
                             </button>
                             <button
-                                onClick={() => setSchedule('COMPLETED', apt.schedule.status, apt.schedule.id)}
+                                onClick={() => setSchedule('COMPLETED', apt.schedule.status)}
                                 disabled={updating !== null}
                                 className="flex-1 rounded-md bg-(--teal) py-2 text-[13px] font-bold text-[#0a0a0c] hover:brightness-110 transition-all disabled:opacity-50"
                             >

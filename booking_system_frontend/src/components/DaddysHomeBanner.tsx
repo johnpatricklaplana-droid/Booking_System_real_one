@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 interface DaddysHomeBannerProps {
     /** Rendered centered on top of the scene — e.g. the business logo. */
@@ -22,7 +22,7 @@ interface Sparkle {
  * stays visible off to one side so it doesn't fight with whatever's
  * centered on top (business logo, avatar, etc).
  */
-export default function DaddysHomeBanner({ children, heightClassName = "h-85" }: DaddysHomeBannerProps) {
+export default function DaddysHomeBanner({ children, heightClassName = "h-85" }: Readonly<DaddysHomeBannerProps>) {
     useEffect(() => {
         const existing = document.getElementById("daddys-home-loader-fonts");
         if (existing) return;

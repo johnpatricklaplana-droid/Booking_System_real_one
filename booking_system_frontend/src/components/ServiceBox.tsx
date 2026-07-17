@@ -10,7 +10,7 @@ import { TimezoneLabel } from "../helper/convertSome";
 // TODO: fetch and pass in the necessary business data (name, address, timezone)
 // as props instead of relying on activeBusiness, so this component can be
 // reused for customer view too.
-export function ServiceBox({ servicesWithRatings }: { servicesWithRatings:  ServiceWithRatings }) {
+export function ServiceBox({ servicesWithRatings }: Readonly<{ servicesWithRatings:  ServiceWithRatings }>) {
 
     const business = useUser().activeBusiness;
 
