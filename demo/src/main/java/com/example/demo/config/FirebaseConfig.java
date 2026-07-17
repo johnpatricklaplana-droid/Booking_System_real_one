@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -19,6 +20,7 @@ public class FirebaseConfig {
     private String credentialsPath;
 
     @Bean
+    @Lazy(false)
     public FirebaseApp firebaseApp() throws IOException {
         FileInputStream serviceAccount = new FileInputStream(credentialsPath);
         FirebaseOptions options = FirebaseOptions.builder()
