@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     CalendarCheck, Users, BarChart3, ShieldCheck, Clock3,
     Sparkles, ArrowRight, Menu, X as XIcon, CheckCircle2,

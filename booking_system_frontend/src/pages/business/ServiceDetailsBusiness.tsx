@@ -1,17 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
-import type { ServiceAvailability, ServiceResponse, ServiceStatus, ServiceWithRatings, Staff } from "../../interfaces/Types";
-import { useEffect, useState, type ChangeEvent } from "react";
+import type { ServiceAvailability, ServiceResponse, ServiceStatus, Staff } from "../../interfaces/Types";
+import { useEffect, useState } from "react";
 import { get, post } from "../../api/api";
 import { durationAsMinutes } from "../../hooks/service";
 import { useUser } from "../../provider/UserContext";
 import { formatDuration } from "../../helper/convertSome";
 import { Edit, Plus, X } from "lucide-react";
-
-const statusStyles: Record<ServiceStatus, string> = {
-    ACTIVE: "bg-(--teal-dim) text-(--teal)",
-    DRAFT: "bg-(--surface-2) text-(--text-3)",
-    PAUSED: "bg-(--gold-dim) text-(--gold)",
-};
 
 function MetricCard({
     icon,
@@ -119,6 +113,8 @@ export function ManageService() {
         }
 
     };
+
+    console.log(addServiceAvailability);
 
     const addServiceAvailabilityFunction = async () => {
     

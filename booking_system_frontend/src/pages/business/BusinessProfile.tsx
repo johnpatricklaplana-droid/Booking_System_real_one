@@ -1,40 +1,19 @@
-import { useState, useRef, useEffect, act } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
     Building2, Mail, Book, MapPin, Clock, Calendar, User,
     ChevronDown, Check, Plus, Camera, Pencil, ExternalLink,
     CircleDot, Tag, Sparkles,
 } from 'lucide-react';
 import { useUser } from '../../provider/UserContext';
-import type { Business, ServiceStatus, ServiceWithRatings } from '../../interfaces/Types';
+import type { Business, ServiceWithRatings } from '../../interfaces/Types';
 import { getServices } from '../../hooks/service';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
 import { update } from '../../api/api';
 
-// ----------------------------------------------------------------------------
-// Types
-// ----------------------------------------------------------------------------
-
-type BusinessStatus = 'ACTIVE' | 'SUSPENDED' | 'INACTIVE';
-
-
-const STATUS_CONFIG: Record<BusinessStatus, { label: string; dot: string; text: string; bg: string; border: string }> = {
-    ACTIVE: { label: 'Active', dot: 'bg-[#1d9e75]', text: 'text-[#5dcaa5]', bg: 'bg-[#0f6e56]/10', border: 'border-[#0f6e56]/30' },
-    SUSPENDED: { label: 'Suspended', dot: 'bg-[#e24b4a]', text: 'text-[#f09595]', bg: 'bg-[#e24b4a]/10', border: 'border-[#e24b4a]/30' },
-    INACTIVE: { label: 'Inactive', dot: 'bg-[#6b6b72]', text: 'text-[#9a9aa3]', bg: 'bg-[#1a1a1d]', border: 'border-[rgba(255,255,255,0.08)]' },
-};
-
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
-
-function formatPrice(price: number) {
-    return price.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-}
-
-// ----------------------------------------------------------------------------
-// Business switcher
-// ----------------------------------------------------------------------------
 
 function BusinessSwitcher({
     business,

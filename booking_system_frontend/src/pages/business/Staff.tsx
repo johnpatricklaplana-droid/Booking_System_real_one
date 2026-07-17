@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Plus,
     Search,
@@ -85,7 +85,6 @@ export default function StaffManagementPage() {
     const [modalState, setModalState] = useState<
         { mode: "add" } | { mode: "edit"; staff: StaffWithServices } | null
     >(null);
-    const [toast, setToast] = useState<string | null>(null);
 
     const businessId = useUser().activeBusiness?.businessId;
 
@@ -183,8 +182,6 @@ export default function StaffManagementPage() {
                     onClose={() => setModalState(null)}
                 />
             )}
-
-            {toast && <Toast message={toast} />}
         </div>
     );
 }
