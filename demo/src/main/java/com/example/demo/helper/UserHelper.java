@@ -21,7 +21,7 @@ public class UserHelper {
                 .secure(true)
                 .path("/")
                 .maxAge(Duration.ofDays(7))
-                .sameSite("Strict")
+                .sameSite("none")
                 .build();
     } 
 
