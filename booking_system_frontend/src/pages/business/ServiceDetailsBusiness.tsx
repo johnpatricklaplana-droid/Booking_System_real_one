@@ -5,7 +5,7 @@ import { get, post } from "../../api/api";
 import { durationAsMinutes } from "../../hooks/service";
 import { useUser } from "../../provider/UserContext";
 import { formatDuration } from "../../helper/convertSome";
-import { Edit, Plus, X } from "lucide-react";
+import { Edit, Plus } from "lucide-react";
 
 function MetricCard({
     icon,
@@ -114,7 +114,7 @@ export function ManageService() {
 
     };
 
-    console.log(addServiceAvailability);
+    console.log(addingServiceAvailability);
 
     const addServiceAvailabilityFunction = async () => {
     

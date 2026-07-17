@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BookingDatePicker } from "../components/DatePicker";
-import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, ServiceWithBusiness, ServiceWithRatings, Staff, Time } from "../interfaces/Types";
+import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, ServiceWithBusiness, Staff, Time } from "../interfaces/Types";
 import { useNavigate, useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, formatDuration, TimezoneLabel } from "../helper/convertSome";

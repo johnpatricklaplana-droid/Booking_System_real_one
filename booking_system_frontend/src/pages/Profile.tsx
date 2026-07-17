@@ -181,10 +181,6 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
     const user = useUser()?.user;
     const setUser = useUser()?.setUser;
 
-    const dot = (color: string) => (
-        <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, opacity: .7, display: "inline-block" }} />
-    );
-
     interface UpdateProfileSuccess {
         open: boolean;
         closeIn: number

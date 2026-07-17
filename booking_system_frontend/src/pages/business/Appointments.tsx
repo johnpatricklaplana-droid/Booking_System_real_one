@@ -1,7 +1,7 @@
-import { Search, Filter, Download, Plus, CheckCircle, XCircle, AlertCircle, Diamond, CalendarX2 } from 'lucide-react';
+import { Search, Filter, CalendarX2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '../../provider/UserContext';
-import { get, update } from '../../api/api';
+import { get } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { durationAsMinutes } from '../../hooks/service';
 import AppointmentCard from '../../components/AppointmentCard';

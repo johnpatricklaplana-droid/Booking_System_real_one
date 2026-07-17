@@ -368,24 +368,24 @@ function CompletedBookingCard({
 /*  CANCELLED — just book again                                        */
 /* ------------------------------------------------------------------ */
 
-function CancelledBookingCard({ booking }: Readonly<{ booking: CustomerAppointments }>) {
-    const navigate = useNavigate();
+// function CancelledBookingCard({ booking }: Readonly<{ booking: CustomerAppointments }>) {
+//     const navigate = useNavigate();
 
-    return (
-        <BookingCardShell
-            booking={booking}
-            actions={
-                <OutlinedButton
-                    className="w-full px-3! text-xs"
-                    onClick={() => navigate(`/customer/service/${booking.service.id}`)}
-                >
-                    <RotateCcw className="h-3.5 w-3.5" />
-                    Book Again
-                </OutlinedButton>
-            }
-        />
-    );
-}
+//     return (
+//         <BookingCardShell
+//             booking={booking}
+//             actions={
+//                 <OutlinedButton
+//                     className="w-full px-3! text-xs"
+//                     onClick={() => navigate(`/customer/service/${booking.service.id}`)}
+//                 >
+//                     <RotateCcw className="h-3.5 w-3.5" />
+//                     Book Again
+//                 </OutlinedButton>
+//             }
+//         />
+//     );
+// }
 
 /* ------------------------------------------------------------------ */
 /*  MISSED — no special action, just the shell                         */
