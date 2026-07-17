@@ -1,15 +1,12 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.request.ServiceAvailabilityDto;
-import com.example.demo.dto.response.BookingsDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.BusinessTotalsDto;
 import com.example.demo.dto.response.CancellationRequestDto;
@@ -23,21 +20,16 @@ import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceDistributionDto;
 import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
-import com.example.demo.dto.response.ServiceWithRatings;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.dto.response.UserDtoPublic;
-import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.CancellationRequest;
 import com.example.demo.entity.Schedule;
 import com.example.demo.entity.ServiceAvailability;
-import com.example.demo.entity.ServiceReviews;
 import com.example.demo.enums.CancellationRequestStatus;
-import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.enums.ScheduleStatusForCustomerUpdate;
 import com.example.demo.exceptions.InvalidInputsException;
-import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
