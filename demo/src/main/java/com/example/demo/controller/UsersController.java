@@ -114,7 +114,7 @@ public class UsersController {
 
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString().concat("; Partitioned"))
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .body(new AuthResponse(200, response));
         } catch (Exception e) {
             e.printStackTrace();
