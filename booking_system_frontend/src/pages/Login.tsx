@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebase_config';
 import { login } from '../api/api';
 import { useUser } from '../provider/UserContext';
+import { API_URL } from '../api/config';
 
 interface AuthData {
     email: string;
@@ -58,7 +59,7 @@ export function Login() {
             console.log(await result.user.getIdToken());
             setStatus("idle");
 
-            const userinfo = await login("https://daddys-home-backend.onrender.com/api/auth/login", await result.user.getIdToken());
+            const userinfo = await login(`${API_URL}/api/auth/login`, await result.user.getIdToken());
 
             user?.setUser({ firstName: userinfo.message.firstName, lastName: userinfo.message.lastName, email: userinfo.message.email, roles: userinfo.message.roles, profilePic: userinfo.message.avatarUrl, addres: null, phone: null, activeRole: userinfo.message.lastActiveRole, lastBusinessIdImViewing: userinfo.message.lastBusinessImViewing });
 

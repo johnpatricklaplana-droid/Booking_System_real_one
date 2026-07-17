@@ -4,6 +4,7 @@ import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
 import type { Customer } from '../../interfaces/Types';
 import { formatDistanceToNow } from 'date-fns';
+import { API_URL } from '../../api/config';
 
 export function Customers() {
 
@@ -16,7 +17,7 @@ export function Customers() {
         if(!business?.businessId) return;
 
         const getIt = async () => {
-            const url = `https://daddys-home-backend.onrender.com/api/business/customer/${business.businessId}`;
+            const url = `${API_URL}/api/business/customer/${business.businessId}`;
 
             const result: Customer[] = await get(url);
 

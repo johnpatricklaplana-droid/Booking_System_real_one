@@ -3,11 +3,12 @@ import { get } from "../api/api";
 import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings, Time } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
+import { API_URL } from "../api/config";
 
 dayjs.extend(duration);
 
 export async function getServices(businessId: string): Promise<ServiceWithRatings[]> {
-    const url = `https://daddys-home-backend.onrender.com/api/business/services/${businessId}`;
+    const url = `${API_URL}/api/business/services/${businessId}`;
     
     const servicesWithRatings: ServiceWithRatings[] = await get(url);
     
@@ -32,7 +33,7 @@ export async function getServices(businessId: string): Promise<ServiceWithRating
 }
 
 export async function getAllServices(): Promise<ServiceWithBusiness[]> {
-    const url = `https://daddys-home-backend.onrender.com/api/services`;
+    const url = `${API_URL}/api/services`;
     
     const services: ServiceWithBusiness[] = await get(url);
     

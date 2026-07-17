@@ -29,6 +29,7 @@ import ReviewModal from "../components/ReviewModal";
 import StarRating from "../components/Star";
 import { useNavigate } from "react-router-dom";
 import { SpinnerLoading } from "../components/SpinnerLoading";
+import { API_URL } from "../api/config";
 
 type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "MISSED";
 
@@ -423,7 +424,7 @@ export default function MyBookingsPage() {
 
     useEffect(() => {
         const getIt = async () => {
-            const url = "https://daddys-home-backend.onrender.com/api/schedule";
+            const url = `${API_URL}/api/schedule`;
             const result: CustomerAppointments[] = await get(url);
             setAppointments(result);
         };
@@ -617,7 +618,7 @@ function CancelBookingModal({
     const sendCancellationRequest = async () => {
         setSending(true);
 
-        const url = `https://daddys-home-backend.onrender.com/api/user/schedule/${appointment.schedule.id}/CANCELLED`;
+        const url = `${API_URL}/api/user/schedule/${appointment.schedule.id}/CANCELLED`;
 
         try {
             const result = await update(url, message);

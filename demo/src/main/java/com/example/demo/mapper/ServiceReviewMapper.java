@@ -1,8 +1,5 @@
 package com.example.demo.mapper;
 
-import java.util.UUID;
-
-import org.hibernate.annotations.CreationTimestamp;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

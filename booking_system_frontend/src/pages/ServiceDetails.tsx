@@ -8,6 +8,7 @@ import { durationAsMinutes, getAverageRating, isTimeAlreadyPassed } from "../hoo
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
 import DaddysHomeBookingTicket from "../components/BookingConfirmation";
 import StarRating from "../components/Star";
+import { API_URL } from "../api/config";
 
 function BookingResultModal ({ 
     serviceDetails, 
@@ -94,7 +95,7 @@ export function ServiceDetails() {
         if(!serviceId) return;
 
         const getIt = async () => {
-            const url = `https://daddys-home-backend.onrender.com/api/services/${serviceId}`;
+            const url = `${API_URL}/api/services/${serviceId}`;
 
             const result: any = await get(url);
             console.log(result);
@@ -112,7 +113,7 @@ export function ServiceDetails() {
         
         if(!serviceId) return;
 
-        const url = `https://daddys-home-backend.onrender.com/api/review/services/${serviceId}`;
+        const url = `${API_URL}/api/review/services/${serviceId}`;
 
         const getIt = async () => {
             const result: ReviewWithUser[] = await get(url);
@@ -129,7 +130,7 @@ export function ServiceDetails() {
 
         if(!business) return;
 
-        const url = `https://daddys-home-backend.onrender.com/api/business/services/${business.businessId}`;
+        const url = `${API_URL}/api/business/services/${business.businessId}`;
 
         const getIt = async () => {
             const result: ServiceWithBusiness[] = await get(url);
@@ -164,7 +165,7 @@ export function ServiceDetails() {
             serviceId: serviceId
         }
 
-        const url = "https://daddys-home-backend.onrender.com/api/schedule";
+        const url = `${API_URL}/api/schedule`;
 
         try {
             const result = await post(url, body);
@@ -302,7 +303,7 @@ export function ServiceDetails() {
                                         setSelectedStaff(s);
                                     }}
                                 >
-                                    <img className="w-9 h-9 rounded-[50%]" src={`https://daddys-home-backend.onrender.com/api/staff/${s.avatarUrl}`} alt="" />
+                                    <img className="w-9 h-9 rounded-[50%]" src={`${API_URL}/api/staff/${s.avatarUrl}`} alt="" />
                                     <div>
                                         <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
                                         <p className="text-(--text-2) text-xs">{s.title}</p>

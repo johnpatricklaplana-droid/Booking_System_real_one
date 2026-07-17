@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { CountryFlag } from "ts-react-emoji-flag";
 import { get, PostFormData } from "../api/api";
+import { API_URL } from "../api/config";
 
 /* ---------------------------------- Types --------------------------------- */
 
@@ -276,7 +277,7 @@ function LocationStep({ data, errors, onChange }: { data: SearchResult; errors: 
             setSearchLoading(true);
             setResults([]);
 
-            const result = await get(`https://daddys-home-backend.onrender.com/api/public/search-test/${value}`);
+            const result = await get(`${API_URL}/api/public/search-test/${value}`);
 
             if(result.length > 0) {
                 setResults(result.map((r: any): SearchResult => ({
@@ -499,7 +500,7 @@ export function BusinessOnboardingWizard() {
         body.append("business_info", new Blob([JSON.stringify({ ...businessInfo, ...contactInfo, address })], { type: "application/json" }));
         body.append("business_logo", logo.file);
 
-        const result = await PostFormData("https://daddys-home-backend.onrender.com/api/user/business", body);
+        const result = await PostFormData(`${API_URL}/api/user/business`, body);
 
         if (result.status === 201) {
             setSubmitting(false);

@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebase_config';
 import { post } from '../api/api';
 import { useNavigate, Link } from 'react-router';
+import { API_URL } from '../api/config';
 
 const benefits = [
     { icon: CalendarCheck, text: 'Easy booking and scheduling' },
@@ -136,7 +137,7 @@ export function Signup() {
                 id_token: idToken,
             };
 
-            const result = await post('https://daddys-home-backend.onrender.com/api/auth/signup', payload);
+            const result = await post(`${API_URL}/api/auth/signup`, payload);
 
             if (result.status === 201) {
                 setStatus('success');

@@ -12,6 +12,7 @@ import { hasAppointmentPassed } from '../hooks/service';
 import { formatDuration } from '../helper/convertSome';
 import { useState } from 'react';
 import { update } from '../api/api';
+import { API_URL } from '../api/config';
 
 
 export default function AppointmentCard({ 
@@ -35,7 +36,7 @@ export default function AppointmentCard({
         setUpdating(next);
         setError(null);
         try {
-             await update(`https://daddys-home-backend.onrender.com/api/schedule/${schedId}/${next}`, null);
+             await update(`${API_URL}/api/schedule/${schedId}/${next}`, null);
              
             setAppointments(prev => prev!.map(ap => {
                 if (ap.schedule.id !== schedId) return ap;

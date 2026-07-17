@@ -10,6 +10,7 @@ import { useUser } from '../../provider/UserContext';
 import DaddysHomeLoader from '../../components/MainLoadingScreen';
 import DaddysHomeStatus from '../../components/Error';
 import { isDurationCanFitToTimeSlots } from '../../hooks/service';
+import { API_URL } from '../../api/config';
 
 interface Services {
     businessId: string;
@@ -116,7 +117,7 @@ export default function ServiceForm() {
 
         setIsSaving(true);
 
-        const url = "https://daddys-home-backend.onrender.com/api/user/business/services";
+        const url = `${API_URL}/api/user/business/services`;
 
         const duration = toISODuration(Number(service.duration), unit);
 

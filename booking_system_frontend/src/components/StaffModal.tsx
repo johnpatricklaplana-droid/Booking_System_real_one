@@ -5,6 +5,7 @@ import { useUser } from "../provider/UserContext";
 import type { ServiceWithRatings } from "../interfaces/Types";
 import { getServices } from "../hooks/service";
 import { PostFormData } from "../api/api";
+import { API_URL } from "../api/config";
 
 export function StaffModal({
     onClose,
@@ -57,7 +58,7 @@ export function StaffModal({
             title: inputs.title
         };
 
-        const url = "https://daddys-home-backend.onrender.com/api/staff";
+        const url = `${API_URL}/api/staff`;
         const requestBody = new FormData();
         requestBody.append('body', new Blob([JSON.stringify(body)], { type: 'application/json' }));
         requestBody.append('image', image);

@@ -19,6 +19,7 @@ import type { CancellationRequest } from "../../interfaces/Types";
 import { differenceInMinutes, isBefore } from "date-fns";
 import { formatDuration } from "../../helper/convertSome";
 import { SpinnerLoading } from "../../components/SpinnerLoading";
+import { API_URL } from "../../api/config";
 
 interface RejectDialogProps {
     request: CancellationRequest;
@@ -47,7 +48,7 @@ function ApproveDialog({ request, onClose, setCansellationRequests }: Readonly<{
     const approveCancellationRequest = async () => {
         setApproving(true);
         
-        const url = `https://daddys-home-backend.onrender.com/api/business/cancellation-request/${request.cancellationRequest.id}`;
+        const url = `${API_URL}/api/business/cancellation-request/${request.cancellationRequest.id}`;
 
         try {
             const result = await update(url, null);
@@ -339,7 +340,7 @@ export default function CancellationRequestsPage(): React.JSX.Element {
         if(!business?.businessId) return;
 
         const getIt = async () => {
-            const result: CancellationRequest[] = await get(`https://daddys-home-backend.onrender.com/api/business/${business.businessId}/schedule`);
+            const result: CancellationRequest[] = await get(`${API_URL}/api/business/${business.businessId}/schedule`);
             setCancellationRequest(result);
         }
 

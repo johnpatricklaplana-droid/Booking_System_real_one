@@ -3,6 +3,7 @@ import { Star, X } from "lucide-react";
 import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types";
 import { post } from "../api/api";
 import { ErrorMessage } from "./BottomErrorMessage";
+import { API_URL } from "../api/config";
 
 export default function ReviewModal({ 
     onClose, 
@@ -23,7 +24,7 @@ export default function ReviewModal({
 
     const addReview = async () => {
 
-        const url = "https://daddys-home-backend.onrender.com/api/review";
+        const url = `/${API_URL}api/review`;
 
         const body = {
             rating: rating,

@@ -6,6 +6,7 @@ import { durationAsMinutes } from "../../hooks/service";
 import { useUser } from "../../provider/UserContext";
 import { formatDuration } from "../../helper/convertSome";
 import { Edit, Plus } from "lucide-react";
+import { API_URL } from "../../api/config";
 
 function MetricCard({
     icon,
@@ -54,7 +55,8 @@ export function ManageService() {
 
         if(!serviceId) return;
 
-        const url = `https://daddys-home-backend.onrender.com/api/services/${serviceId}`;
+        const url = `${API_URL}
+/api/services/${serviceId}`;
 
         const getIt = async () => {
 
@@ -76,7 +78,8 @@ export function ManageService() {
         if(!businessId) return;
 
         const getIt = async () => {
-            const url = `https://daddys-home-backend.onrender.com/api/staff/business/${businessId}/staff-only`;
+            const url = `${API_URL}
+/api/staff/business/${businessId}/staff-only`;
 
             const result = await get(url);
           console.log(result);
@@ -92,7 +95,8 @@ export function ManageService() {
         setAddingStaff(true);
         setStaffs(prev => [...prev, staff]);
 
-        const url = `https://daddys-home-backend.onrender.com/api/staff/business/${businessId}`;
+        const url = `${API_URL}
+/api/staff/business/${businessId}`;
 
         const body = {
             serviceId: serviceId,
@@ -124,7 +128,7 @@ export function ManageService() {
 
         setAddingServiceAvailability(true);
 
-        const url = `https://daddys-home-backend.onrender.com/api/services/${serviceId}/${businessId}`;
+        const url = `${API_URL}/api/services/${serviceId}/${businessId}`;
         const body: ServiceAvailability = addServiceAvailability;
 
         console.log(body);

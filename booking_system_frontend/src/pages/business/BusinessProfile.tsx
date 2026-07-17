@@ -10,6 +10,7 @@ import { getServices } from '../../hooks/service';
 import { useNavigate } from 'react-router-dom';
 import { ServiceBox } from '../../components/ServiceBox';
 import { update } from '../../api/api';
+import { API_URL } from '../../api/config';
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -39,7 +40,7 @@ function BusinessSwitcher({
 
     const switchBusiness = async (buss: Business) => {
 
-        const url = `https://daddys-home-backend.onrender.com/api/user/business/${buss.businessId}`;
+        const url = `${API_URL}/api/user/business/${buss.businessId}`;
 
         const result = await update(url, null);
 

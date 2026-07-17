@@ -3,6 +3,7 @@ import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Brie
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
 import { Logo } from './AppLogo';
+import { API_URL } from '../api/config';
 
 const navItems = [
     { icon: Grid3x3, label: 'Analytics', path: '/business' },
@@ -26,7 +27,7 @@ export function Sidebar({
     const location = useLocation();
 
     const swithToCustomer = async () => {
-        const url = "https://daddys-home-backend.onrender.com/api/user/customer";
+        const url = `${API_URL}/api/user/customer`;
         const body = null;
         
         const result = await update(url, body);

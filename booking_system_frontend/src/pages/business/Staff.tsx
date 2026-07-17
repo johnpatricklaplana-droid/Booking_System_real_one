@@ -81,7 +81,8 @@ export default function StaffManagementPage() {
         if(!businessId) return;
 
         const getStaff = async () => {
-            const url = `https://daddys-home-backend.onrender.com/api/staff/business/${businessId}`;
+            const url = `${API_URL}
+/api/staff/business/${businessId}`;
 
             const result: Staff[] = await get(url);
 

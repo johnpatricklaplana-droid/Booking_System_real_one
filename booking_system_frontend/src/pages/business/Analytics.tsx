@@ -5,6 +5,7 @@ import { useUser } from '../../provider/UserContext';
 import { get } from '../../api/api';
 import { fillMonths } from '../../hooks/service';
 import type { BusinessTotals, FullAnalytics, MonthlyStats } from '../../interfaces/Types';
+import { API_URL } from '../../api/config';
 
 interface ServiceData  {
     name: string;
@@ -33,7 +34,7 @@ export function Analytics() {
 
         const CHART_COLORS = ['#c9a87c', '#9d8fb5', '#6b9fa3', '#b89c7e', '#a3766b', '#7c9ac9'];
 
-        const url = `https://daddys-home-backend.onrender.com/api/business/${business.businessId}`;
+        const url = `${API_URL}/api/business/${business.businessId}`;
 
         const getIt = async () => {
             const result: FullAnalytics = await get(url);

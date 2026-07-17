@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { get } from "../api/api";
 import type { Business } from "../interfaces/Types";
 import DaddysHomeLoader from "../components/MainLoadingScreen";
+import { API_URL } from "../api/config";
 
 interface User {
     firstName: string;
@@ -37,7 +38,7 @@ export function UserProvider ({ children }: { children: ReactNode }) {
     useEffect(() => {
         const getUser = async () => {
 
-            const url = "https://daddys-home-backend.onrender.com/api/super-me";
+            const url = `${API_URL}/api/super-me`;
 
             try {
                 const userResult = await get(url);
@@ -58,7 +59,7 @@ export function UserProvider ({ children }: { children: ReactNode }) {
                 }
 
                 if (userResult.message.roles.includes("BUSINESS_OWNER")) {
-                    const url = "https://daddys-home-backend.onrender.com/api/business";
+                    const url = `${API_URL}/api/business`;
 
                     const businessResult: Business[] = await get(url);
 

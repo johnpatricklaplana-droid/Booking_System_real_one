@@ -5,6 +5,7 @@ import { get } from '../../api/api';
 import type { Appointment } from '../../interfaces/Types';
 import { durationAsMinutes } from '../../hooks/service';
 import AppointmentCard from '../../components/AppointmentCard';
+import { API_URL } from '../../api/config';
 
 export function Appointments() {
 
@@ -16,7 +17,7 @@ export function Appointments() {
         if(!business) return;
 
         const getIt = async () => {
-            const url = `https://daddys-home-backend.onrender.com/api/schedule/business/${business.businessId}`;
+            const url = `${API_URL}/api/schedule/business/${business.businessId}`;
 
             const result: Appointment[] = await get(url);
 
