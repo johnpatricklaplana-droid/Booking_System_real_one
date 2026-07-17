@@ -9,6 +9,7 @@ import { useUser } from "../../provider/UserContext";
 import { get } from "../../api/api";
 import { StaffCard } from "../../components/StaffCard";
 import { StaffModal } from "../../components/StaffModal";
+import { API_URL } from "../../api/config";
 
 type FilterValue = "all" | "active" | "inactive";
 
@@ -81,8 +82,7 @@ export default function StaffManagementPage() {
         if(!businessId) return;
 
         const getStaff = async () => {
-            const url = `${API_URL}
-/api/staff/business/${businessId}`;
+            const url = `${API_URL}/api/staff/business/${businessId}`;
 
             const result: Staff[] = await get(url);
 
