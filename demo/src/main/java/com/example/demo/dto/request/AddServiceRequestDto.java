@@ -27,6 +27,7 @@ public class AddServiceRequestDto {
 
     @NotNull
     private Duration duration;
+    
     @NotNull
     private BigDecimal price;
     
