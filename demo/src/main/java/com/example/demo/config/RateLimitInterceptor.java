@@ -84,10 +84,14 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     private String resolveKey(HttpServletRequest request) {
         
-        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userId != null) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication() != null
+        ? SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+        : null;
+
+        if (principal instanceof UUID userId) {
             return "user:" + userId;
         }
+        
         String ip = Optional.ofNullable(request.getHeader("X-Forwarded-For"))
             .map(h -> h.split(",")[0].trim())
             .orElse(request.getRemoteAddr());
