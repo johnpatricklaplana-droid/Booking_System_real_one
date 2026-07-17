@@ -21,7 +21,7 @@ import { ManageService } from "../pages/business/ServiceDetailsBusiness";
 import CancellationRequestsPage from "../pages/business/CancellationRequest";
 
 export const router = createBrowserRouter([
-    { path: 'landing', Component: Landing },
+    { path: '/', Component: Landing },
     { path: '/login', Component: Login },
     { path: '/signup', Component: Signup },
     { path: 'create-business', Component: BusinessOnboardingWizard },
