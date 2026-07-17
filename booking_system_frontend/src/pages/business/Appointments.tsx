@@ -16,7 +16,7 @@ export function Appointments() {
         if(!business) return;
 
         const getIt = async () => {
-            const url = `http://localhost:8080/api/schedule/business/${business.businessId}`;
+            const url = `https://daddys-home-backend.onrender.com/api/schedule/business/${business.businessId}`;
 
             const result: Appointment[] = await get(url);
 

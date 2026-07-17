@@ -136,7 +136,7 @@ export function Signup() {
                 id_token: idToken,
             };
 
-            const result = await post('http://localhost:8080/api/auth/signup', payload);
+            const result = await post('https://daddys-home-backend.onrender.com/api/auth/signup', payload);
 
             if (result.status === 201) {
                 setStatus('success');

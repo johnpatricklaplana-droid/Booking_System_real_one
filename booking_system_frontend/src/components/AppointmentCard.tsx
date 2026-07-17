@@ -35,7 +35,7 @@ export default function AppointmentCard({
         setUpdating(next);
         setError(null);
         try {
-             await update(`http://localhost:8080/api/schedule/${schedId}/${next}`, null);
+             await update(`https://daddys-home-backend.onrender.com/api/schedule/${schedId}/${next}`, null);
              
             setAppointments(prev => prev!.map(ap => {
                 if (ap.schedule.id !== schedId) return ap;

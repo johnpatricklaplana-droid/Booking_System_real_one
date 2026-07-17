@@ -212,7 +212,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
         const formData = new FormData();
         formData.append('file', profilePic);
 
-        const url = "http://localhost:8080/api/user/profile";
+        const url = "https://daddys-home-backend.onrender.com/api/user/profile";
 
         const result = await PostFormData(url, formData);
 
@@ -242,7 +242,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
 
     const switchToBusiness = async () => {
 
-        const url = "http://localhost:8080/api/user/business";
+        const url = "https://daddys-home-backend.onrender.com/api/user/business";
         const body = null;
 
         const result = await update(url, body);

@@ -7,7 +7,7 @@ import { toZonedTime } from "date-fns-tz";
 dayjs.extend(duration);
 
 export async function getServices(businessId: string): Promise<ServiceWithRatings[]> {
-    const url = `http://localhost:8080/api/business/services/${businessId}`;
+    const url = `https://daddys-home-backend.onrender.com/api/business/services/${businessId}`;
     
     const servicesWithRatings: ServiceWithRatings[] = await get(url);
     
@@ -32,7 +32,7 @@ export async function getServices(businessId: string): Promise<ServiceWithRating
 }
 
 export async function getAllServices(): Promise<ServiceWithBusiness[]> {
-    const url = `http://localhost:8080/api/services`;
+    const url = `https://daddys-home-backend.onrender.com/api/services`;
     
     const services: ServiceWithBusiness[] = await get(url);
     

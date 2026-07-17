@@ -54,7 +54,7 @@ export function ManageService() {
 
         if(!serviceId) return;
 
-        const url = `http://localhost:8080/api/services/${serviceId}`;
+        const url = `https://daddys-home-backend.onrender.com/api/services/${serviceId}`;
 
         const getIt = async () => {
 
@@ -76,7 +76,7 @@ export function ManageService() {
         if(!businessId) return;
 
         const getIt = async () => {
-            const url = `http://localhost:8080/api/staff/business/${businessId}/staff-only`;
+            const url = `https://daddys-home-backend.onrender.com/api/staff/business/${businessId}/staff-only`;
 
             const result = await get(url);
           console.log(result);
@@ -92,7 +92,7 @@ export function ManageService() {
         setAddingStaff(true);
         setStaffs(prev => [...prev, staff]);
 
-        const url = `http://localhost:8080/api/staff/business/${businessId}`;
+        const url = `https://daddys-home-backend.onrender.com/api/staff/business/${businessId}`;
 
         const body = {
             serviceId: serviceId,
@@ -124,7 +124,7 @@ export function ManageService() {
 
         setAddingServiceAvailability(true);
 
-        const url = `http://localhost:8080/api/services/${serviceId}/${businessId}`;
+        const url = `https://daddys-home-backend.onrender.com/api/services/${serviceId}/${businessId}`;
         const body: ServiceAvailability = addServiceAvailability;
 
         console.log(body);

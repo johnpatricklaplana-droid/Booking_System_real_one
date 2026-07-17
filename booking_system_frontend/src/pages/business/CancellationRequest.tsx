@@ -47,7 +47,7 @@ function ApproveDialog({ request, onClose, setCansellationRequests }: Readonly<{
     const approveCancellationRequest = async () => {
         setApproving(true);
         
-        const url = `http://localhost:8080/api/business/cancellation-request/${request.cancellationRequest.id}`;
+        const url = `https://daddys-home-backend.onrender.com/api/business/cancellation-request/${request.cancellationRequest.id}`;
 
         try {
             const result = await update(url, null);
@@ -339,7 +339,7 @@ export default function CancellationRequestsPage(): React.JSX.Element {
         if(!business?.businessId) return;
 
         const getIt = async () => {
-            const result: CancellationRequest[] = await get(`http://localhost:8080/api/business/${business.businessId}/schedule`);
+            const result: CancellationRequest[] = await get(`https://daddys-home-backend.onrender.com/api/business/${business.businessId}/schedule`);
             setCancellationRequest(result);
         }
 

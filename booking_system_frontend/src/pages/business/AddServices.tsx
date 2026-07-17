@@ -116,7 +116,7 @@ export default function ServiceForm() {
 
         setIsSaving(true);
 
-        const url = "http://localhost:8080/api/user/business/services";
+        const url = "https://daddys-home-backend.onrender.com/api/user/business/services";
 
         const duration = toISODuration(Number(service.duration), unit);
 

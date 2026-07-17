@@ -23,7 +23,7 @@ export default function ReviewModal({
 
     const addReview = async () => {
 
-        const url = "http://localhost:8080/api/review";
+        const url = "https://daddys-home-backend.onrender.com/api/review";
 
         const body = {
             rating: rating,

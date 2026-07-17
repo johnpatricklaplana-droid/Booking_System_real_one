@@ -39,7 +39,7 @@ function BusinessSwitcher({
 
     const switchBusiness = async (buss: Business) => {
 
-        const url = `http://localhost:8080/api/user/business/${buss.businessId}`;
+        const url = `https://daddys-home-backend.onrender.com/api/user/business/${buss.businessId}`;
 
         const result = await update(url, null);
 

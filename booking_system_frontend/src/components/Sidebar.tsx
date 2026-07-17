@@ -26,7 +26,7 @@ export function Sidebar({
     const location = useLocation();
 
     const swithToCustomer = async () => {
-        const url = "http://localhost:8080/api/user/customer";
+        const url = "https://daddys-home-backend.onrender.com/api/user/customer";
         const body = null;
         
         const result = await update(url, body);

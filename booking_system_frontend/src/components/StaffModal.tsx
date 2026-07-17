@@ -57,7 +57,7 @@ export function StaffModal({
             title: inputs.title
         };
 
-        const url = "http://localhost:8080/api/staff";
+        const url = "https://daddys-home-backend.onrender.com/api/staff";
         const requestBody = new FormData();
         requestBody.append('body', new Blob([JSON.stringify(body)], { type: 'application/json' }));
         requestBody.append('image', image);

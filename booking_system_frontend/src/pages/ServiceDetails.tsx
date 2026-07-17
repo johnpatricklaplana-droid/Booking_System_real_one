@@ -94,7 +94,7 @@ export function ServiceDetails() {
         if(!serviceId) return;
 
         const getIt = async () => {
-            const url = `http://localhost:8080/api/services/${serviceId}`;
+            const url = `https://daddys-home-backend.onrender.com/api/services/${serviceId}`;
 
             const result: any = await get(url);
             console.log(result);
@@ -112,7 +112,7 @@ export function ServiceDetails() {
         
         if(!serviceId) return;
 
-        const url = `http://localhost:8080/api/review/services/${serviceId}`;
+        const url = `https://daddys-home-backend.onrender.com/api/review/services/${serviceId}`;
 
         const getIt = async () => {
             const result: ReviewWithUser[] = await get(url);
@@ -129,7 +129,7 @@ export function ServiceDetails() {
 
         if(!business) return;
 
-        const url = `http://localhost:8080/api/business/services/${business.businessId}`;
+        const url = `https://daddys-home-backend.onrender.com/api/business/services/${business.businessId}`;
 
         const getIt = async () => {
             const result: ServiceWithBusiness[] = await get(url);
@@ -164,7 +164,7 @@ export function ServiceDetails() {
             serviceId: serviceId
         }
 
-        const url = "http://localhost:8080/api/schedule";
+        const url = "https://daddys-home-backend.onrender.com/api/schedule";
 
         try {
             const result = await post(url, body);
@@ -302,7 +302,7 @@ export function ServiceDetails() {
                                         setSelectedStaff(s);
                                     }}
                                 >
-                                    <img className="w-9 h-9 rounded-[50%]" src={`http://localhost:8080/api/staff/${s.avatarUrl}`} alt="" />
+                                    <img className="w-9 h-9 rounded-[50%]" src={`https://daddys-home-backend.onrender.com/api/staff/${s.avatarUrl}`} alt="" />
                                     <div>
                                         <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
                                         <p className="text-(--text-2) text-xs">{s.title}</p>

@@ -423,7 +423,7 @@ export default function MyBookingsPage() {
 
     useEffect(() => {
         const getIt = async () => {
-            const url = "http://localhost:8080/api/schedule";
+            const url = "https://daddys-home-backend.onrender.com/api/schedule";
             const result: CustomerAppointments[] = await get(url);
             setAppointments(result);
         };
@@ -617,7 +617,7 @@ function CancelBookingModal({
     const sendCancellationRequest = async () => {
         setSending(true);
 
-        const url = `http://localhost:8080/api/user/schedule/${appointment.schedule.id}/CANCELLED`;
+        const url = `https://daddys-home-backend.onrender.com/api/user/schedule/${appointment.schedule.id}/CANCELLED`;
 
         try {
             const result = await update(url, message);

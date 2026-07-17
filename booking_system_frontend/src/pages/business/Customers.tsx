@@ -16,7 +16,7 @@ export function Customers() {
         if(!business?.businessId) return;
 
         const getIt = async () => {
-            const url = `http://localhost:8080/api/business/customer/${business.businessId}`;
+            const url = `https://daddys-home-backend.onrender.com/api/business/customer/${business.businessId}`;
 
             const result: Customer[] = await get(url);
 

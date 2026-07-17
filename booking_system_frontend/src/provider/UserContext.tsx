@@ -37,7 +37,7 @@ export function UserProvider ({ children }: { children: ReactNode }) {
     useEffect(() => {
         const getUser = async () => {
 
-            const url = "http://localhost:8080/api/super-me";
+            const url = "https://daddys-home-backend.onrender.com/api/super-me";
 
             try {
                 const userResult = await get(url);
@@ -58,7 +58,7 @@ export function UserProvider ({ children }: { children: ReactNode }) {
                 }
 
                 if (userResult.message.roles.includes("BUSINESS_OWNER")) {
-                    const url = "http://localhost:8080/api/business";
+                    const url = "https://daddys-home-backend.onrender.com/api/business";
 
                     const businessResult: Business[] = await get(url);
 
