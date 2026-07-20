@@ -96,7 +96,8 @@ export default function StaffManagementPage() {
                         title: staff.title,
                         avatarUrl: staff.avatarUrl,
                         active: staff.active,
-                        createdAt: staff.createdAt
+                        createdAt: staff.createdAt,
+                        staffUnavailable: staff.staffUnavailable
                     }
                 }))
             }
