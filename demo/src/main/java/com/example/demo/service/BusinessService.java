@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +24,7 @@ import com.example.demo.dto.response.ServiceReviewDto;
 import com.example.demo.dto.response.ServiceWithBusinessDto;
 import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
+import com.example.demo.dto.response.StaffUnavailableDto;
 import com.example.demo.dto.response.UserDtoPublic;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.CancellationRequest;
@@ -133,13 +136,33 @@ public class BusinessService {
         BusinessDetailsDto business = businessMapper.toBusinessDetailsDto(businessServices.getBusiness());
         ServicesDetailsDto services = businessMapper.toBusinessServices(businessServices);
         List<StaffResponseDto> staff = businessServices.getStaffs().stream()
-            .map(businessMapper::toStaffResponseDto)
+            .map(s -> {
+                StaffResponseDto dto = businessMapper.toStaffResponseDto(s);
+                dto.setStaffUnavailable(s.getUnavailable().stream()
+                    .map(su -> {
+                        StaffUnavailableDto suDto = new StaffUnavailableDto();
+                        suDto.setStart(su.getTimeRange().lower());
+                        suDto.setEnd(su.getTimeRange().upper());
+
+                        return suDto;
+                    })
+                    .toList()
+                );
+
+                return dto;
+            })
             .toList();
+
         List<ServiceAvailabilityDto> serviceAvailability = serviceAvailabilityRepo.findByServicesId(businessServices.getId()).stream()
             .map(serviceMapper::toServiceAvailabilityDto)
             .toList();
 
-        return new ServiceDetailsDto(business, services, staff, serviceAvailability);
+        return new ServiceDetailsDto(
+            business, 
+            services, 
+            staff, 
+            serviceAvailability
+        );
 
     }
 

@@ -36,15 +36,9 @@ export function TimezoneLabel(timezone: string): string {
 }
 
 export function buildBookingPayloadTime(date: Date, time: string, businessTimezone: string): string {
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
+    const datePart = formatInTimeZone(date, businessTimezone, "yyyy-MM-dd");
     const offset = formatInTimeZone(date, businessTimezone, "XXX");
-
-    return `${year}-${month}-${day}T${time}:00${offset}`;
-    
+    return `${datePart}T${time}:00${offset}`;
 }
 
 export function to24Hour(time12: string): string  {

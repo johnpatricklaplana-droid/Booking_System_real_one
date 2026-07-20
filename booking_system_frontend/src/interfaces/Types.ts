@@ -102,6 +102,12 @@ export interface Staff {
     avatarUrl: string;
     active: boolean;
     createdAt: string;
+    staffUnavailable: StaffUnavailable[];
+}
+
+export interface StaffUnavailable {
+    start: string;
+    end: string;
 }
 
 export interface StaffWithServices {

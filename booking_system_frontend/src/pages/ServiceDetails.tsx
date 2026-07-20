@@ -4,7 +4,7 @@ import type { Business, ReviewWithUser, ServiceAvailability, ServiceResponse, Se
 import { useNavigate, useParams } from "react-router-dom";
 import { get, post } from "../api/api";
 import { buildBookingPayloadTime, formatDuration, TimezoneLabel } from "../helper/convertSome";
-import { durationAsMinutes, getAverageRating, isTimeAlreadyPassed } from "../hooks/service";
+import { durationAsMinutes, getAverageRating, isStaffUnavailableInThisTimeRange, isTimeAlreadyPassed } from "../hooks/service";
 import DaddysHomeBanner from "../components/DaddysHomeBanner";
 import DaddysHomeBookingTicket from "../components/BookingConfirmation";
 import StarRating from "../components/Star";
@@ -295,20 +295,30 @@ export function ServiceDetails() {
                         </div>  
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
                         <div className="mb-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
-                            {staff?.map(s => 
-                                <button
-                                    key={s.id}
-                                    className={`flex gap-2 ${selectedStaff?.id === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
-                                    onClick={() => {
-                                        setSelectedStaff(s);
-                                    }}
-                                >
-                                    <img className="w-9 h-9 rounded-[50%]" src={`${API_URL}/api/staff/${s.avatarUrl}`} alt="" />
-                                    <div>
-                                        <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
-                                        <p className="text-(--text-2) text-xs">{s.title}</p>
+                            {staff?.map(s => {
+                                const dis: boolean = s.staffUnavailable.length || selectedTime?.value ? isStaffUnavailableInThisTimeRange(selectedDate, selectedTime?.value!, business?.timezone!, s.staffUnavailable) : false;
+                                return (
+                                    <div
+                                        key={s.id}
+                                        className="flex flex-col"
+                                    >
+                                        {dis && <p className="text-red-700 text-center">this staff is not available in the time please choose another one</p>}
+                                        <button
+                                            className={`flex gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-(--border) ${selectedStaff?.id === s.id ? 'bg-(--gold-dim) border-(--gold-light)' : 'bg-(--surface-2)'} rounded-sm hover:border-(--gold-light) border border-(--border) cursor-pointer py-2 px-4`}
+                                            onClick={() => {
+                                                setSelectedStaff(s);
+                                            }}
+                                            disabled={dis}
+                                        >
+                                            <img className="w-9 h-9 rounded-[50%]" src={`${API_URL}/api/staff/${s.avatarUrl}`} alt="" />
+                                            <div>
+                                                <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
+                                                <p className="text-(--text-2) text-xs">{s.title}</p>
+                                            </div>
+                                        </button>
                                     </div>
-                                </button>
+                                )
+                            }
                             )}
                         </div>
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">What clients say</p>

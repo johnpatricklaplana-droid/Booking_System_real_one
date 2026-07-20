@@ -82,5 +82,4 @@ public class BusinessController {
             .body(new AuthResponse(200, "super approved"));
     }
     
-    
 }

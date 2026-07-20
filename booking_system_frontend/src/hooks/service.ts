@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
 import { get } from "../api/api";
-import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings, Time } from "../interfaces/Types";
+import type { MonthlyStats, ServiceWithBusiness, ServiceWithRatings, StaffUnavailable, Time } from "../interfaces/Types";
 import  duration  from "dayjs/plugin/duration";
 import { toZonedTime } from "date-fns-tz";
 import { API_URL } from "../api/config";
+import { buildBookingPayloadTime } from "../helper/convertSome";
 
 dayjs.extend(duration);
 
@@ -153,5 +154,17 @@ export function isDurationCanFitToTimeSlots(startTime: string, endTime: string, 
     const startToEndDifference = Math.abs(endTimeMin - startTimeMin);
 
     return startToEndDifference >= duration;
+
+}
+
+export function isStaffUnavailableInThisTimeRange (date: Date, time: string, timezone: string,timeRanges: StaffUnavailable[]): boolean {
+    const scheduledTime = new Date(buildBookingPayloadTime(date, time, timezone));
+    return timeRanges.some(tr => {
+        const start = new Date(tr.start);
+        const end = new Date(tr.end);
+        console.log(start);
+        return scheduledTime >= start && scheduledTime <= end;
+       
+    });
 
 }
