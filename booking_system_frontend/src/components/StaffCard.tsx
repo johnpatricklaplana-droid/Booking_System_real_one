@@ -52,8 +52,8 @@ export function StaffCard({
             <div className="relative z-10 my-4 h-px w-full bg-linear-to-r from-transparent via-(--border) to-transparent" />
 
             <div className="relative z-10 mb-3.5 flex justify-center">
-                <div className="h-32 w-32 rounded-full bg-[conic-gradient(from_180deg,#fbf0cf,var(--gold),var(--gold-dim),var(--gold),#fbf0cf)] p-[5px] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.55)]">
-                    <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-[3px] border-[var(--surface)] bg-gradient-to-br from-[#123449] to-[#0a2436]">
+                <div className="h-32 w-32 rounded-full bg-[conic-gradient(from_180deg,#fbf0cf,var(--gold),var(--gold-dim),var(--gold),#fbf0cf)] p-1.25 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.55)]">
+                    <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-[3px] border-(--surface) bg-linear-to-br from-[#123449] to-[#0a2436]">
                         {staff.avatarUrl ? (
                             <img
                                 src={staff.avatarUrl}
@@ -99,17 +99,17 @@ export function StaffCard({
                     {Array.from({ length: 5 }).map((_, i) => (
                         <Star
                             key={i}
-                            className="h-[15px] w-[15px]"
+                            className="h-3.75 w-3.75"
                             fill="#e8c878"
                             stroke="none"
                             opacity={i < filledStars ? 1 : 0.35}
                         />
                     ))}
                 </div>
-                <span className="font-[Baloo_2] text-sm font-bold text-[var(--gold)]">
+                <span className="font-[Baloo_2] text-sm font-bold text-(--gold)">
                     {rating.toFixed(1)}
                 </span>
-                <span className="text-[11px] text-[var(--text-3)]">
+                <span className="text-[11px] text-(--text-3)">
                     ({ratingCount} bookings)
                 </span>
             </div>
@@ -121,7 +121,7 @@ export function StaffCard({
                         fill="#8a6f3a"
                     />
                 </svg>
-                <span className="whitespace-nowrap text-[10px] uppercase tracking-[2px] text-[var(--text-3)]">
+                <span className="whitespace-nowrap text-[10px] uppercase tracking-[2px] text-(--text-3)">
                     ID &middot; {staffId}
                 </span>
                 <svg width="34" height="18" viewBox="0 0 34 18" className="opacity-80">

@@ -83,7 +83,7 @@ export default function AppointmentCard({
 
                 <div className="flex gap-2">
                     <button
-                        onClick={() => setSchedule('CONFIRMED', apt.schedule.status)}
+                        onClick={() => setSchedule('CONFIRMED', apt.schedule.id)}
                         disabled={updating !== null}
                         className="flex-1 flex items-center justify-center gap-1.5 rounded-md bg-(--gold) py-2 text-[13px] font-bold text-[#0a0a0c] hover:brightness-110 transition-all disabled:opacity-50"
                     >
@@ -94,7 +94,7 @@ export default function AppointmentCard({
                         )}
                     </button>
                     <button
-                        onClick={() => setSchedule('CANCELLED', apt.schedule.status)}
+                        onClick={() => setSchedule('CANCELLED', apt.schedule.id)}
                         disabled={updating !== null}
                         className="flex-1 rounded-md border border-(--border) py-2 text-[13px] font-medium text-(--text-2) hover:border-(--text-3) transition-all disabled:opacity-50"
                     >
@@ -150,14 +150,14 @@ export default function AppointmentCard({
                     {passed ? (
                         <div className="flex gap-2">
                             <button
-                                onClick={() => setSchedule('MISSED', apt.schedule.status)}
+                                onClick={() => setSchedule('MISSED', apt.schedule.id)}
                                 disabled={updating !== null}
                                 className="flex-1 rounded-md border border-red-500/30 bg-red-500/10 py-2 text-[13px] font-medium text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-50"
                             >
                                 {updating === 'MISSED' ? <span className="w-4 h-4 mx-auto rounded-full border-2 border-red-400/30 border-t-red-400 animate-spin block" /> : 'No-show'}
                             </button>
                             <button
-                                onClick={() => setSchedule('COMPLETED', apt.schedule.status)}
+                                onClick={() => setSchedule('COMPLETED', apt.schedule.id)}
                                 disabled={updating !== null}
                                 className="flex-1 rounded-md bg-(--teal) py-2 text-[13px] font-bold text-[#0a0a0c] hover:brightness-110 transition-all disabled:opacity-50"
                             >

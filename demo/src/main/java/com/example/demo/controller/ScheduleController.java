@@ -66,7 +66,7 @@ public class ScheduleController {
         @PathVariable UUID scheduleId,
         @AuthenticationPrincipal UUID uid,
         @PathVariable ScheduleStatus status
-    ) throws BadRequestException {
+    ) {
 
         scheduleService.updateBookingStatus(scheduleId, status);
         return ResponseEntity
