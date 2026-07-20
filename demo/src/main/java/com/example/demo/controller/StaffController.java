@@ -7,14 +7,12 @@ import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.dto.request.AssignStaffToServiceDto;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.StaffResponseDto;
-import com.example.demo.dto.response.StaffWithServicesDto;
 import com.example.demo.service.StaffService;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,26 +62,6 @@ public class StaffController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(new AuthResponse(201, "created one"));
-    }
-    
-    
-    @GetMapping("/api/staff/{filename}")
-    public ResponseEntity<byte[]> getStaffProfilePic(@PathVariable String filename, @AuthenticationPrincipal UUID uid) throws AccessDeniedException {
-        String[] filenameAndUserId = filename.split("_");
-        String originalFileName = filenameAndUserId[1];
-        String userId = filenameAndUserId[0];
-
-        if(!uid.toString().equals(userId)) {
-            throw new AccessDeniedException("originalFileName");
-        }
-
-        byte[] fileStream = staffService.getStaffProfilePic(userId, originalFileName, "staff_logo");
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .contentType(MediaTypeFactory.getMediaType(originalFileName).orElse(MediaType.APPLICATION_OCTET_STREAM))
-            .cacheControl(CacheControl.noStore())
-            .body(fileStream);
-
     }
 
     @GetMapping("/api/staff/business/{businessId}")

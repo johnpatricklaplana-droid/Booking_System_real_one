@@ -310,7 +310,7 @@ export function ServiceDetails() {
                                             }}
                                             disabled={dis}
                                         >
-                                            <img className="w-9 h-9 rounded-[50%]" src={`${API_URL}/api/staff/${s.avatarUrl}`} alt="" />
+                                            <img className="w-9 h-9 rounded-[50%]" src={s.avatarUrl} alt="" />
                                             <div>
                                                 <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
                                                 <p className="text-(--text-2) text-xs">{s.title}</p>

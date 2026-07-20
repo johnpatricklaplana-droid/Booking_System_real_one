@@ -102,49 +102,4 @@ public class SupabaseStorageService {
         
     }
 
-    public String uploadProfilePicOfStaff(MultipartFile file, String bucketName, UUID userId) {
-       
-        try {
-
-            String fileName = String.join("_", userId.toString(), file.getOriginalFilename());
-
-            String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
-
-            webClient.post()
-                    .uri(url)
-                    .header("Authorization", "Bearer " + supabaseSecretRoleKey)
-                    .header("apiKey", supabaseSecretRoleKey)
-                    .contentType(MediaType.parseMediaType(file.getContentType()))
-                    .bodyValue(file.getBytes())
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block();
-
-            return fileName; 
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BadGateWayException("Failed to upload file to Supabase");
-        }
-
-    }
-
-    public byte[] getStaffProfilePic(String userId, String fileName, String bucketName) {
-        String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + userId + "_" + fileName;
-      
-        try {
-            return  webClient.get()
-                    .uri(url)
-                    .header("Authorization", "Bearer " + supabaseSecretRoleKey)
-                    .header("apiKey", supabaseSecretRoleKey)
-                    .retrieve()
-                    .bodyToMono(byte[].class)
-                    .block();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        
-    }
-
 }

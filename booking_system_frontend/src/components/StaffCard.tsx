@@ -21,13 +21,13 @@ export function StaffCard({
     const business = useUser().activeBusiness;
 
     return (
-        <div className="relative rounded-[22px] border border-(--border) bg-gradient-to-b from-[var(--surface)] to-[#081f30] px-6 pb-7 pt-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.65),0_0_40px_-10px_rgba(232,200,120,0.12)] overflow-hidden">
-            <div className="pointer-events-none absolute -top-[60%] -left-[20%] h-[220%] w-[60%] rotate-[18deg] bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent" />
+        <div className="relative rounded-[22px] border border-(--border) bg-linear-to-b from-(--surface) to-[#081f30] px-6 pb-7 pt-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.65),0_0_40px_-10px_rgba(232,200,120,0.12)] overflow-hidden">
+            <div className="pointer-events-none absolute top-[-60%] left-[-20%] h-[220%] w-[60%] rotate-18 bg-linear-to-tr from-transparent via-white/6 to-transparent" />
 
-            <div className="absolute left-2.5 top-2.5 h-6.5 w-[26px] rounded-tl-[10px] border-t-2 border-l-2 border-[var(--gold-dim)]/70" />
-            <div className="absolute right-2.5 top-2.5 h-6.5 w-[26px] rounded-tr-[10px] border-t-2 border-r-2 border-[var(--gold-dim)]/70" />
-            <div className="absolute bottom-2.5 left-2.5 h-[26px] w-[26px] rounded-bl-[10px] border-b-2 border-l-2 border-[var(--gold-dim)]/70" />
-            <div className="absolute bottom-2.5 right-2.5 h-[26px] w-[26px] rounded-br-[10px] border-b-2 border-r-2 border-[var(--gold-dim)]/70" />
+            <div className="absolute left-2.5 top-2.5 h-6.5 w-6.5 rounded-tl-[10px] border-t-2 border-l-2 border-(--gold-dim)/70" />
+            <div className="absolute right-2.5 top-2.5 h-6.5 w-6.5 rounded-tr-[10px] border-t-2 border-r-2 border-(--gold-dim)/70" />
+            <div className="absolute bottom-2.5 left-2.5 h-6.5 w-6.5 rounded-bl-[10px] border-b-2 border-l-2 border-(--gold-dim)/70" />
+            <div className="absolute bottom-2.5 right-2.5 h-6.5 w-6.5 rounded-br-[10px] border-b-2 border-r-2 border-(--gold-dim)/70" />
 
             <div className="relative z-10 flex flex-col items-center gap-1.5">
                 <div className="flex h-13 w-13 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#fbf0cf,var(--gold)_45%,var(--gold-dim)_100%)] shadow-[0_0_0_3px_rgba(232,200,120,0.15),0_6px_16px_-4px_rgba(0,0,0,0.5)]">

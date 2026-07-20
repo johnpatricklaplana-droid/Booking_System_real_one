@@ -1,18 +1,14 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.dto.request.AssignStaffToServiceDto;
-import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
-import com.example.demo.dto.response.StaffWithServicesDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.join_table.StaffServices;
@@ -48,14 +44,10 @@ public class StaffService {
     public void addNewStaff(AddStaffDto request, MultipartFile imageFile, UUID userId) {
         Staff staff = businessMapper.toStaffSave(request, entityManager);
         staff.setActive(true);
-        staff.setAvatarUrl(supabaseStorageService.uploadProfilePicOfStaff(imageFile, "staff_logo", userId));
+        staff.setAvatarUrl(supabaseStorageService.uploadBusinessLogo(imageFile, "staff_logo"));
 
         staffRepo.save(staff);
 
-    }
-    
-    public byte[] getStaffProfilePic(String userId, String fileName, String bucketName) {
-        return supabaseStorageService.getStaffProfilePic(userId, fileName, bucketName);
     }
 
     public List<StaffResponseDto> getStaff(UUID businessId) {
