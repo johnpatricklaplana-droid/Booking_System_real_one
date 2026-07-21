@@ -79,7 +79,7 @@ public class ScheduleService {
     CancellationRequestRepository cancellationRequestRepo;
 
     @Transactional
-    public void addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
+    public StaffResponseDto addSchedule(SaveScheduleDto scheduleDto, UUID userId) {
         
         boolean staffOffersService = staffRepo.existByStaffIdAndServiceId(scheduleDto.getStaffId(), scheduleDto.getServiceId());
 
@@ -139,6 +139,17 @@ public class ScheduleService {
         staffUnavailableRepo.save(unavailable);
         
         scheduleRepo.save(schedule);
+
+        Staff staff = staffRepo.findById(scheduleDto.getStaffId()).orElse(null);
+        staff.getUnavailable().add(unavailable);
+
+        StaffResponseDto staffResponseDto = businessMapper.toStaffResponseDto(staff);
+        staffResponseDto.setStaffUnavailable(staff.getUnavailable().stream()
+            .map(businessMapper::toStaffUnavailableDto)
+            .toList()
+        );
+
+        return staffResponseDto;
 
     }
 

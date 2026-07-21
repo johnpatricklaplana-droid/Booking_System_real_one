@@ -171,9 +171,18 @@ export function ServiceDetails() {
             const result = await post(url, body);
 
             if (result.status === 201) {
-                console.log("good one");
+                setStaff(prev => prev 
+                    ? prev.map(s => { 
+                        if (s.id === result.message.id) { return result.message };
+                        return s; 
+                      }) 
+                    : [result.message]);
+                console.log(result.message);
                 setBookingResult({ success: true, message: "super success" });
                 setOpenBookingConfirmation(false);
+
+                // clear selected date time and some
+                setSelectedStaff(null);
             }
         } catch (error) {
             console.log(error);
@@ -296,7 +305,7 @@ export function ServiceDetails() {
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
                         <div className="mb-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
                             {staff?.map(s => {
-                                const dis: boolean = s.staffUnavailable.length || selectedTime?.value ? isStaffUnavailableInThisTimeRange(selectedDate, selectedTime?.value!, business?.timezone!, s.staffUnavailable) : false;
+                                const dis: boolean = s.staffUnavailable.length && selectedTime?.value && serviceDetails?.duration ? isStaffUnavailableInThisTimeRange(selectedDate, selectedTime?.value!, business?.timezone!, s.staffUnavailable,Number(durationAsMinutes(serviceDetails?.duration))) : false;
                                 return (
                                     <div
                                         key={s.id}

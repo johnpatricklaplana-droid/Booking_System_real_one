@@ -157,14 +157,14 @@ export function isDurationCanFitToTimeSlots(startTime: string, endTime: string, 
 
 }
 
-export function isStaffUnavailableInThisTimeRange (date: Date, time: string, timezone: string,timeRanges: StaffUnavailable[]): boolean {
+export function isStaffUnavailableInThisTimeRange (date: Date, time: string, timezone: string,timeRanges: StaffUnavailable[], durationAsMinutes: number): boolean {
     const scheduledTime = new Date(buildBookingPayloadTime(date, time, timezone));
+    const startsAt = new Date(scheduledTime);
+    const endsAt = new Date(scheduledTime.getTime() + durationAsMinutes * 60 * 1000);
     return timeRanges.some(tr => {
         const start = new Date(tr.start);
         const end = new Date(tr.end);
-        console.log(start);
-        return scheduledTime >= start && scheduledTime <= end;
-       
+        return endsAt >= start && startsAt <= end;
     });
 
 }

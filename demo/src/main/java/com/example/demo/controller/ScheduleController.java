@@ -34,10 +34,9 @@ public class ScheduleController {
         @RequestBody SaveScheduleDto scheduleDto,
         @AuthenticationPrincipal UUID userId
     ) {
-        scheduleService.addSchedule(scheduleDto, userId);
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(new AuthResponse(201, "created one"));
+            .body(new AuthResponse(201, scheduleService.addSchedule(scheduleDto, userId)));
     }
 
     @GetMapping("/api/schedule/business/{businessId}")
