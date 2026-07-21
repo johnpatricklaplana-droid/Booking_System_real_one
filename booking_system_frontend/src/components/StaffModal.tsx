@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown, Loader2, X, Image } from "lucide-react";
 import { ServiceMultiSelect } from "./MultiSelect";
 import { useUser } from "../provider/UserContext";
-import type { ServiceWithRatings } from "../interfaces/Types";
+import type { ServiceWithRatings, Staff } from "../interfaces/Types";
 import { getServices } from "../hooks/service";
 import { PostFormData } from "../api/api";
 import { API_URL } from "../api/config";
 
 export function StaffModal({
     onClose,
+    setStaffList
 }: Readonly<{
     onClose: () => void;
+    setStaffList: React.Dispatch<React.SetStateAction<Staff[]>>;
 }>) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
@@ -69,6 +71,9 @@ export function StaffModal({
 
         if(result.status === 201) {
             setSaving(false);
+            console.log(result);
+            setStaffList(prev => [...prev, result.message]);
+            onClose();
         } else {
             setError("bad one");
             setSaving(false);

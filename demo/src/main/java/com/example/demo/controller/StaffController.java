@@ -45,10 +45,9 @@ public class StaffController {
         @RequestPart("image") MultipartFile imageFile,
         @AuthenticationPrincipal UUID id
     ) {
-        staffService.addNewStaff(request, imageFile, id);
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(new AuthResponse(201, "new staff added super successfully"));
+            .body(new AuthResponse(201, staffService.addNewStaff(request, imageFile, id)));
     }
 
     @PostMapping("/api/staff/business/{businessId}")

@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.dto.request.AssignStaffToServiceDto;
 import com.example.demo.dto.response.StaffResponseDto;
+import com.example.demo.dto.response.StaffUnavailableDto;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.Staff;
 import com.example.demo.entity.join_table.StaffServices;
@@ -41,12 +42,21 @@ public class StaffService {
         this.staffServicesRepo = staffServicesRepo;
     }
 
-    public void addNewStaff(AddStaffDto request, MultipartFile imageFile, UUID userId) {
+    public StaffResponseDto addNewStaff(AddStaffDto request, MultipartFile imageFile, UUID userId) {
         Staff staff = businessMapper.toStaffSave(request, entityManager);
         staff.setActive(true);
         staff.setAvatarUrl(supabaseStorageService.uploadBusinessLogo(imageFile, "staff_logo"));
 
         staffRepo.save(staff);
+
+        StaffResponseDto response = businessMapper.toStaffResponseDto(staff);
+        if(staff.getUnavailable() != null) {
+            response.setStaffUnavailable(staff.getUnavailable().stream()
+                .map(businessMapper::toStaffUnavailableDto)
+                .toList());
+        }
+
+        return response;
 
     }
 

@@ -3,6 +3,7 @@ import {
     CalendarCheck, Users, BarChart3, ShieldCheck, Clock3,
     Sparkles, ArrowRight, Menu, X as XIcon, CheckCircle2,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 /**
  * Daddy's Home — marketing landing page.
@@ -140,9 +141,12 @@ export function Landing() {
                     </nav>
 
                     <div className="hidden md:flex items-center gap-3">
-                        <button className="px-4 py-2 text-[13px] font-medium text-(--text-2) hover:text-(--text-1) transition-colors">
+                        <Link 
+                            className="px-4 py-2 text-[13px] font-medium text-(--text-2) hover:text-(--text-1) transition-colors"
+                            to={'login'}
+                        >
                             Log in
-                        </button>
+                        </Link>
                         <button className="px-4 py-2 bg-linear-to-br from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) hover:shadow-lg hover:shadow-(--gold)/20 transition-all">
                             Get started free
                         </button>

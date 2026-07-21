@@ -169,6 +169,7 @@ export default function StaffManagementPage() {
 
             {modalState && (
                 <StaffModal
+                    setStaffList={setStaffList}
                     onClose={() => setModalState(null)}
                 />
             )}

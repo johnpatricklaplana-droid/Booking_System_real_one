@@ -52,6 +52,11 @@ public interface BusinessMapper {
     
     ServicesDetailsDto toBusinessServices(BusinessServices services);
 
+    @Mapping(target = "start", expression = "java(staffUnavailable.getTimeRange().lower())")
+    @Mapping(target = "end", expression = "java(staffUnavailable.getTimeRange().lower())")
+    StaffUnavailableDto toStaffUnavailableDtos(StaffUnavailable staffUnavailable);
+
+    @Mapping(target = "staffUnavailable", ignore = true)
     StaffResponseDto toStaffResponseDto(Staff staff);
 
     ScheduleDto toScheduleDto(Schedule schedule);
@@ -83,10 +88,6 @@ public interface BusinessMapper {
     @Mapping(target = "region", ignore = true)
     @Mapping(source = "countryCode", target = "countryCode")
     AddressDto toAddressDto(Address address);
-
-    @Mapping(source = "id", target = "staffId")
-    @Mapping(source = "unavailable", target = "unavailable")    
-    StaffResponseDtoWithoutServices toStaffResponseDtoWithoutServices(Staff staff);
 
     default List<BusinessServices> fromListOfUUIDToListOfBusinessServices(List<UUID> servicesIds, EntityManager entityManager) {
 
