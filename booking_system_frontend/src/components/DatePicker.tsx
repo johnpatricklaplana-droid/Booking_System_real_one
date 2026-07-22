@@ -39,7 +39,7 @@ export function BookingDatePicker({
 
                 return !availableDaysOfWeek.has((date.getDay())) || date < today
             }}
-            className="bg-(--surface) text-(--text-2) border border-(--border) rounded-2xl p-4"
+            className="bg-(--surface) overflow-x-auto text-(--text-2) border border-(--border) rounded-2xl p-4"
         />
     );
 }
