@@ -1,0 +1,64 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="waterGlow" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#3C8C8C"/>
+      <stop offset="55%" stop-color="#1F6363"/>
+      <stop offset="100%" stop-color="#124444"/>
+    </radialGradient>
+    <linearGradient id="goldRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0CE7E"/>
+      <stop offset="45%" stop-color="#D4A24C"/>
+      <stop offset="100%" stop-color="#A87B2E"/>
+    </linearGradient>
+    <linearGradient id="goldRingInner" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B8873A"/>
+      <stop offset="100%" stop-color="#F0CE7E"/>
+    </linearGradient>
+    <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFE9B0" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#FFE9B0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- scalloped wax-seal edge -->
+  <g fill="url(#goldRing)">
+    <circle cx="256" cy="256" r="246"/>
+  </g>
+  <g fill="none" stroke="#8C6423" stroke-width="2" opacity="0.35">
+    <circle cx="256" cy="256" r="246"/>
+  </g>
+
+  <!-- inner gold ring -->
+  <circle cx="256" cy="256" r="222" fill="url(#goldRingInner)"/>
+
+  <circle cx="256" cy="256" r="204" fill="url(#waterGlow)"/>
+
+  <!-- thin inner rope-style ring -->
+  <circle cx="256" cy="256" r="204" fill="none" stroke="#F0CE7E" stroke-width="3" opacity="0.6"/>
+  <circle cx="256" cy="256" r="196" fill="none" stroke="#0E3838" stroke-width="2" opacity="0.5"/>
+
+  <!-- sky glow behind roofline (home light) -->
+  <circle cx="256" cy="196" r="90" fill="url(#lampGlow)"/>
+
+  <!-- gable roofline suggesting "home", low and wide, sitting on the horizon -->
+  <path d="M 150 232 L 256 152 L 362 232 L 340 232 L 256 172 L 172 232 Z" fill="#F0CE7E" opacity="0.9"/>
+  <rect x="238" y="196" width="36" height="36" rx="3" fill="#0E3838" opacity="0.85"/>
+
+  <!-- water line -->
+  <path d="M 60 300 Q 256 268 452 300 L 452 460 Q 256 492 60 460 Z" fill="#134B4B"/>
+
+  <!-- ripples -->
+  <g stroke="#5FB3B3" stroke-width="3" fill="none" opacity="0.55" stroke-linecap="round">
+    <path d="M 96 322 Q 176 306 256 322 T 416 322"/>
+    <path d="M 108 352 Q 188 338 268 352 T 404 352"/>
+    <path d="M 120 382 Q 200 370 256 382 T 392 382"/>
+  </g>
+
+  <!-- boat silhouette, returning across the water -->
+  <g>
+    <path d="M 176 336 Q 256 356 336 336 L 320 356 Q 256 368 192 356 Z" fill="#0E3838"/>
+    <line x1="256" y1="336" x2="256" y2="286" stroke="#0E3838" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 256 290 Q 292 300 300 326 Q 274 320 256 312 Z" fill="#F0CE7E"/>
+  </g>
+
+</svg>
