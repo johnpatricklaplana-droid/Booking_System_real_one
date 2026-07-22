@@ -303,7 +303,7 @@ export function ServiceDetails() {
                             })}
                         </div>  
                         <p className="text-[0.75rem] font-semibold uppercase tracking-[0.8em] text-(--text-3) mb-3.5 mt-10">Select Staff</p>
-                        <div className="mb-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="mb-8 flex flex-wrap gap-4">
                             {staff?.map(s => {
                                 const dis: boolean = s.staffUnavailable.length && selectedTime?.value && serviceDetails?.duration ? isStaffUnavailableInThisTimeRange(selectedDate, selectedTime?.value!, business?.timezone!, s.staffUnavailable,Number(durationAsMinutes(serviceDetails?.duration))) : false;
                                 return (
@@ -321,8 +321,8 @@ export function ServiceDetails() {
                                         >
                                             <img className="w-9 h-9 rounded-[50%]" src={s.avatarUrl} alt="" />
                                             <div>
-                                                <h1 className="text-(--text-1) text-sm">{s.fullName}</h1>
-                                                <p className="text-(--text-2) text-xs">{s.title}</p>
+                                                <h1 className="text-(--text-1) text-start text-sm">{s.fullName}</h1>
+                                                <p className="text-(--text-2) text-start text-xs">{s.title}</p>
                                             </div>
                                         </button>
                                     </div>
