@@ -50,20 +50,20 @@
     --rdp-accent-color: var(--gold) !important;
 }
 
-.rdp-day {
-    margin-left: auto;
-    margin-right: auto;
+.rdp-day_button {
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 .rdp-month_grid {
-    width: 100%;
-    table-layout: fixed;
+    width: 100% !important;
+    table-layout: fixed !important;
 }
 
 .rdp-weekdays,
 .rdp-week {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    width: var(--rdp-day-width, 40px);
+    min-width: 0;
 }
 
 @layer components {

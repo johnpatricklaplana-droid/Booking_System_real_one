@@ -33,6 +33,10 @@ export function BookingDatePicker({
                 selectDate(date ?? new Date());
                 setSelected(date);
             }}
+            style={{
+                '--rdp-day-width': '14.28%', // 100% / 7 days
+                '--rdp-day-height': '40px',
+            } as React.CSSProperties}
             disabled={(date) => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
