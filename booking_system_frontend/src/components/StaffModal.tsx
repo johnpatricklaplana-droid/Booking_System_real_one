@@ -19,11 +19,12 @@ export function StaffModal({
     const [selected, setSelected] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
     const [services, setServices] = useState<ServiceWithRatings[]>([]);
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState<File | null>(null);
     const [inputs, setInputs] = useState({
         fullName: "",
         title: ""
     });
+    const [fileSizeError, setFileSizeError] = useState<string | null>(null);
 
     const businessId = useUser().activeBusiness?.businessId;
 
@@ -43,8 +44,16 @@ export function StaffModal({
 
     }, [businessId]);
 
+    const MAX_SIZE_MB = 5;
     const handleImageChange = (e: any) => {
-        const file = e.target.files[0];
+        const file: File = e.target.files[0];
+       console.log(file.size * (1024 * 1024));
+        if(file.size > MAX_SIZE_MB * (1024 * 1024)) {
+            setFileSizeError("Maximum upload size exceeded");
+            return;
+        } else {
+            setFileSizeError(null);
+        }
 
         setImage(file);
     };
@@ -111,7 +120,7 @@ export function StaffModal({
                 </div>
 
                 <div className="max-h-[70vh] overflow-y-auto space-y-4 px-6 py-5">
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-center gap-1">
                         <div className="flex h-36 w-36 mx-auto relative group shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--bg) text-sm font-semibold text-(--gold) ring-1 ring-white/10">
                             {image !== null 
                             && <img
@@ -128,6 +137,7 @@ export function StaffModal({
                                 <input type="file" onChange={handleImageChange} hidden id="imageInput" />
                             </label>
                         </div>
+                        <p className="text-red-700">{fileSizeError}</p>
                     </div>
 
                     <div>
@@ -201,7 +211,7 @@ export function StaffModal({
                         </div>
                     </div>
 
-                    {error && <p className="text-sm text-red-400">{error}</p>}
+                    {error && <p className="text-sm text-center text-red-400">error happens</p>}
                 </div>
 
                 <div className="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
