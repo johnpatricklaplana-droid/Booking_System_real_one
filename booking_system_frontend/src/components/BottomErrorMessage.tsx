@@ -11,7 +11,7 @@ Readonly<{
     head: string 
 }>) {
     return (
-        <div className={`w-95 rounded-2xl border ${success ? 'border-(--teal)/40 bg-[#0f2222]' : 'border-[#6b1f28] bg-[#221214]'} backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.6)] p-5 flex gap-4 items-start fixed z-50 bottom-4 right-4 overflow-hidden opacity-0 translate-y-2 animate-[fade-in_0.4s_ease-out_forwards] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.75)] hover:-translate-y-0.5`}>
+        <div className={`lg:w-95 sm:w-95 w-[90%] lg:right-4 bottom-4 sm:right-4 rounded-2xl border ${success ? 'border-(--teal)/40 bg-[#0f2222]' : 'border-[#6b1f28] bg-[#221214]'} backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.6)] p-5 flex gap-4 items-start fixed z-50 overflow-hidden opacity-0 translate-y-2 animate-[fade-in_0.4s_ease-out_forwards] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.75)] hover:-translate-y-0.5`}>
             <div className={`absolute left-0 top-0 bottom-0 w-0.75 bg-linear-to-b ${success ? 'from-(--teal)/80 via-(--teal) to-(--teal)/40' : 'from-[#e0453f]/80 via-[#c93a35] to-[#e0453f]/40'}`} />
 
             <div className="absolute inset-0 rounded-2xl pointer-events-none ring-1 ring-inset ring-[#d4af37]/8" />
@@ -22,8 +22,8 @@ Readonly<{
                 </div>
             </div>
 
-            <div className="flex-1 min-w-0 pr-1">
-                <h4 className="text-[14.5px] font-semibold text-[#f2f0ea] tracking-[-0.01em] leading-snug">
+            <div className="flex-1 min-w-0">
+                <h4 className="text-[14.5px] font-semibold text-[#f2f0ea] tracking-[-0.01em] leading-1">
                     {head}
                 </h4>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-[#a8a5a0] font-normal">

@@ -4,6 +4,7 @@ import type { CustomerAppointments, ServiceResponse } from "../interfaces/Types"
 import { post } from "../api/api";
 import { ErrorMessage } from "./BottomErrorMessage";
 import { API_URL } from "../api/config";
+import { SpinnerLoading } from "./SpinnerLoading";
 
 export default function ReviewModal({ 
     onClose, 
@@ -21,10 +22,13 @@ export default function ReviewModal({
     const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState("");
     const [ratingSuccess, setRatingSuccess] = useState<boolean>(false);
+    const [sending, setSending] = useState<boolean>(false);
 
     const addReview = async () => {
 
-        const url = `/${API_URL}api/review`;
+        setSending(true);
+
+        const url = `${API_URL}/api/review`;
 
         const body = {
             rating: rating,
@@ -35,7 +39,7 @@ export default function ReviewModal({
         const result = await post(url, body);
 
         if(result.status === 201) {
-            console.log("good one");
+            setSending(false);
             setRatingSuccess(true);
 
             setBooking((prev: CustomerAppointments[]) => prev.map(p => {
@@ -133,9 +137,12 @@ export default function ReviewModal({
                     <button
                         disabled={rating === 0}
                         onClick={addReview}
-                        className="flex-1 rounded-xl bg-(--gold) px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
+                        className="flex-1 rounded-xl flex items-center justify-center bg-(--gold) px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
                     >
-                        Submit Review
+                        {sending 
+                            ? <SpinnerLoading color="black" />
+                            : 'Submit Review'
+                        }
                     </button>
                 </div>
             </div>
