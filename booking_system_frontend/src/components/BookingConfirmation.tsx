@@ -1,17 +1,6 @@
-import { Calendar, Clock, Users, X, Check, Waves } from "lucide-react";
+import { Calendar, Clock, Users, X, Waves } from "lucide-react";
 import type { ServiceResponse, Staff, Time } from "../interfaces/Types";
-
-// Hardcoded booking data — swap this block for real props later
-const booking = {
-    serviceName: "Deep Sea Detailing",
-    staffName: "Miguel Santos",
-    day: "TUE",
-    date: "Jul 14",
-    year: 2026,
-    time: "3:30 PM",
-    capacity: 2,
-    price: 1800,
-};
+import { SpinnerLoading } from "./SpinnerLoading";
 
 export default function DaddysHomeBookingTicket({ 
     service,
@@ -20,6 +9,7 @@ export default function DaddysHomeBookingTicket({
     time,
     onClick,
     onClose,
+    sending,
 }: Readonly<{
     service: ServiceResponse,
     staff: Staff,
@@ -27,6 +17,7 @@ export default function DaddysHomeBookingTicket({
     time: Time,
     onClick: any,
     onClose: any,
+    sending: any;
 }> ) {
 
     return (
@@ -58,7 +49,7 @@ export default function DaddysHomeBookingTicket({
                         <h3 className="dht-service">{service?.serviceName}</h3>
                         <div className="dht-staff">
                             <span className="dht-staff-avatar dht-staff-avatar--fallback">
-                                {booking.staffName[0]}
+                                {staff.fullName}
                             </span>
                             <span>{staff?.fullName}</span>
                         </div>
@@ -98,7 +89,7 @@ export default function DaddysHomeBookingTicket({
                             <Users size={12} strokeWidth={2.5} /> Guests
                         </span>
                         <span className="dht-stat-value">{service?.capacity}</span>
-                        <span className="dht-stat-sub">{booking.capacity === 1 ? "person" : "people"}</span>
+                        <span className="dht-stat-sub">{service.capacity === 1 ? "person" : "people"}</span>
                     </div>
                 </div>
 
@@ -107,14 +98,17 @@ export default function DaddysHomeBookingTicket({
                     <span className="dht-price-value">₱{service?.price.toLocaleString()}</span>
                 </div>
 
-                {/* CTA */}
                 <button
                     className={`dht-cta`}
                     onClick={() => {
                       onClick();
                     }}
+                    disabled={sending}
                 >  
-                  <Check size={16} strokeWidth={3} /> Booking Confirmed
+                  {sending
+                    ? <SpinnerLoading color="black" />
+                    : 'Confirm Booking'
+                  }
                 </button>
             </div>
 

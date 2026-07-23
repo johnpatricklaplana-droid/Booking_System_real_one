@@ -3,17 +3,17 @@ package com.example.demo.service;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.coyote.BadRequestException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.request.SaveScheduleDto;
@@ -34,6 +34,7 @@ import com.example.demo.entity.StaffUnavailable;
 import com.example.demo.entity.Users;
 import com.example.demo.enums.ScheduleStatus;
 import com.example.demo.enums.ScheduleStatusForCustomerUpdate;
+import com.example.demo.exceptions.ConflictHappensException;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
@@ -138,7 +139,24 @@ public class ScheduleService {
 
         staffUnavailableRepo.save(unavailable);
         
-        scheduleRepo.save(schedule);
+        try {
+            scheduleRepo.saveAndFlush(schedule);
+        } catch (DataIntegrityViolationException ex) {
+
+            Throwable cause = ex;
+            while (cause != null) {
+                if (cause.getMessage() != null &&
+                    cause.getMessage().contains("no_overlapping_user_bookings")) {
+        
+                    throw new ConflictHappensException(
+                        "You already have an appointment scheduled during this time. Please choose a different time."
+                    );
+                }
+        
+                cause = cause.getCause();
+            }
+            throw ex;
+        }
 
         Staff staff = staffRepo.findById(scheduleDto.getStaffId()).orElse(null);
         staff.getUnavailable().add(unavailable);

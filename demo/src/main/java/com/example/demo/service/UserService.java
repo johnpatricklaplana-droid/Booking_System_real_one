@@ -33,7 +33,7 @@ import com.example.demo.entity.ServiceCategory;
 import com.example.demo.entity.Users;
 import com.example.demo.exceptions.InvalidInputsException;
 import com.example.demo.exceptions.ResourceNotFoundException;
-import com.example.demo.exceptions.UserAlreadyExistsException;
+import com.example.demo.exceptions.ConflictHappensException;
 import com.example.demo.helper.UserHelper;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceMapper;
@@ -282,7 +282,7 @@ public class UserService {
                 request.getBusinessId(),
                 request.getServiceName())) {
 
-            throw new UserAlreadyExistsException("service already exist");
+            throw new ConflictHappensException("service already exist");
         }
 
         if(file.isEmpty()) {

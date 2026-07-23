@@ -16,8 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
-        @ExceptionHandler(UserAlreadyExistsException.class)
-        public ResponseEntity<AuthResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        @ExceptionHandler(ConflictHappensException.class)
+        public ResponseEntity<AuthResponse> handleUserAlreadyExists(ConflictHappensException ex) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

@@ -9,39 +9,7 @@ import DaddysHomeBanner from "../components/DaddysHomeBanner";
 import DaddysHomeBookingTicket from "../components/BookingConfirmation";
 import StarRating from "../components/Star";
 import { API_URL } from "../api/config";
-
-function BookingResultModal ({ 
-    serviceDetails, 
-    selectedStaff, 
-    selectedTime, 
-    selectedDate 
-}: 
-    Readonly<{ 
-        serviceDetails: ServiceResponse | null, 
-        selectedStaff: string, 
-        selectedTime: Time | null, 
-        selectedDate: Date 
-    }>) {
-    return (
-        <div className="bg-(--surface) w-[90%] top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] z-50 lg:w-125 fixed border border-(--teal)/30 rounded-xl p-8 text-center">
-            <div className="w-12 h-12 rounded-full bg-(--teal-dim) flex items-center justify-center mx-auto mb-4">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-(--teal)">
-                    <path d="M20 6L9 17l-5-5" />
-                </svg>
-            </div>
-            <div className="text-(--text-1) text-[1.125rem] font-semibold mb-1.5">You're all set</div>
-            <p className="text-(--text-2) text-sm mb-1">{serviceDetails?.serviceName} with {selectedStaff}</p>
-            <p className="text-(--text-3) text-[0.8125rem] mb-6">
-                {selectedDate?.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · {selectedTime?.label}
-            </p>
-            <button
-                className="text-(--gold) text-sm font-medium hover:underline"
-            >
-                View my bookings →
-            </button>
-        </div> 
-    );
-}
+import BookingResultModal from "../components/BookingResultModal";
 
 function dayAsNumber(day: string): number {
     if (day === "MONDAY") {
@@ -61,6 +29,11 @@ function dayAsNumber(day: string): number {
     }
 }
 
+export const toMinutes = (t: string): number => {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+};
+
 export function ServiceDetails() {
 
     const [serviceDetails, setServiceDetails] = useState<ServiceResponse | null>(null);
@@ -75,6 +48,7 @@ export function ServiceDetails() {
     const [openBookingConfirmation, setOpenBookingConfirmation] = useState<boolean>(false);
     const [validTime, setValidTime] = useState<boolean>();
     const [servicesFromSameBusiness, setServicesFromSameBusiness] = useState<ServiceWithBusiness[]>([]);
+    const [sending, setSending] = useState<boolean>(false);
     
     const { serviceId } = useParams();
 
@@ -157,6 +131,8 @@ export function ServiceDetails() {
 
         if(!selectedDate) return;
 
+        setSending(true);
+
         const datetimeWithTimeZone = buildBookingPayloadTime(selectedDate, selectedTime?.value, business?.timezone ?? "");
 
         const body: { startsAt: string, staffId: string, serviceId: string } = {
@@ -167,37 +143,31 @@ export function ServiceDetails() {
 
         const url = `${API_URL}/api/schedule`;
 
-        try {
-            const result = await post(url, body);
+        const result = await post(url, body);
 
-            if (result.status === 201) {
-                setStaff(prev => prev 
-                    ? prev.map(s => { 
-                        if (s.id === result.message.id) { return result.message };
-                        return s; 
-                      }) 
-                    : [result.message]);
-                console.log(result.message);
-                setBookingResult({ success: true, message: "super success" });
-                setOpenBookingConfirmation(false);
+        if (result.status === 201) {
+            setStaff(prev => prev 
+                ? prev.map(s => { 
+                    if (s.id === result.message.id) { return result.message };
+                    return s; 
+                  }) 
+                : [result.message]);
+            setBookingResult({ success: true, message: "super success" });
+            setOpenBookingConfirmation(false);
 
-                // clear selected date time and some
-                setSelectedStaff(null);
-            }
-        } catch (error) {
-            console.log(error);
-            setBookingResult({ success: false, message: "something went super wrong try again later" });
+            // clear selected date time and some
+            setSelectedStaff(null);
+            setSending(false);
+        } else if(result.status === 409) {
+            setBookingResult({ success: false, message: result.message });
+            setOpenBookingConfirmation(false);
+            setSending(false);
         }
+        
+        // setTimeout(() => {
+        //     setBookingResult(null);
+        // }, 4000);
 
-        setTimeout(() => {
-            setBookingResult(null);
-        }, 2000);
-
-    };
-
-    const toMinutes = (t: string): number => {
-        const [h, m] = t.split(':').map(Number);
-        return h * 60 + m;
     };
 
     const isTimeCanDoIt = (sa: ServiceAvailability): boolean => {
@@ -217,9 +187,9 @@ export function ServiceDetails() {
                 <img className="rounded-[50%] w-40 h-40" src={business?.businessLogoUrl} alt="" />
             </DaddysHomeBanner>
 
-            {openBookingConfirmation && <DaddysHomeBookingTicket onClick={book} onClose={() => setOpenBookingConfirmation(false)} staff={selectedStaff!} service={serviceDetails!} date={selectedDate} time={selectedTime!} />}
+            {openBookingConfirmation && <DaddysHomeBookingTicket sending={sending} onClick={book} onClose={() => setOpenBookingConfirmation(false)} staff={selectedStaff!} service={serviceDetails!} date={selectedDate} time={selectedTime!} />}
 
-            {bookingResult && <BookingResultModal selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff?.id!} />}
+            {bookingResult && <BookingResultModal onClose={() => setBookingResult(null)} success={bookingResult?.success} selectedTime={selectedTime} selectedDate={selectedDate} serviceDetails={serviceDetails} selectedStaff={selectedStaff} />}
 
             <div className="min-h-screen lg:p-8 p-6 max-w-280 mx-auto">
                 <div className="grid lg:grid-cols-[1fr_340px] gap-12 pt-12 items-start">
@@ -431,7 +401,7 @@ export function ServiceDetails() {
             <div className="sticky lg:hidden flex backdrop-blur-2xl items-center gap-4 justify-end bottom-0 border-t border-t-(--border) py-4 px-6">
                 <p className="text-(--text-1)">₱{serviceDetails?.price.toLocaleString()}</p>
                 <button 
-                    className="btn-primary py-2 px-4 rounded-sm"
+                    className="btn-primary py-2 cursor-pointer px-4 rounded-sm"
                     disabled={notGoods()}
                     onClick={() => setOpenBookingConfirmation(true)}
                 >Book now

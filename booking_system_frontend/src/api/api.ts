@@ -1,27 +1,20 @@
 export async function post(url: string, body: any) {
 
-    try {
-        const result = await fetch(url, {
-            method: "POST",
-            credentials: 'include',
-            body: JSON.stringify(body),
-            headers: {
-                "Content-Type": "application/json"
-            },
-        });
+    const result = await fetch(url, {
+        method: "POST",
+        credentials: 'include',
+        body: JSON.stringify(body),
+        headers: {
+            "Content-Type": "application/json"
+        },
+    });
 
-        if(!result.ok) {
-            console.log(result.json());
-            throw new Error("super bad one");
-        }
-
-        const response = await result.json();
-        console.log(response);
-        return response;
-    } catch (error) {
-        console.error(error);
-        throw new Error("super bad one");
+    if(!result.ok) {
+        return result.json();
     }
+
+    return await result.json();
+
 }
 
 export async function login(url: string, token: string) {

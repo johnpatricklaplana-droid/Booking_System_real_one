@@ -642,7 +642,7 @@ function CancelBookingModal({
     };
 
     return (
-        <div className="inset-0 z-100 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
+        <div className="inset-0 fixed z-100 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
             <div
                 className={`w-full max-w-md rounded-2xl border bg-(--surface) p-6 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.6)] ${isLocked ? "border-red-500/20" : "border-(--gold)/20"}`}
             >
@@ -690,7 +690,7 @@ function CancelBookingModal({
                     <div className="flex justify-between py-1">
                         <span className="text-neutral-500">Appointment</span>
                         <strong className="text-neutral-200">
-                            {new Date(appointment.schedule.startsAt).toLocaleDateString()} · {new Date(appointment.schedule.startsAt).toLocaleTimeString()}
+                            {new Date(appointment.schedule.startsAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit' })} · {new Date(appointment.schedule.startsAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </strong>
                     </div>
                 </div>
@@ -752,7 +752,7 @@ function CancelBookingModal({
 
                 {isLocked && (
                     <>
-                        <div className="mb-6 flex items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/[0.06] px-3.5 py-3 text-[13px] text-red-300">
+                        <div className="mb-6 flex items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/6 px-3.5 py-3 text-[13px] text-red-300">
                             <Ban className="mt-0.5 h-4 w-4 shrink-0" />
                             <span>
                                 This appointment starts in under 2 hours, so it&apos;s too late to cancel online.
