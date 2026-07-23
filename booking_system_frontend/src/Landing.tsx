@@ -3,7 +3,8 @@ import {
     CalendarCheck, Users, BarChart3, ShieldCheck, Clock3,
     Sparkles, ArrowRight, Menu, X as XIcon, CheckCircle2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "./provider/UserContext";
 
 /**
  * Daddy's Home — marketing landing page.
@@ -83,6 +84,17 @@ const steps = [
 export function Landing() {
     const [navOpen, setNavOpen] = useState(false);
     const [heroIn, setHeroIn] = useState(false);
+    const [loggedIn, setLoggedIn] = useState<boolean>(false);
+
+    const user = useUser();
+
+    useEffect(() => {
+
+        if(!user) return;
+
+        setLoggedIn(true);
+
+    }, [user]);
 
     useEffect(() => {
         const existing = document.getElementById("daddys-home-loader-fonts");
@@ -120,6 +132,18 @@ export function Landing() {
         []
     );
 
+    const navigate = useNavigate();
+
+    const goToApp = () => {
+
+        if (user.user?.activeRole === "CUSTOMER") {
+            navigate('/customer/home');
+        } else {
+            navigate('/business');
+        }
+
+    };
+
     return (
         <div className="bg-(--bg) min-h-screen">
             <style>{CSS}</style>
@@ -141,15 +165,28 @@ export function Landing() {
                     </nav>
 
                     <div className="hidden md:flex items-center gap-3">
-                        <Link 
-                            className="px-4 py-2 text-[13px] font-medium text-(--text-2) hover:text-(--text-1) transition-colors"
-                            to={'login'}
-                        >
-                            Log in
-                        </Link>
-                        <button className="px-4 py-2 bg-linear-to-br from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) hover:shadow-lg hover:shadow-(--gold)/20 transition-all">
-                            Get started free
-                        </button>
+                        {loggedIn 
+                            ?   <button
+                                    className="px-4 py-2 bg-linear-to-br cursor-pointer from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) hover:shadow-lg hover:shadow-(--gold)/20 transition-all"
+                                    onClick={goToApp}
+                                >
+                                    Go to app <ArrowRight size={14} className="inline ml-1" strokeWidth={2.5} />
+                                </button>
+                            : <>
+                                    <Link
+                                        className="px-4 py-2 text-[13px] font-medium text-(--text-2) hover:text-(--text-1) transition-colors"
+                                        to={'login'}
+                                    >
+                                        Log in
+                                    </Link>
+                                    <Link
+                                        className="px-4 py-2 bg-linear-to-br cursor-pointer from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) hover:shadow-lg hover:shadow-(--gold)/20 transition-all"
+                                        to={'signup'}
+                                    >
+                                        Get started free
+                                    </Link>
+                                </>
+                        }
                     </div>
 
                     <button
@@ -166,9 +203,17 @@ export function Landing() {
                         <a href="#features" onClick={() => setNavOpen(false)}>Features</a>
                         <a href="#how-it-works" onClick={() => setNavOpen(false)}>How it works</a>
                         <a href="#pricing" onClick={() => setNavOpen(false)}>Pricing</a>
-                        <button className="mt-2 px-4 py-2.5 bg-linear-to-br from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) text-left">
-                            Get started free
-                        </button>
+                        {loggedIn
+                            ? <button
+                                className="px-4 py-2 bg-linear-to-br cursor-pointer from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) hover:shadow-lg hover:shadow-(--gold)/20 transition-all"
+                                onClick={goToApp}
+                            >
+                                Go to app <ArrowRight size={14} className="inline ml-1" strokeWidth={2.5} />
+                            </button>
+                            : <button className="mt-2 px-4 py-2.5 bg-linear-to-br from-(--gold) to-(--gold-light) rounded-lg text-[13px] font-medium text-(--bg) text-left">
+                                Get started free
+                            </button>
+                        }
                     </div>
                 )}
             </header>
@@ -264,9 +309,17 @@ export function Landing() {
                         schedule staff, manage availability, and never double-book again.
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
-                        <button className="dh-btn-primary">
-                            Get started free <ArrowRight size={16} strokeWidth={2.5} />
-                        </button>
+                        {loggedIn 
+                            ?   <button
+                                    className="dh-btn-primary"
+                                    onClick={goToApp}
+                                >
+                                    Go to app <ArrowRight size={14} className="inline ml-1" strokeWidth={2.5} />
+                                </button>
+                            :   <button className="dh-btn-primary">
+                                    Get started free <ArrowRight size={16} strokeWidth={2.5} />
+                                </button>
+                        }
                         <a href="#how-it-works" className="dh-btn-ghost">
                             See how it works
                         </a>
@@ -340,9 +393,17 @@ export function Landing() {
                             </li>
                         ))}
                     </ul>
-                    <button className="dh-btn-primary mx-auto">
-                        Get started free <ArrowRight size={16} strokeWidth={2.5} />
-                    </button>
+                    {loggedIn
+                        ? <button
+                            className="dh-btn-primary"
+                            onClick={goToApp}
+                        >
+                            Go to app <ArrowRight size={14} className="inline ml-1" strokeWidth={2.5} />
+                        </button>
+                        : <button className="dh-btn-primary">
+                            Get started free <ArrowRight size={16} strokeWidth={2.5} />
+                        </button>
+                    }
                 </div>
             </section>
 

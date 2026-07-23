@@ -4,6 +4,7 @@ import { CheckIcon, CircleUser, ArrowBigLeftDash } from "lucide-react";
 import { useUser } from "../provider/UserContext";
 import { PostFormData, update } from "../api/api";
 import { API_URL } from "../api/config";
+import { CustomerNavBar } from "../components/custumerNavBar";
 
 const mockUser = {
     name: "Juan dela Cruz",
@@ -193,6 +194,8 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
     const [saving, setSaving] = useState(false);
     const [updateProfileSuccess, setUpdateProfileSuccess] = useState<UpdateProfileSuccess>({open: false, closeIn: 3});
 
+    const navigate = useNavigate();
+
     const handleCloseOpen = () => {
         setCloseOpen(cp => cp ? false : true);
     };
@@ -250,6 +253,7 @@ function ProfileHeader({ onBecomeSellerClick }: { onBecomeSellerClick: () => voi
 
         if(result.status === 200) {
             setUser?.(prev => ({ ...prev!, activeRole: "BUSINESS_OWNER" }));
+            navigate('/business');
         }
     };
 

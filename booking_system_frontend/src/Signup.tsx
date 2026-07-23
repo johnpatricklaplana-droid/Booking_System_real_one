@@ -1,10 +1,10 @@
 import { Mail, Lock, ArrowRight, CalendarCheck, Bell, Shield, Star, Smartphone, Bookmark } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebase_config';
-import { post } from '../api/api';
 import { useNavigate, Link } from 'react-router';
-import { API_URL } from '../api/config';
+import { auth } from './firebase/firebase_config';
+import { API_URL } from './api/config';
+import { post } from './api/api';
 
 const benefits = [
     { icon: CalendarCheck, text: 'Easy booking and scheduling' },
@@ -168,7 +168,6 @@ export function Signup() {
 
     return (
         <>
-            {/* ── Keyframes ── */}
             <style>{`
                 @keyframes drawRing {
                     to { stroke-dashoffset: 0; }
@@ -196,7 +195,7 @@ export function Signup() {
                         <SuccessRing />
 
                         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#c9a87c] mb-3">
-                            Welcome to Apex
+                            Welcome to Daddy's Home
                         </p>
                         <h2 className="text-[28px] font-medium text-[#e8e8ea] mb-3 leading-tight">
                             Your account is ready.
@@ -227,17 +226,16 @@ export function Signup() {
                 </div>
             )}
 
-            {/* ── Main layout ── */}
             <div className="min-h-screen bg-[#0a0a0c] flex">
 
                 {/* Left — Form */}
-                <div className="w-1/2 flex items-center justify-center p-8">
+                <div className="lg:w-1/2 w-full flex items-center justify-center p-8">
                     <div className="w-full max-w-md">
                         <Link to="/landing" className="inline-flex items-center gap-3 mb-12">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c9a87c] to-[#9d8fb5] flex items-center justify-center">
-                                <span className="text-[#0a0a0c] font-semibold">A</span>
+                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#c9a87c] to-[#9d8fb5] flex items-center justify-center">
+                                <span className="text-[#0a0a0c] font-semibold">DH</span>
                             </div>
-                            <span className="text-[18px] font-medium text-[#e8e8ea]">Apex</span>
+                            <span className="text-[18px] font-medium text-[#e8e8ea]">Daddy's Home</span>
                         </Link>
 
                         <div className="mb-8">
@@ -395,8 +393,8 @@ export function Signup() {
                 </div>
 
                 {/* Right — Benefits panel (unchanged) */}
-                <div className="w-1/2 relative overflow-hidden bg-gradient-to-br from-[#151518] to-[#0a0a0c] border-l border-[rgba(255,255,255,0.06)]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#c9a87c]/10 via-transparent to-[#9d8fb5]/10" />
+                <div className="w-1/2 relative lg:block hidden overflow-hidden bg-linear-to-br from-[#151518] to-[#0a0a0c] border-l border-[rgba(255,255,255,0.06)]">
+                    <div className="absolute inset-0 bg-linear-to-br from-[#c9a87c]/10 via-transparent to-[#9d8fb5]/10" />
 
                     <div className="relative h-full flex flex-col items-center justify-center p-16">
                         <div className="mb-12 text-center">

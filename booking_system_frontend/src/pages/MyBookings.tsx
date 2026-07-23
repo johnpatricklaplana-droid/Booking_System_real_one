@@ -30,6 +30,7 @@ import StarRating from "../components/Star";
 import { useNavigate } from "react-router-dom";
 import { SpinnerLoading } from "../components/SpinnerLoading";
 import { API_URL } from "../api/config";
+import { CustomerNavBar } from "../components/custumerNavBar";
 
 type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "MISSED";
 
@@ -467,7 +468,7 @@ export default function MyBookingsPage() {
     };
 
     return (
-        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
             {openReview && (
                 <ReviewModal
                     setBooking={setAppointments}
@@ -477,113 +478,116 @@ export default function MyBookingsPage() {
                 />
             )}
 
-            <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
-                <div>
-                    <h1 className="text-3xl font-semibold text-white sm:text-4xl">My Bookings</h1>
-                    <p className="mt-2 text-[0.95rem] text-neutral-400">
-                        Manage your upcoming appointments and review your previous bookings.
-                    </p>
+            <div className="px-4 py-10 sm:px-6 lg:px-8 bg-(--bg)">
+                <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+                    <div>
+                        <h1 className="text-3xl font-semibold text-white sm:text-4xl">My Bookings</h1>
+                        <p className="mt-2 text-[0.95rem] text-neutral-400">
+                            Manage your upcoming appointments and review your previous bookings.
+                        </p>
+                    </div>
+                    <OutlinedButton className="w-full sm:w-auto">
+                        Explore Services
+                        <ChevronRight className="h-4 w-4" />
+                    </OutlinedButton>
                 </div>
-                <OutlinedButton className="w-full sm:w-auto">
-                    Explore Services
-                    <ChevronRight className="h-4 w-4" />
-                </OutlinedButton>
-            </div>
 
-            <div className="mt-8 flex flex-wrap gap-2">
-                {filters.map((f) => (
-                    <button
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        className={`py-2 px-4 border cursor-pointer active:text-(--gold) active:bg-(--gold-light) transition-colors rounded-2xl ${filter === f ? "border-(--gold) text-(--gold) shadow shadow-amber-200" : "text-(--text-2) border-(--gold)"
-                            }`}
-                    >
-                        {f}
-                    </button>
-                ))}
-            </div>
-
-            <div className="mt-5">
-                <div className="relative flex-1">
-                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-                    <input
-                        type="text"
-                        placeholder="Search bookings..."
-                        className="w-full rounded-xl border border-white/10 bg-(--surface) py-2.5 pl-10 pr-4 text-sm text-neutral-200 placeholder:text-neutral-500 transition-all duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-(--gold)/30"
-                    />
+                <div className="mt-8 flex flex-wrap gap-2">
+                    {filters.map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={`py-2 px-4 border cursor-pointer active:text-(--gold) active:bg-(--gold-light) transition-colors rounded-2xl ${filter === f ? "border-(--gold) text-(--gold) shadow shadow-amber-200" : "text-(--text-2) border-(--gold)"
+                                }`}
+                        >
+                            {f}
+                        </button>
+                    ))}
                 </div>
-            </div>
 
-            {!hasAnyBookings ? (
-                <div className="mt-10">
-                    <EmptyState />
+                <div className="mt-5">
+                    <div className="relative flex-1">
+                        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                        <input
+                            type="text"
+                            placeholder="Search bookings..."
+                            className="w-full rounded-xl border border-white/10 bg-(--surface) py-2.5 pl-10 pr-4 text-sm text-neutral-200 placeholder:text-neutral-500 transition-all duration-200 focus:border-(--gold)/50 focus:outline-none focus:ring-1 focus:ring-(--gold)/30"
+                        />
+                    </div>
                 </div>
-            ) : (
-                <>
-                    {todayBooking && (filter === "all" || filter === "today") && (
-                        <div className="mt-10 space-y-4">
-                            {todayBooking.map((tod) => (
-                                <TodayBookingCard key={tod.schedule.id} booking={tod} />
-                            ))}
-                        </div>
-                    )}
 
-                    {upcomingBooking.length > 0 && (filter === "all" || filter === "upcoming") && (
-                        <div className="mt-12">
-                            <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
-                            <div className="mt-5 space-y-4">
-                                {upcomingBooking.map((ub) => (
-                                    <ConfirmedBookingCard 
-                                        setAppointments={setAppointments}
-                                        key={ub.schedule.id} 
-                                        booking={ub} 
-                                    />
+                {!hasAnyBookings ? (
+                    <div className="mt-10">
+                        <EmptyState />
+                    </div>
+                ) : (
+                    <>
+                        {todayBooking && (filter === "all" || filter === "today") && (
+                            <div className="mt-10 space-y-4">
+                                {todayBooking.map((tod) => (
+                                    <TodayBookingCard key={tod.schedule.id} booking={tod} />
                                 ))}
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {upcomingBooking.length === 0 && (filter === "all" || filter === "upcoming") && (
-                        <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-(--surface) px-6 py-16 text-center">
-                            <AlertCircle className="mb-4 h-8 w-8 text-neutral-600" />
-                            <p className="text-neutral-400">No bookings match this filter.</p>
-                        </div>
-                    )}
-
-                    {pendingBookings.length > 0 && (filter === "all" || filter === "pending") && (
-                        <div className="mt-12">
-                            <h2 className="text-xl font-semibold text-white">Pending Bookings</h2>
-                            <div className="mt-5 space-y-4">
-                                {pendingBookings.map((pb) => (
-                                    <PendingBookingCard key={pb.schedule.id} booking={pb} />
-                                ))}
+                        {upcomingBooking.length > 0 && (filter === "all" || filter === "upcoming") && (
+                            <div className="mt-12">
+                                <h2 className="text-xl font-semibold text-white">Upcoming Bookings</h2>
+                                <div className="mt-5 space-y-4">
+                                    {upcomingBooking.map((ub) => (
+                                        <ConfirmedBookingCard
+                                            setAppointments={setAppointments}
+                                            key={ub.schedule.id}
+                                            booking={ub}
+                                        />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {filteredHistory.length > 0 && (filter === "all" || filter === "completed") && (
-                        <div className="mt-12">
-                            <h2 className="text-xl font-semibold text-white">Booking History</h2>
-                            <div className="mt-5 space-y-4">
-                                {filteredHistory.map((b) => (
-                                    <CompletedBookingCard key={b.schedule.id} booking={b} onOpenReview={openReviewFor} />
-                                ))}
+                        {upcomingBooking.length === 0 && (filter === "all" || filter === "upcoming") && (
+                            <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-(--surface) px-6 py-16 text-center">
+                                <AlertCircle className="mb-4 h-8 w-8 text-neutral-600" />
+                                <p className="text-neutral-400">No bookings match this filter.</p>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {missedBookings.length > 0 && (filter === "all" || filter === "missed") && (
-                        <div className="mt-12">
-                            <h2 className="text-xl font-semibold text-white">Missed Bookings</h2>
-                            <div className="mt-5 space-y-4">
-                                {missedBookings.map((mb) => (
-                                    <MissedBookingCard key={mb.schedule.id} booking={mb} />
-                                ))}
+                        {pendingBookings.length > 0 && (filter === "all" || filter === "pending") && (
+                            <div className="mt-12">
+                                <h2 className="text-xl font-semibold text-white">Pending Bookings</h2>
+                                <div className="mt-5 space-y-4">
+                                    {pendingBookings.map((pb) => (
+                                        <PendingBookingCard key={pb.schedule.id} booking={pb} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </>
-            )}
+                        )}
+
+                        {filteredHistory.length > 0 && (filter === "all" || filter === "completed") && (
+                            <div className="mt-12">
+                                <h2 className="text-xl font-semibold text-white">Booking History</h2>
+                                <div className="mt-5 space-y-4">
+                                    {filteredHistory.map((b) => (
+                                        <CompletedBookingCard key={b.schedule.id} booking={b} onOpenReview={openReviewFor} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {missedBookings.length > 0 && (filter === "all" || filter === "missed") && (
+                            <div className="mt-12">
+                                <h2 className="text-xl font-semibold text-white">Missed Bookings</h2>
+                                <div className="mt-5 space-y-4">
+                                    {missedBookings.map((mb) => (
+                                        <MissedBookingCard key={mb.schedule.id} booking={mb} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+            
         </div>
     );
 }
@@ -639,10 +643,9 @@ function CancelBookingModal({
     };
 
     return (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
+        <div className="inset-0 z-100 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
             <div
-                className={`w-full max-w-md rounded-2xl border bg-(--surface) p-6 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.6)] ${isLocked ? "border-red-500/20" : "border-(--gold)/20"
-                    }`}
+                className={`w-full max-w-md rounded-2xl border bg-(--surface) p-6 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.6)] ${isLocked ? "border-red-500/20" : "border-(--gold)/20"}`}
             >
                 <div className="mb-5 flex items-start gap-3">
                     <div

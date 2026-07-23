@@ -2,10 +2,10 @@ import { Link, useNavigate } from 'react-router';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebase_config';
-import { login } from '../api/api';
-import { useUser } from '../provider/UserContext';
-import { API_URL } from '../api/config';
+import { auth } from './firebase/firebase_config';
+import { login } from './api/api';
+import { useUser } from './provider/UserContext';
+import { API_URL } from './api/config';
 
 interface AuthData {
     email: string;
@@ -115,14 +115,14 @@ export function Login() {
             <div className="min-h-screen bg-[#0a0a0c] flex">
 
                 {/* ── Left — Form ── */}
-                <div className="w-1/2 flex items-center justify-center p-8">
+                <div className="lg:w-1/2 w-full flex items-center justify-center p-8">
                     <div className="w-full max-w-md">
 
                         <Link to="/landing" className="inline-flex items-center gap-3 mb-12">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c9a87c] to-[#9d8fb5] flex items-center justify-center">
-                                <span className="text-[#0a0a0c] font-semibold">A</span>
+                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#c9a87c] to-[#9d8fb5] flex items-center justify-center">
+                                <span className="text-[#0a0a0c] font-semibold">DH</span>
                             </div>
-                            <span className="text-[18px] font-medium text-[#e8e8ea]">Apex</span>
+                            <span className="text-[18px] font-medium text-[#e8e8ea]">Daddy's Home</span>
                         </Link>
 
                         <div className="mb-8">
@@ -297,8 +297,8 @@ export function Login() {
                 </div>
 
                 {/* ── Right — Visual ── */}
-                <div className="w-1/2 relative overflow-hidden bg-gradient-to-br from-[#151518] to-[#0a0a0c] border-l border-[rgba(255,255,255,0.06)]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#c9a87c]/10 via-transparent to-[#9d8fb5]/10" />
+                <div className="w-1/2 hidden lg:block relative overflow-hidden bg-linear-to-br from-[#151518] to-[#0a0a0c] border-l border-[rgba(255,255,255,0.06)]">
+                    <div className="absolute inset-0 bg-linear-to-br from-[#c9a87c]/10 via-transparent to-[#9d8fb5]/10" />
 
                     <div className="relative h-full flex flex-col items-center justify-center p-16 text-center">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#c9a87c] to-[#9d8fb5] flex items-center justify-center mb-8 shadow-[0_0_48px_rgba(201,168,124,0.18)]">

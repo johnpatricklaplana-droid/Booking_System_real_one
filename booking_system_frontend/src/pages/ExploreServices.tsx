@@ -27,8 +27,8 @@ export function ExploreServices() {
 
     return (
         <div className="min-h-screen p-6 lg:p-8" id="page-explore">
-            <div className="pt-12 px-0 pb-8">
-                <div className="max-w-280 my-0 mx-auto">
+            <div className="px-0 pb-8">
+                <div className="max-w-280 mx-auto">
                     <h1 className="text-[1.75rem] text-(--text-1) font-bold tracking-[-0.03em] mb-5">Explore services
                     </h1>
                     <div className="flex gap-3 items-center mb-5">
@@ -38,15 +38,7 @@ export function ExploreServices() {
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="m21 21-4.35-4.35" />
                             </svg>
-                            <input className="w-full py-2 text-(--text-1) outline-none" type="text" placeholder="Search services, businesses…" />
-                        </div>
-                        <div className="relative pl-4 items-center border border-(--border) gap-4 flex text-(--text-2) rounded-2xl flex-1 bg-(--surface-2)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                strokeWidth="2">
-                                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0Z" />
-                                <circle cx="12" cy="10" r="3" />
-                            </svg>
-                            <input className="py-2 w-full placeholder:text-(--text-2) text-(--text-1) outline-none" type="text" placeholder="Manila, PH" />
+                            <input className="w-full py-2 text-(--text-1) outline-none" type="text" placeholder="Find services" />
                         </div>
                         <button className="btn btn-primary">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"

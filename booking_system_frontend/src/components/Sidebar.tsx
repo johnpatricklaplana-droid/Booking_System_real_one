@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { BarChart3, Users, Settings, BriefcaseBusinessIcon, Grid3x3, Clock, Briefcase, CircleSlashedIcon, ArrowLeftRight, PanelLeftClose } from 'lucide-react';
 import { update } from '../api/api';
 import { useUser } from '../provider/UserContext';
@@ -23,6 +23,7 @@ export function Sidebar({
 }>) {
 
     const { setUser, user } = useUser();
+    const navigate = useNavigate();
 
     const location = useLocation();
 
@@ -36,6 +37,7 @@ export function Sidebar({
 
         if(result.status === 200) {
             setUser?.(prev => ({ ...prev!, activeRole: "CUSTOMER" }));
+            navigate('/customer/home');
         }
     };
 
