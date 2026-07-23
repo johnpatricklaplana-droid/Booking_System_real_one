@@ -4,7 +4,6 @@ import { CheckIcon, CircleUser, ArrowBigLeftDash } from "lucide-react";
 import { useUser } from "../provider/UserContext";
 import { PostFormData, update } from "../api/api";
 import { API_URL } from "../api/config";
-import { CustomerNavBar } from "../components/custumerNavBar";
 
 const mockUser = {
     name: "Juan dela Cruz",

@@ -6,7 +6,6 @@ import { get } from '../../api/api';
 import { fillMonths } from '../../hooks/service';
 import type { BusinessTotals, FullAnalytics, MonthlyStats } from '../../interfaces/Types';
 import { API_URL } from '../../api/config';
-import { Sidebar } from '../../components/Sidebar';
 
 interface ServiceData  {
     name: string;

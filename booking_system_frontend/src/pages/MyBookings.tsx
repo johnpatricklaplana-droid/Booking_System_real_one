@@ -30,7 +30,6 @@ import StarRating from "../components/Star";
 import { useNavigate } from "react-router-dom";
 import { SpinnerLoading } from "../components/SpinnerLoading";
 import { API_URL } from "../api/config";
-import { CustomerNavBar } from "../components/custumerNavBar";
 
 type BookingStatus = "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "MISSED";
 
