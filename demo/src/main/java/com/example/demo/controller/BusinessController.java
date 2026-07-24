@@ -19,6 +19,7 @@ import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.CancellationRequestDto;
 import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.FullAnalyticsResponse;
+import com.example.demo.dto.response.PublicBusinessDto;
 import com.example.demo.service.BusinessService;
 
 
@@ -35,6 +36,21 @@ public class BusinessController {
             .status(HttpStatus.OK)
             .body(businessService.getBusinesses(uid));
     }
+
+    @GetMapping("/api/public/business")
+    public ResponseEntity<AuthResponse> getPublicBusiness() {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new AuthResponse(200, businessService.getPublicBusiness()));
+    }
+
+    @GetMapping("/api/public/business/{businessId}")
+    public ResponseEntity<AuthResponse> getMethodName(@PathVariable UUID businessId) {
+        return ResponseEntity
+            .status(200)
+            .body(new AuthResponse(200, businessService.getPublicBusiness(businessId)));
+    }
+    
 
     @GetMapping("/api/business/customer/{businessId}")
     @PreAuthorize("@businessOwnershipChecker.hasAccess(#businessId, #id)")

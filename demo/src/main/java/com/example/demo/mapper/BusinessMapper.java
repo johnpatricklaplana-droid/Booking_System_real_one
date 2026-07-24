@@ -15,6 +15,7 @@ import com.example.demo.dto.request.AddStaffDto;
 import com.example.demo.dto.response.AddressDto;
 import com.example.demo.dto.response.BusinessDetailsDto;
 import com.example.demo.dto.response.CancellationRequestMiniDto;
+import com.example.demo.dto.response.PublicBusinessDto;
 import com.example.demo.dto.response.ScheduleDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServicesDetailsDto;

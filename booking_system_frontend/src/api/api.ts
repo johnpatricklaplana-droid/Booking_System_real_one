@@ -55,23 +55,19 @@ export async function PostFormData(url: string, body: any) {
 }
 
 export async function get(url: string) {
-    try {
-        const result = await fetch(url, {
-            method: "GET",
-            credentials: 'include'
-        });
+    const result = await fetch(url, {
+        method: "GET",
+        credentials: 'include'
+    });
 
-        if(!result.ok) {
-            throw new Error("ang nais ko malaman mo ooh");
-        }
-
-        const response = await result.json();
-        console.log(response);
-        return response;
-    } catch (error) {
-        console.error(error);
-        return null;
+    if(!result.ok) {
+        console.log(result);
+        throw new Error("ang nais ko malaman mo ooh");
     }
+
+    const response = await result.json();
+    return response;
+       
 }
 
 export async function update(url: string, body: any) {

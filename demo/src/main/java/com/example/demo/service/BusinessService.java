@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.request.ServiceAvailabilityDto;
@@ -17,6 +18,7 @@ import com.example.demo.dto.response.CustomerSummary;
 import com.example.demo.dto.response.FullAnalyticsResponse;
 import com.example.demo.dto.response.MonthlyStatsDto;
 import com.example.demo.dto.response.PeakHourDto;
+import com.example.demo.dto.response.PublicBusinessDto;
 import com.example.demo.dto.response.ScheduleDto;
 import com.example.demo.dto.response.ServiceDetailsDto;
 import com.example.demo.dto.response.ServiceDistributionDto;
@@ -26,6 +28,7 @@ import com.example.demo.dto.response.ServicesDetailsDto;
 import com.example.demo.dto.response.StaffResponseDto;
 import com.example.demo.dto.response.StaffUnavailableDto;
 import com.example.demo.dto.response.UserDtoPublic;
+import com.example.demo.entity.Business;
 import com.example.demo.entity.BusinessServices;
 import com.example.demo.entity.CancellationRequest;
 import com.example.demo.entity.Schedule;
@@ -33,6 +36,7 @@ import com.example.demo.entity.ServiceAvailability;
 import com.example.demo.enums.CancellationRequestStatus;
 import com.example.demo.enums.ScheduleStatusForCustomerUpdate;
 import com.example.demo.exceptions.InvalidInputsException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.mapper.BusinessMapper;
 import com.example.demo.mapper.ServiceMapper;
 import com.example.demo.mapper.ServiceReviewMapper;
@@ -228,6 +232,28 @@ public class BusinessService {
         scheduleRepo.save(schedule);
         cancellationRequestRepo.save(cr);
         
+    }
+
+    public List<PublicBusinessDto> getPublicBusiness() {
+    
+        List<Business> business = businessRepo.findAll();
+
+        return business.stream()
+            .map(b -> 
+                new PublicBusinessDto(businessMapper.toBusinessDetailsDto(b), userMapper.toUserDtoPublic(b.getUser()))
+            )
+            .toList();
+
+    }
+
+    public PublicBusinessDto getPublicBusiness(UUID businessId) {
+        
+        Business business = businessRepo.findById(businessId).orElse(null);
+
+        if(business == null) throw new ResourceNotFoundException("business not found");
+
+        return new PublicBusinessDto(businessMapper.toBusinessDetailsDto(business), userMapper.toUserDtoPublic(business.getUser()));
+
     }
 
     

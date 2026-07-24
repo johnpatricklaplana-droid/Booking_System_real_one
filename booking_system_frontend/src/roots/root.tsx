@@ -20,6 +20,7 @@ import CancellationRequestsPage from "../pages/business/CancellationRequest";
 import { Root } from "../Root";
 import { CustomerRoot } from "../customerRoot";
 import { Signup } from "../Signup";
+import { BusinessDetailsPage } from "../pages/PublicBusinessDetails";
 
 export const router = createBrowserRouter([
     { path: '/', Component: Landing },
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
             { path: 'explore', Component: ExploreServices },
             { path: 'service/:serviceId', Component: ServiceDetails },
             { path: 'bookings', Component: MyBookingsPage },
+            { path: 'business-detail/:businessId', Component: BusinessDetailsPage },
         ]
     },
 

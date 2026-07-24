@@ -74,6 +74,11 @@ export interface UserPublic {
     lastName: string;
 }
 
+export interface BusinessPublic {
+    business: Business;
+    user: UserPublic;
+}
+
 export interface Business {
     address: BusinessAddress;
     businessEmail: string;
